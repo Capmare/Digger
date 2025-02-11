@@ -74,21 +74,6 @@ void dae::GameObject::UnregisterComponentAtIndex(unsigned int idx)
 	m_Components.erase(m_Components.begin() + idx);
 }
 
-std::vector<std::shared_ptr<dae::BaseComponent>> dae::GameObject::GetAllComponentsOfType(const std::type_info& ComponentType)
-{
-	std::vector<std::shared_ptr<BaseComponent>> ComponentVector;
-	ComponentVector.reserve(20);
-
-	for (std::shared_ptr<BaseComponent>& Comp : m_Components) {
-		if (typeid(*Comp) == ComponentType) {  // Check if the type matches
-			ComponentVector.push_back(Comp);  
-		}
-	}
-	// reference count will get increased when returning this vector
-	return ComponentVector;
-
-}
-
 std::shared_ptr<dae::BaseComponent> dae::GameObject::GetComponentAtIndex(unsigned int idx)
 {
 	assert(idx < m_Components.size() && "Index out of scope");

@@ -25,14 +25,34 @@ namespace dae
 		void SetTexture(const std::string& filename);
 		void SetPosition(float x, float y);
 		
+		template <typename T> std::shared_ptr<T> CreateComponent()
+		{
+			m_Components.emplace_back(std::make_shared<T>());
+			return m_Components.back();
+		};
+
 		void AddComponent(const std::shared_ptr<class BaseComponent>& NewComponent);
+
 
 		// Unregister the component so next frame can be deleted after it updates
 		bool UnregisterComponent(const std::shared_ptr<class BaseComponent>& Component);
 		void UnregisterComponentAtIndex(unsigned int idx);
 
-		std::vector<std::shared_ptr<BaseComponent>> GetAllComponentsOfType(const std::type_info& ComponentType);
 		std::shared_ptr<BaseComponent> GetComponentAtIndex(unsigned int idx);
+		// implement the template in the header so i don't need to explicitly instantiate the template for each derived class
+		template <typename T> std::vector<std::shared_ptr<T>> GetAllComponentsOfType()
+		{
+			std::vector<std::shared_ptr<T>> ComponentVector;
+			for (const std::shared_ptr<T>& Comp : m_Components)
+			{
+				if (auto CorrectComponent = std::dynamic_pointer_cast<T>(Comp))
+				{
+					ComponentVector.emplace_back(CorrectComponent);
+				}
+			}
+			return ComponentVector;
+		};
+
 
 	private:
 		bool DeleteUnregisteredComponents();
