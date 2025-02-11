@@ -29,10 +29,10 @@ namespace dae
 
 		// Unregister the component so next frame can be deleted after it updates
 		bool UnregisterComponent(const std::shared_ptr<class BaseComponent>& Component);
-		void UnregisterComponentAtIndex(int idx);
+		void UnregisterComponentAtIndex(unsigned int idx);
 
 		std::vector<std::shared_ptr<BaseComponent>> GetAllComponentsOfType(const std::type_info& ComponentType);
-		std::shared_ptr<BaseComponent> GetComponentAtIndex(int idx);
+		std::shared_ptr<BaseComponent> GetComponentAtIndex(unsigned int idx);
 
 	private:
 		bool DeleteUnregisteredComponents();

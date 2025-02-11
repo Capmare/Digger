@@ -64,7 +64,7 @@ bool dae::GameObject::UnregisterComponent(const std::shared_ptr<class BaseCompon
 	return false;
 }
 
-void dae::GameObject::UnregisterComponentAtIndex(int idx)
+void dae::GameObject::UnregisterComponentAtIndex(unsigned int idx)
 {
 	assert(idx < m_Components.size() && "Index out of scope");
 
@@ -89,7 +89,7 @@ std::vector<std::shared_ptr<dae::BaseComponent>> dae::GameObject::GetAllComponen
 
 }
 
-std::shared_ptr<dae::BaseComponent> dae::GameObject::GetComponentAtIndex(int idx)
+std::shared_ptr<dae::BaseComponent> dae::GameObject::GetComponentAtIndex(unsigned int idx)
 {
 	assert(idx < m_Components.size() && "Index out of scope");
 
