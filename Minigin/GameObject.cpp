@@ -74,7 +74,7 @@ void dae::GameObject::UnregisterComponentAtIndex(unsigned int idx)
 	m_Components.erase(m_Components.begin() + idx);
 }
 
-std::shared_ptr<dae::BaseComponent> dae::GameObject::GetComponentAtIndex(unsigned int idx)
+std::weak_ptr<dae::BaseComponent> dae::GameObject::GetComponentAtIndex(unsigned int idx)
 {
 	assert(idx < m_Components.size() && "Index out of scope");
 

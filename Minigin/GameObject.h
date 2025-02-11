@@ -38,20 +38,23 @@ namespace dae
 		bool UnregisterComponent(const std::shared_ptr<class BaseComponent>& Component);
 		void UnregisterComponentAtIndex(unsigned int idx);
 
-		std::shared_ptr<BaseComponent> GetComponentAtIndex(unsigned int idx);
+		std::weak_ptr<BaseComponent> GetComponentAtIndex(unsigned int idx);
 		// implement the template in the header so i don't need to explicitly instantiate the template for each derived class
-		template <typename T> std::vector<std::shared_ptr<T>> GetAllComponentsOfType()
+		template <typename T>
+		std::vector<std::weak_ptr<T>> GetAllComponentsOfType()
 		{
-			std::vector<std::shared_ptr<T>> ComponentVector;
-			for (const std::shared_ptr<T>& Comp : m_Components)
+			std::vector<std::weak_ptr<T>> WeakComponentVector;
+
+			for (const std::weak_ptr<T>& Comp : m_Components)
 			{
-				if (auto CorrectComponent = std::dynamic_pointer_cast<T>(Comp))
+				if (typeid(*Comp.lock()) == typeid(T)) // using typeid to avoid using dynamic casting, still RTTI
 				{
-					ComponentVector.emplace_back(CorrectComponent);
+					WeakComponentVector.push_back(Comp);
 				}
 			}
-			return ComponentVector;
-		};
+			return WeakComponentVector;
+		}
+
 
 
 	private:

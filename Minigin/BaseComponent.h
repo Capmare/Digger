@@ -16,10 +16,11 @@ namespace dae
 		virtual void Update(const float deltaTime);
 		virtual void FixedUpdate(const float fixedDeltaTime);
 
+		
 	protected:
 
 	private:
-
+		
 	};
 }
 
