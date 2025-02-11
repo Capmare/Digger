@@ -26,11 +26,19 @@ void Scene::RemoveAll()
 	m_objects.clear();
 }
 
-void Scene::Update()
+void dae::Scene::Update([[maybe_unused]] const float deltaTime)
 {
 	for(auto& object : m_objects)
 	{
-		object->Update();
+		object->Update(deltaTime);
+	}
+}
+
+void Scene::FixedUpdate([[maybe_unused]] const float fixedDeltaTime)
+{
+	for (auto& object : m_objects)
+	{
+		object->FixedUpdate(fixedDeltaTime);
 	}
 }
 

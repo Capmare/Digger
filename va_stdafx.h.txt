@@ -1,0 +1,7 @@
+namespace std {
+template <class _Ty>
+	unique_ptr<_Ty> make_unique(_Types&&... _Args);
+	
+	template <class _Ty>
+	shared_ptr<_Ty> make_shared(_Types&&... _Args);
+};
