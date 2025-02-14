@@ -46,7 +46,7 @@ namespace dae
 		std::vector<T*> GetAllComponentsOfType()
 		{
 			std::vector<T*> ComponentVector;
-		
+			ComponentVector.reserve(m_Components.size());
 			for (const auto& Comp : m_Components)
 			{
 				if (Comp->GetType() == typeid(T)) // There is no way to avoid using typeid since i am using templates without constructing the object.
