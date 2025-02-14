@@ -1,10 +1,6 @@
 #include "BaseComponent.h"
 #include <typeinfo>
 
-dae::BaseComponent::BaseComponent() : TYPE{typeid(this).name()}
-{
-
-}
 
 void dae::BaseComponent::Update([[maybe_unused]] const float deltaTime)
 {

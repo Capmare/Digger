@@ -1,12 +1,13 @@
 #pragma once
 #include <string>
+#include <typeinfo>
 
 namespace dae
 {
 	class BaseComponent
 	{
 	public:
-		BaseComponent();
+		BaseComponent() = default;
 		~BaseComponent() = default;
 		
 		BaseComponent(const BaseComponent&) = delete;
@@ -18,11 +19,11 @@ namespace dae
 		virtual void FixedUpdate(const float fixedDeltaTime);
 
 		
-		const std::string GetType() const { return TYPE; }
 	protected:
 
 	private:
-		const std::string TYPE;
+
+
 	};
 }
 

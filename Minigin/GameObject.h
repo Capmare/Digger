@@ -10,7 +10,7 @@ namespace dae
 	class Texture2D;
 
 	// todo: this should become final.
-	class GameObject 
+	class GameObject final
 	{
 	public:
 		GameObject() = default;
@@ -49,7 +49,7 @@ namespace dae
 			ComponentVector.reserve(m_Components.size());
 			for (const auto& Comp : m_Components)
 			{
-				if (Comp->GetType() == typeid(T)) // There is no way to avoid using typeid since i am using templates without constructing the object.
+				if (typeid(*Comp) == typeid(T)) // There is no way to avoid using typeid since i am using templates without constructing the object.
 				{
 					ComponentVector.push_back(static_cast<T*>(Comp.get()));
 				}
