@@ -27,10 +27,10 @@ namespace dae
 		void SetTexture(const std::string& filename);
 		void SetPosition(float x, float y);
 		
-		template <typename T> std::unique_ptr<T> CreateComponent()
+		template <typename T> T* CreateComponent()
 		{
 			m_Components.emplace_back(std::make_unique<T>());
-			return m_Components.back();
+			return m_Components.back().get();
 		};
 
 		void AddComponent(std::unique_ptr<BaseComponent>&& NewComponent);
@@ -43,16 +43,16 @@ namespace dae
 		BaseComponent* GetComponentAtIndex(unsigned int idx);
 		// implement the template in the header so i don't need to explicitly instantiate the template for each derived class
 		template <typename T>
-		std::vector<std::unique_ptr<T>> GetAllComponentsOfType()
+		std::vector<T*> GetAllComponentsOfType()
 		{
-			std::vector<std::unique_ptr<T>> ComponentVector;
+			std::vector<T*> ComponentVector;
 		
-			for (const std::unique_ptr<T>& Comp : m_Components)
+			for (const auto& Comp : m_Components)
 			{
-				//if (typeid(*Comp.lock()) == typeid(T)) // using typeid to avoid using dynamic casting, still RTTI
-				//{
-				//	ComponentVector.push_back(Comp);
-				//}
+				if (Comp->GetType() == typeid(T)) // There is no way to avoid using typeid since i am using templates without constructing the object.
+				{
+					ComponentVector.push_back(static_cast<T*>(Comp.get()));
+				}
 			}
 			return ComponentVector;
 		}
