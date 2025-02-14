@@ -40,27 +40,24 @@ void dae::GameObject::SetPosition(float x, float y)
 	m_transform.SetPosition(x, y, 0.0f);
 }
 
-void dae::GameObject::AddComponent(const std::shared_ptr<class BaseComponent>& NewComponent)
+void dae::GameObject::AddComponent(std::unique_ptr<BaseComponent>&& NewComponent)
 {
-	m_Components.emplace_back(NewComponent);
+	m_Components.emplace_back(std::move(NewComponent));
 }
 
-bool dae::GameObject::UnregisterComponent(const std::shared_ptr<class BaseComponent>& Component)
+bool dae::GameObject::UnregisterComponent(const std::unique_ptr<BaseComponent>& Component)
 {
-	auto it = std::find(m_Components.begin(), m_Components.end(), Component);
+	auto it = std::find_if(m_Components.begin(), m_Components.end(),
+		[&](const std::unique_ptr<BaseComponent>& comp) { return comp.get() == Component.get(); }
+	);
+
 	if (it != m_Components.end())
 	{
 		m_UnregisteredComponents.emplace_back(std::move(*it));
-		size_t idx = it - m_Components.begin();
-
-		assert(idx < m_Components.size() && "Index out of scope");
-
-		it->reset();
-		m_Components.erase(m_Components.begin() + idx);
-
-
+		m_Components.erase(it);
 		return true;
 	}
+
 	return false;
 }
 
@@ -74,11 +71,11 @@ void dae::GameObject::UnregisterComponentAtIndex(unsigned int idx)
 	m_Components.erase(m_Components.begin() + idx);
 }
 
-std::weak_ptr<dae::BaseComponent> dae::GameObject::GetComponentAtIndex(unsigned int idx)
+dae::BaseComponent* dae::GameObject::GetComponentAtIndex(unsigned int idx)
 {
 	assert(idx < m_Components.size() && "Index out of scope");
 
-	return m_Components[idx];
+	return m_Components[idx].get();
 }
 
 bool dae::GameObject::DeleteUnregisteredComponents()
@@ -87,5 +84,6 @@ bool dae::GameObject::DeleteUnregisteredComponents()
 	if (m_UnregisteredComponents.empty()) return true;
 
 	m_UnregisteredComponents.clear();
+	m_UnregisteredComponents.shrink_to_fit(); // this should free memory in case there is any problems
 	return m_UnregisteredComponents.empty();
 }
