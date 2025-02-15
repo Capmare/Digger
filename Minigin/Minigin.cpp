@@ -72,6 +72,7 @@ dae::Minigin::Minigin(const std::string &dataPath)
 
 dae::Minigin::~Minigin()
 {
+	ResourceManager::GetInstance().UnloadUnusedResources();
 	Renderer::GetInstance().Destroy();
 	SDL_DestroyWindow(g_window);
 	g_window = nullptr;
@@ -121,4 +122,6 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 
 	}
+
+	
 }

@@ -1,6 +1,7 @@
 #pragma once
 #include <vec2.hpp>
 #include <string>
+#include "BaseComponent.h"
 
 struct SDL_Texture;
 namespace dae
@@ -8,7 +9,7 @@ namespace dae
 	/**
 	 * Simple RAII wrapper for an SDL_Texture
 	 */
-	class Texture2D final
+	class Texture2D final : public BaseComponent
 	{
 	public:
 		SDL_Texture* GetSDLTexture() const;
