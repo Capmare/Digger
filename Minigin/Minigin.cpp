@@ -91,19 +91,19 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	// todo: this update loop could use some work.
 	bool doContinue = true;
-	auto lastTime = high_resolution_clock::now();
+	auto currentTime = high_resolution_clock::now();
 	float lag{};
 
-	constexpr int MS_PER_FRAME{ 1000 / 144 };
+	constexpr double MAX_FRAME{ 1.f / 60.f };
 	constexpr double FIXED_TIME_STEP{ 1.f / 60.f };
-
 	while (doContinue)
 	{
 
-		const auto currentTime = steady_clock::now();
-		const float deltaTime = duration<float>(currentTime - lastTime).count();
+		const auto newTime = steady_clock::now();
+		const float deltaTime = duration<float>(newTime - currentTime).count();
+		if (deltaTime < MAX_FRAME) continue;
 
-		lastTime = currentTime;
+		currentTime = newTime;
 		lag += deltaTime;
 
 
@@ -117,8 +117,8 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		sceneManager.Update(deltaTime);
 		renderer.Render();
 
-		const auto sleepTime = currentTime + milliseconds(MS_PER_FRAME) - high_resolution_clock::now();
-		std::this_thread::sleep_for(sleepTime);
+		//const auto sleepTime = newTime + milliseconds(MS_PER_FRAME) - high_resolution_clock::now();
+		//std::this_thread::sleep_for(sleepTime);
 
 
 	}

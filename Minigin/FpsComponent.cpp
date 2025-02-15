@@ -16,11 +16,11 @@ void dae::FpsComponent::Update([[maybe_unused]] const float deltaTime)
 	m_accumulatedTime += deltaTime;
 	++m_frameCount;
 
-	if (m_accumulatedTime >= 1.0f)
+	if (m_accumulatedTime >= 1.f)
 	{
 		std::cout << m_accumulatedTime << " " << m_frameCount << std::endl;
 		m_fps = m_frameCount;
-		m_accumulatedTime -= 1.0f; // remove one and keep the left over for next frame calculation
+		m_accumulatedTime = 0.f;
 		m_frameCount = 0;
 	}
 
@@ -33,6 +33,10 @@ void dae::FpsComponent::Update([[maybe_unused]] const float deltaTime)
 
 void dae::FpsComponent::Render() const
 {
-	m_FpsText->Render();
+	if (bShowFpsText)
+	{
+		m_FpsText->Render();
+
+	}
 }
 
