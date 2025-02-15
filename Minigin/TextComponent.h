@@ -9,15 +9,15 @@ namespace dae
 {
 	class Font;
 	class Texture2D;
-	class TextObject final : public BaseComponent
+	class TextComponent final : public BaseComponent
 	{
 	public:
-		TextObject(const std::string& text, std::shared_ptr<Font> font);
-		virtual ~TextObject() = default;
-		TextObject(const TextObject& other) = delete;
-		TextObject(TextObject&& other) = delete;
-		TextObject& operator=(const TextObject& other) = delete;
-		TextObject& operator=(TextObject&& other) = delete;
+		TextComponent(const std::string& text, std::shared_ptr<Font> font);
+		virtual ~TextComponent() = default;
+		TextComponent(const TextComponent& other) = delete;
+		TextComponent(TextComponent&& other) = delete;
+		TextComponent& operator=(const TextComponent& other) = delete;
+		TextComponent& operator=(TextComponent&& other) = delete;
 
 		void Update(const float deltaTime) override;
 		virtual void Render() const;

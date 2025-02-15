@@ -18,8 +18,6 @@ namespace dae
 
 
 	private:
-		static constexpr int MS_PER_FRAME{ 1000/60 };
-		static constexpr float FIXED_TIME_STEP{ 0.02f };
 
 	};
 }

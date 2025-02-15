@@ -8,7 +8,7 @@ namespace dae
 	{
 	public:
 		BaseComponent() = default;
-		~BaseComponent() = default;
+		virtual ~BaseComponent() = default;
 		
 		BaseComponent(const BaseComponent&) = delete;
 		BaseComponent(BaseComponent&&) noexcept = delete;
@@ -17,7 +17,7 @@ namespace dae
 
 		virtual void Update(const float deltaTime);
 		virtual void FixedUpdate(const float fixedDeltaTime);
-
+		virtual void Render() const;
 		
 	protected:
 

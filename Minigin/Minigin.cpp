@@ -6,6 +6,7 @@
 #include <SDL_ttf.h>
 #include <thread>
 #include <chrono>
+#include <iostream>
 #include "Minigin.h"
 #include "InputManager.h"
 #include "SceneManager.h"
@@ -92,13 +93,18 @@ void dae::Minigin::Run(const std::function<void()>& load)
 	auto lastTime = high_resolution_clock::now();
 	float lag{};
 
+	constexpr int MS_PER_FRAME{ 1000 / 144 };
+	constexpr double FIXED_TIME_STEP{ 1.f / 60.f };
+
 	while (doContinue)
 	{
 
-		const auto currentTime = high_resolution_clock::now();
+		const auto currentTime = steady_clock::now();
 		const float deltaTime = duration<float>(currentTime - lastTime).count();
+
 		lastTime = currentTime;
 		lag += deltaTime;
+
 
 		doContinue = input.ProcessInput();
 		while (lag >= FIXED_TIME_STEP)
@@ -106,11 +112,13 @@ void dae::Minigin::Run(const std::function<void()>& load)
 			sceneManager.FixedUpdate(FIXED_TIME_STEP);
 			lag -= FIXED_TIME_STEP;
 		}
+
 		sceneManager.Update(deltaTime);
 		renderer.Render();
 
 		const auto sleepTime = currentTime + milliseconds(MS_PER_FRAME) - high_resolution_clock::now();
 		std::this_thread::sleep_for(sleepTime);
+
 
 	}
 }

@@ -27,10 +27,12 @@ namespace dae
 		void SetTexture(const std::string& filename);
 		void SetPosition(float x, float y);
 		
-		template <typename T> T* CreateComponent()
+		template <typename T, typename... Args> T* CreateComponent(Args&&... args)
 		{
-			m_Components.emplace_back(std::make_unique<T>());
-			return m_Components.back().get();
+			 static_assert(std::is_base_of<BaseComponent, T>::value, "T must derive from BaseComponent");
+
+			m_Components.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
+			return static_cast<T*>(m_Components.back().get());
 		};
 
 		void AddComponent(std::unique_ptr<BaseComponent>&& NewComponent);
@@ -41,7 +43,8 @@ namespace dae
 		void UnregisterComponentAtIndex(unsigned int idx);
 		
 		BaseComponent* GetComponentAtIndex(unsigned int idx);
-		// implement the template in the header so i don't need to explicitly instantiate the template for each derived class
+		
+		// Get all components of one singular type
 		template <typename T>
 		std::vector<T*> GetAllComponentsOfType()
 		{

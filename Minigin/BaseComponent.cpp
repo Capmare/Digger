@@ -11,3 +11,8 @@ void dae::BaseComponent::FixedUpdate([[maybe_unused]] const float fixedDeltaTime
 {
 
 }
+
+void dae::BaseComponent::Render() const
+{
+
+}
