@@ -6,7 +6,7 @@
 
 dae::GameObject::~GameObject() = default;
 
-void dae::GameObject::Update([[maybe_unused]] const float deltaTime)
+void dae::GameObject::Update( const float deltaTime)
 {
 	for (const auto& components : m_Components)
 	{
@@ -16,7 +16,7 @@ void dae::GameObject::Update([[maybe_unused]] const float deltaTime)
 	DeleteUnregisteredComponents();
 }
 
-void dae::GameObject::FixedUpdate([[maybe_unused]] const float fixedDeltaTime)
+void dae::GameObject::FixedUpdate( const float fixedDeltaTime)
 {
 	for (const auto& components : m_Components)
 	{

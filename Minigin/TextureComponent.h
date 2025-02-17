@@ -8,7 +8,7 @@ namespace dae  {
 	class TextureComponent final: public BaseComponent
 	{
 	public:
-		TextureComponent() = default;
+		TextureComponent(const GameObject* Owner) : BaseComponent(Owner) {};
 		virtual ~TextureComponent() = default;
 		
 		TextureComponent(const TextureComponent&) = delete;

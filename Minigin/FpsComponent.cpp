@@ -3,15 +3,22 @@
 #include "ResourceManager.h"
 #include <iostream>
 
-dae::FpsComponent::FpsComponent()
+dae::FpsComponent::FpsComponent(const GameObject* Owner) : BaseComponent(Owner)
 {
-	auto font = dae::ResourceManager::GetInstance().LoadFont("Lingua.otf", 36);
-	m_FpsText = make_unique<TextComponent>("FPS:", font);
-	m_FpsText->SetPosition(10, 10);
+	if (GetOwner())
+	{
+		auto textComponents = GetOwner()->GetAllComponentsOfType<TextComponent>(); // assumes that the first object is a text component, will solve it later
+		if (!textComponents.empty())
+		{
+			m_FpsText = textComponents[0];
+			m_FpsText->SetPosition(10, 10);
 
+		}
+	}
+	
 }
 
-void dae::FpsComponent::Update([[maybe_unused]] const float deltaTime)
+void dae::FpsComponent::Update( const float deltaTime)
 {
 	m_accumulatedTime += deltaTime;
 	++m_frameCount;
@@ -24,19 +31,12 @@ void dae::FpsComponent::Update([[maybe_unused]] const float deltaTime)
 		m_frameCount = 0;
 	}
 
-	std::string fpsString = "FPS: " + std::to_string(m_fps);
-	m_FpsText->Update(deltaTime);
-	m_FpsText->SetText(fpsString);
-
-
-}
-
-void dae::FpsComponent::Render() const
-{
-	if (bShowFpsText)
+	if (m_FpsText)
 	{
-		m_FpsText->Render();
-
+		std::string fpsString = "FPS: " + std::to_string(m_fps);
+		m_FpsText->SetText(fpsString);
 	}
+
 }
+
 

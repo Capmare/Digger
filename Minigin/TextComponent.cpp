@@ -5,11 +5,11 @@
 #include "Font.h"
 #include "Texture2D.h"
 
-dae::TextComponent::TextComponent(const std::string& text, std::shared_ptr<Font> font) 
-	: m_needsUpdate(true), m_text(text), m_font(std::move(font)), m_textTexture(nullptr)
+dae::TextComponent::TextComponent(const GameObject* Owner, const std::string& text, std::shared_ptr<Font> font) :
+	BaseComponent(Owner), m_needsUpdate(true), m_text(text), m_font(std::move(font)), m_textTexture(nullptr)
 { }
 
-void dae::TextComponent::Update([[maybe_unused]] const float deltaTime)
+void dae::TextComponent::Update( const float )
 {
 	if (m_needsUpdate)
 	{

@@ -8,7 +8,7 @@ namespace dae
 	class FpsComponent final : public BaseComponent
 	{
 	public:
-		FpsComponent();
+		FpsComponent(const GameObject* Owner);
 		~FpsComponent() = default;
 		
 		FpsComponent(const FpsComponent&) = delete;
@@ -18,14 +18,13 @@ namespace dae
 
 
 		void Update(const float deltaTime) override;
-		void Render() const override;
-		int GetFrameRate() const { return m_fps; }
+		const int& GetFrameRate() const { return m_fps; }
 		void ShowFpsText(bool val) { bShowFpsText = val; }
 
 	protected:
 	private:
 
-		std::unique_ptr<TextComponent> m_FpsText;
+		TextComponent* m_FpsText;
 
 		int m_fps{};
 		bool bShowFpsText{ true };

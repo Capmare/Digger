@@ -1,13 +1,15 @@
 #include "BaseComponent.h"
 #include <typeinfo>
+#include <cassert>
+#include "GameObject.h"
 
 
-void dae::BaseComponent::Update([[maybe_unused]] const float deltaTime)
+void dae::BaseComponent::Update( const float )
 {
 
 }
 
-void dae::BaseComponent::FixedUpdate([[maybe_unused]] const float fixedDeltaTime)
+void dae::BaseComponent::FixedUpdate( const float )
 {
 
 }
@@ -16,3 +18,6 @@ void dae::BaseComponent::Render() const
 {
 
 }
+
+
+

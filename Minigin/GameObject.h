@@ -28,9 +28,10 @@ namespace dae
 		
 		template <typename T, typename... Args> T* CreateComponent(Args&&... args)
 		{
-			 static_assert(std::is_base_of<BaseComponent, T>::value, "T must derive from BaseComponent");
-
-			m_Components.emplace_back(std::make_unique<T>(std::forward<Args>(args)...));
+			static_assert(std::is_base_of<BaseComponent, T>::value, "T must derive from BaseComponent");
+			const GameObject* self = this;
+			std::unique_ptr<BaseComponent> NewComp = std::make_unique<T>(self,std::forward<Args>(args)...);
+			m_Components.emplace_back(std::move(NewComp));
 			return static_cast<T*>(m_Components.back().get());
 		};
 
@@ -45,9 +46,11 @@ namespace dae
 		
 		// Get all components of one singular type
 		template <typename T>
-		std::vector<T*> GetAllComponentsOfType()
+		std::vector<T*> GetAllComponentsOfType() const
 		{
 			std::vector<T*> ComponentVector;
+			if (m_Components.empty()) return ComponentVector;
+
 			ComponentVector.reserve(m_Components.size());
 			for (const auto& Comp : m_Components)
 			{
