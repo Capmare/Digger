@@ -405,3 +405,5 @@ build_web
 
 # Dear Imgui settings file
 imgui.ini
+
+.vs/
