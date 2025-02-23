@@ -9,11 +9,18 @@ namespace dae
 {
 	class Texture2D;
 
+	enum class TransformUpdate
+	{
+		KeepWorldPosition,
+		InheritParentWorldPosition
+	};
+
+
 	// todo: this should become final.
 	class GameObject final
 	{
 	public:
-		GameObject() = default;
+		GameObject();
 		virtual ~GameObject();
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
@@ -39,7 +46,7 @@ namespace dae
 
 
 		// Unregister the component so next frame can be deleted after it updates
-		bool UnregisterComponent(const std::unique_ptr<BaseComponent>& Component);
+		bool UnregisterComponent(BaseComponent* component);
 		void UnregisterComponentAtIndex(unsigned int idx);
 		
 		BaseComponent* GetComponentAtIndex(unsigned int idx);
@@ -62,13 +69,24 @@ namespace dae
 			return ComponentVector;
 		}
 
+		void SetNewParent(GameObject* NewParent);
 
+
+		dae::Transform GetWorldTransform() const { return m_WorldTransform; }
+		dae::Transform GetLocalTransform() const { return m_LocalTransform; }
 
 	private:
 		bool DeleteUnregisteredComponents();
 
-		Transform m_transform{};
+		void RemoveChildFromParent(GameObject* Child);
+		void AddChildToParent(GameObject* Child);
 
+		Transform m_LocalTransform{};
+		Transform m_WorldTransform{};
+
+		GameObject* m_Parent;
+
+		std::vector<std::unique_ptr<GameObject>> m_ChildObjects{};
 		std::vector<std::unique_ptr<BaseComponent>> m_Components{};
 		std::vector<std::unique_ptr<BaseComponent>> m_UnregisteredComponents{};
 	};
