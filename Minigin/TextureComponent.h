@@ -8,7 +8,7 @@ namespace dae  {
 	class TextureComponent final: public BaseComponent
 	{
 	public:
-		TextureComponent(const GameObject* Owner) : BaseComponent(Owner) {};
+		TextureComponent(GameObject* Owner) : BaseComponent(Owner) {};
 		virtual ~TextureComponent() = default;
 		
 		TextureComponent(const TextureComponent&) = delete;
@@ -19,10 +19,8 @@ namespace dae  {
 		void Render() const override;
 
 		void SetTexture(const std::string& filename);
-		void SetPosition(float x, float y);
 
 	private:
-		Transform m_Transform{};
 		std::shared_ptr<Texture2D> m_Texture{};
 	};
 }

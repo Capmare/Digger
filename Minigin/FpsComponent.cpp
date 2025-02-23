@@ -3,7 +3,7 @@
 #include "ResourceManager.h"
 #include <iostream>
 
-dae::FpsComponent::FpsComponent(const GameObject* Owner) : BaseComponent(Owner)
+dae::FpsComponent::FpsComponent(GameObject* Owner) : BaseComponent(Owner)
 {
 	if (GetOwner())
 	{

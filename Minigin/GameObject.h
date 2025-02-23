@@ -21,22 +21,21 @@ namespace dae
 	{
 	public:
 		GameObject();
-		virtual ~GameObject();
+		~GameObject() = default;
 		GameObject(const GameObject& other) = delete;
 		GameObject(GameObject&& other) = delete;
 		GameObject& operator=(const GameObject& other) = delete;
 		GameObject& operator=(GameObject&& other) = delete;
 
-		virtual void Update(const float deltaTime);
-		virtual void FixedUpdate(const float fixedDeltaTime);
-		virtual void Render() const;
+		void Update(const float deltaTime);
+		void FixedUpdate(const float fixedDeltaTime);
+		void Render() const;
 
-		void SetPosition(float x, float y);
 		
 		template <typename T, typename... Args> T* CreateComponent(Args&&... args)
 		{
 			static_assert(std::is_base_of<BaseComponent, T>::value, "T must derive from BaseComponent");
-			const GameObject* self = this;
+			GameObject* self = this;
 			std::unique_ptr<BaseComponent> NewComp = std::make_unique<T>(self,std::forward<Args>(args)...);
 			m_Components.emplace_back(std::move(NewComp));
 			return static_cast<T*>(m_Components.back().get());
@@ -69,25 +68,40 @@ namespace dae
 			return ComponentVector;
 		}
 
-		void SetNewParent(GameObject* NewParent);
+		void SetParent(GameObject* NewParent, bool bKeepWorldPosition);
+		GameObject* GetParent() const { return m_Parent; }
 
-
+		void SetLocalPosition(const glm::vec3& pos);
+		void SetLocalPosition(int x, int y);
 		dae::Transform GetWorldTransform() const { return m_WorldTransform; }
 		dae::Transform GetLocalTransform() const { return m_LocalTransform; }
+		const glm::vec3& GetWorldPosition();
+
+		std::string m_Name{};
+
+		void RemoveSelfFromParent();
 
 	private:
 		bool DeleteUnregisteredComponents();
 
 		void RemoveChildFromParent(GameObject* Child);
 		void AddChildToParent(GameObject* Child);
+		bool IsChild(GameObject* Child);
+
+		void UpdateWorldPosition();
+
+		void SetPositionDirty() { m_bPositionDirty = true; }
+
 
 		Transform m_LocalTransform{};
 		Transform m_WorldTransform{};
 
-		GameObject* m_Parent;
+		GameObject* m_Parent{};
 
-		std::vector<std::unique_ptr<GameObject>> m_ChildObjects{};
+		std::vector<GameObject*> m_ChildObjects{};
 		std::vector<std::unique_ptr<BaseComponent>> m_Components{};
 		std::vector<std::unique_ptr<BaseComponent>> m_UnregisteredComponents{};
+
+		bool m_bPositionDirty{ false };
 	};
 }

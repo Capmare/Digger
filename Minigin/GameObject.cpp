@@ -4,19 +4,9 @@
 #include "Renderer.h"
 #include "BaseComponent.h"
 
-dae::GameObject::~GameObject() = default;
 
-dae::GameObject::GameObject()
-{
-	if (m_Parent)
-	{
-		m_WorldTransform.m_position = m_LocalTransform.m_position + m_Parent->GetLocalTransform().m_position;
-	}
-	else
-	{
-		m_WorldTransform.m_position = m_LocalTransform.m_position;
-	}
-}
+dae::GameObject::GameObject() = default;
+
 
 void dae::GameObject::Update( const float deltaTime)
 {
@@ -44,13 +34,9 @@ void dae::GameObject::Render() const
 	{
 		components->Render();
 	}
-
 }
 
-void dae::GameObject::SetPosition(float x, float y)
-{
-	GetLocalTransform().m_position = {x, y, 0.0f};
-}
+
 
 void dae::GameObject::AddComponent(std::unique_ptr<BaseComponent>&& NewComponent)
 {
@@ -73,7 +59,6 @@ bool dae::GameObject::UnregisterComponent(BaseComponent* component)
 	return false;
 }
 
-
 void dae::GameObject::UnregisterComponentAtIndex(unsigned int idx)
 {
 	assert(idx < m_Components.size() && "Index out of scope");
@@ -90,20 +75,10 @@ dae::BaseComponent* dae::GameObject::GetComponentAtIndex(unsigned int idx)
 
 void dae::GameObject::RemoveChildFromParent(GameObject* Child)
 {
-	assert(Child != nullptr && "Child should not be nullptr");
+	if (Child == nullptr) return;
 
-	auto it = std::find_if(m_ChildObjects.begin(), m_ChildObjects.end(),
-		[&](const std::unique_ptr<GameObject>& comp) { return comp.get() == Child; }
-	);
-
-	assert(it != m_ChildObjects.end() && "Child object does not exist in vector");
-
-	if (it != m_ChildObjects.end())
-	{
-		m_ChildObjects.erase(it);
-	}
-
-
+	std::erase_if(m_ChildObjects, [&](const auto& comp) { return comp == Child; });
+	
 }
 
 void dae::GameObject::AddChildToParent(GameObject* Child)
@@ -111,32 +86,92 @@ void dae::GameObject::AddChildToParent(GameObject* Child)
 	m_ChildObjects.emplace_back(Child);
 }
 
-void dae::GameObject::SetNewParent(GameObject* NewParent)
+bool dae::GameObject::IsChild(GameObject* Child)
 {
-	assert(NewParent != nullptr && "NewParent can't be nullptr");
-	if (NewParent != m_Parent) return; // check that parent is not the same
-	if (m_Parent) // check if new parent valid
+	auto it = std::find_if(m_ChildObjects.begin(), m_ChildObjects.end(),
+		[&](const auto& ChildComp) { return ChildComp == Child; }
+	);
+
+	if (it != m_ChildObjects.end()) return true;
+	return false;
+}
+
+void dae::GameObject::SetLocalPosition(const glm::vec3& pos)
+{
+	m_LocalTransform.m_position = pos;
+
+	SetPositionDirty();
+	for (const auto& children : m_ChildObjects)
 	{
-		m_Parent->RemoveChildFromParent(this); // remove itself from old parent
-		m_Parent = NewParent; // set new parent
-		m_Parent->AddChildToParent(this);
-		this->m_WorldTransform = m_Parent->GetLocalTransform();
+		children->SetPositionDirty();
 	}
+
+}
+
+void dae::GameObject::SetLocalPosition(int x, int y)
+{
+	SetLocalPosition({ x,y,0.f });
+}
+
+void dae::GameObject::UpdateWorldPosition()
+{
+	if (m_bPositionDirty)
+	{
+		if (m_Parent == nullptr)
+		{
+			m_WorldTransform.m_position = m_LocalTransform.m_position;
+		}
+		else
+		{
+			m_WorldTransform.m_position = m_Parent->GetWorldPosition() + m_LocalTransform.m_position;
+		}
+	}
+	m_bPositionDirty = false;
+}
+
+void dae::GameObject::SetParent(GameObject* NewParent, bool bKeepWorldPosition)
+{
+	if (IsChild(NewParent) || NewParent == this || m_Parent == NewParent) return;
+	
+	if (NewParent == nullptr)
+	{
+		SetLocalPosition(GetWorldPosition());
+	}
+	else
+	{
+		if (bKeepWorldPosition)
+		{
+			SetLocalPosition(GetWorldPosition() - NewParent->GetWorldPosition());
+		}
+		SetPositionDirty();
+	}
+
+	if (m_Parent) m_Parent->RemoveChildFromParent(this);
+	m_Parent = NewParent;
+	if (m_Parent) m_Parent->AddChildToParent(this);
+
+}
+
+const glm::vec3& dae::GameObject::GetWorldPosition()
+{
+	if (m_bPositionDirty)
+	{
+		UpdateWorldPosition();
+	}
+	return m_WorldTransform.m_position;
+}
+
+void dae::GameObject::RemoveSelfFromParent()
+{
+	SetParent(nullptr, true);
 }
 
 bool dae::GameObject::DeleteUnregisteredComponents()
 {
 	if (m_UnregisteredComponents.empty()) return true;
 
-	// Remove null pointers from m_Components
-	m_Components.erase(
-		std::remove_if(
-			m_Components.begin(), m_Components.end(),
-			[](const std::unique_ptr<BaseComponent>& ptr) { return ptr == nullptr; }),
-		m_Components.end()
-	);
+	std::erase_if(m_Components, [](const auto& Component) { return Component.get() == nullptr; });
 
-	// Clear the unregistered list
 	m_UnregisteredComponents.clear();
 	return m_UnregisteredComponents.empty();
 }

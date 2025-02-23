@@ -8,7 +8,7 @@ namespace dae
 	class BaseComponent
 	{
 	public:
-		BaseComponent(const GameObject* Owner) : m_Owner{ Owner } {};
+		BaseComponent(GameObject* Owner) : m_Owner{ Owner } {};
 		virtual ~BaseComponent() = default;
 		
 		BaseComponent(const BaseComponent&) = delete;
@@ -22,9 +22,10 @@ namespace dae
 		
 
 	protected:
-		const class GameObject* GetOwner() const { return m_Owner; }
+		GameObject* GetOwner() const { return m_Owner; }
 	private:
-		const class GameObject* m_Owner{};
+		// this is now not const due some issues i had, I will trust the user he will never touch this variable or i will personally come to cut his hands
+		GameObject* m_Owner{};
 
 	};
 }

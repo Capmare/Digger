@@ -195,6 +195,7 @@ xcopy "$(SolutionDir)Data" "$(OutputPath)Data\" /R /Y</Command>
     <ClInclude Include="Minigin.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="RotatingComponent.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="Singleton.h" />
@@ -213,6 +214,7 @@ xcopy "$(SolutionDir)Data" "$(OutputPath)Data\" /R /Y</Command>
     <ClCompile Include="Minigin.cpp" />
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="RotatingComponent.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="TextComponent.cpp" />
