@@ -13,7 +13,15 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+#pragma region ImGui
+#include "imgui.h"
+#include "imgui_impl_sdl2.h"
+#include "imgui_impl_opengl2.h"
+#pragma endregion ImGui
+
+
 SDL_Window* g_window{};
+SDL_GLContext g_context;
 
 void PrintSDLVersion()
 {
@@ -41,6 +49,8 @@ void PrintSDLVersion()
 	version = *TTF_Linked_Version();
 	printf("We are linking against SDL_ttf version %u.%u.%u.\n",
 		version.major, version.minor, version.patch);
+
+
 }
 
 dae::Minigin::Minigin(const std::string &dataPath)
@@ -64,6 +74,20 @@ dae::Minigin::Minigin(const std::string &dataPath)
 	{
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
 	}
+
+	g_context = SDL_GL_CreateContext(g_window);
+	if (g_context == nullptr)
+	{
+		throw std::runtime_error(std::string("SDL_GL_CreateContext Error: ") + SDL_GetError());
+	}
+
+	int majorVersion, minorVersion;
+	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &majorVersion);
+	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minorVersion);
+
+	std::cout << "OpenGl Version: " << majorVersion << "." << minorVersion << std::endl;
+
+
 
 	Renderer::GetInstance().Init(g_window);
 
@@ -95,8 +119,20 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	constexpr int MS_PER_FRAME{ 1000 / 144 };
 	constexpr double FIXED_TIME_STEP{ 1.f / 60.f };
+
+	// imgui 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+	ImGuiIO& io = ImGui::GetIO();
+	(void)io;
+	ImGui::StyleColorsDark();
+	ImGui_ImplSDL2_InitForOpenGL(g_window, g_context);
+	ImGui_ImplOpenGL2_Init();
+
+
 	while (doContinue)
 	{
+
 
 		const auto newTime = steady_clock::now();
 		const float deltaTime = duration<float>(newTime - currentTime).count();
@@ -112,8 +148,22 @@ void dae::Minigin::Run(const std::function<void()>& load)
 			lag -= FIXED_TIME_STEP;
 		}
 
+
+		ImGui_ImplOpenGL2_NewFrame();
+		ImGui_ImplSDL2_NewFrame();
+		ImGui::NewFrame();
+
+		ImGui::SetNextWindowSize(ImVec2(100, 100), ImGuiCond_Once);
+		ImGui::Begin("Window", NULL, ImGuiWindowFlags_None);
+		ImGui::Text("Hellooo");
+		ImGui::End();
+		ImGui::Render();
+
 		sceneManager.Update(deltaTime);
 		renderer.Render();
+
+
+
 
 		const auto sleepTime = newTime + milliseconds(MS_PER_FRAME) - high_resolution_clock::now();
 		std::this_thread::sleep_for(sleepTime);
@@ -121,5 +171,8 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	}
 
+	ImGui_ImplOpenGL2_Shutdown();
+	ImGui_ImplSDL2_Shutdown();
+	ImGui::DestroyContext();
 	
 }
