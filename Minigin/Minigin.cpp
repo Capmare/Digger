@@ -13,10 +13,14 @@
 #include "Renderer.h"
 #include "ResourceManager.h"
 
+#include "GameObject.h"
+
+#include <Time.h>
 #pragma region ImGui
 #include "imgui.h"
 #include "imgui_impl_sdl2.h"
 #include "imgui_impl_opengl2.h"
+#include "imgui_plot.h"
 #pragma endregion ImGui
 
 
@@ -100,9 +104,50 @@ void dae::Minigin::ImGuiInterface()
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::SetNextWindowSize(ImVec2(100, 100), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(300, 600), ImGuiCond_Once);
 	ImGui::Begin("Window", NULL, ImGuiWindowFlags_None);
-	ImGui::Text("Hellooo");
+
+	ImGui::InputInt("Sample size", &m_SampleSize);
+
+	if (ImGui::Button("Trash cache with GameObject"))
+	{
+		m_bFirstTrashFinished = false;
+		std::vector<GameObject> g(m_SampleSize);
+		ImGui::Text("Trashing the cache");
+		FirstTrashYData.clear();
+		for (int StepSize{1}; StepSize < 1024; StepSize *= 2)
+		{
+			const auto start = std::chrono::high_resolution_clock::now();
+
+			for (int i = 0; i < g.size(); i += StepSize)
+			{
+				g[i].m_Name += 'a';
+			}
+			auto end = std::chrono::high_resolution_clock::now();
+			auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+			FirstTrashYData.emplace_back(static_cast<float>(total));
+		}
+		m_bFirstTrashFinished = true;
+	}
+
+	if (m_bFirstTrashFinished)
+	{
+		ImGui::PlotConfig conf;
+		//conf.values.xs = FirstTrashXData.data(); // this line is optional
+		conf.values.ys = FirstTrashYData.data();
+		conf.values.count = static_cast<int>(FirstTrashYData.size());
+		conf.scale.min = 0;
+		conf.scale.max = 100;
+		conf.tooltip.show = true;
+		conf.tooltip.format = "x=%.2f, y=%.2f";
+		conf.grid_x.show = true;
+		conf.grid_y.show = true;
+		conf.frame_size = ImVec2(200, 100);
+		conf.line_thickness = 2.f;
+
+		ImGui::Plot("plot", conf);
+	}
+
 	ImGui::End();
 	ImGui::Render();
 }
@@ -161,12 +206,11 @@ void dae::Minigin::Run(const std::function<void()>& load)
 			lag -= FIXED_TIME_STEP;
 		}
 
-
+		ImGuiInterface();
 
 
 		sceneManager.Update(deltaTime);
 		renderer.Render();
-
 
 
 

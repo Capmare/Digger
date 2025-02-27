@@ -78,7 +78,6 @@ namespace dae
 		const glm::vec3& GetWorldPosition();
 
 		std::string m_Name{};
-
 		void RemoveSelfFromParent();
 
 	private:

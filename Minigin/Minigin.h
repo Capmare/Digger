@@ -21,5 +21,9 @@ namespace dae
 
 		void ImGuiInterface();
 
+		int m_SampleSize{1000};
+		bool m_bFirstTrashFinished{};
+		std::vector<float> FirstTrashXData{};
+		std::vector<float> FirstTrashYData{};
 	};
 }
