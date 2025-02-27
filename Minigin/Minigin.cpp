@@ -94,6 +94,19 @@ dae::Minigin::Minigin(const std::string &dataPath)
 	ResourceManager::GetInstance().Init(dataPath);
 }
 
+void dae::Minigin::ImGuiInterface()
+{
+	ImGui_ImplOpenGL2_NewFrame();
+	ImGui_ImplSDL2_NewFrame();
+	ImGui::NewFrame();
+
+	ImGui::SetNextWindowSize(ImVec2(100, 100), ImGuiCond_Once);
+	ImGui::Begin("Window", NULL, ImGuiWindowFlags_None);
+	ImGui::Text("Hellooo");
+	ImGui::End();
+	ImGui::Render();
+}
+
 dae::Minigin::~Minigin()
 {
 	ResourceManager::GetInstance().UnloadUnusedResources();
@@ -149,15 +162,7 @@ void dae::Minigin::Run(const std::function<void()>& load)
 		}
 
 
-		ImGui_ImplOpenGL2_NewFrame();
-		ImGui_ImplSDL2_NewFrame();
-		ImGui::NewFrame();
 
-		ImGui::SetNextWindowSize(ImVec2(100, 100), ImGuiCond_Once);
-		ImGui::Begin("Window", NULL, ImGuiWindowFlags_None);
-		ImGui::Text("Hellooo");
-		ImGui::End();
-		ImGui::Render();
 
 		sceneManager.Update(deltaTime);
 		renderer.Render();

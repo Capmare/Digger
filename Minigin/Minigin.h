@@ -19,5 +19,7 @@ namespace dae
 
 	private:
 
+		void ImGuiInterface();
+
 	};
 }
