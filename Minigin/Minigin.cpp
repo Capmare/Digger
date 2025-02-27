@@ -27,6 +27,8 @@
 SDL_Window* g_window{};
 SDL_GLContext g_context;
 
+
+
 void PrintSDLVersion()
 {
 	SDL_version version{};
@@ -70,8 +72,8 @@ dae::Minigin::Minigin(const std::string &dataPath)
 		"Programming 4 assignment",
 		SDL_WINDOWPOS_CENTERED,
 		SDL_WINDOWPOS_CENTERED,
-		640,
-		480,
+		1280,
+		960,
 		SDL_WINDOW_OPENGL
 	);
 	if (g_window == nullptr) 
@@ -104,38 +106,37 @@ void dae::Minigin::ImGuiInterface()
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
 
-	ImGui::SetNextWindowSize(ImVec2(300, 600), ImGuiCond_Once);
-	ImGui::Begin("Window", NULL, ImGuiWindowFlags_None);
+	ImGui::SetNextWindowSize(ImVec2(400, 300), ImGuiCond_Once);
+	ImGui::Begin("Exercise 1", NULL, ImGuiWindowFlags_None);
 
-	ImGui::InputInt("Sample size", &m_SampleSize);
+	ImGui::InputInt("Sample size Int", &m_IntSampleSize);
 
-	if (ImGui::Button("Trash cache with GameObject"))
+	if (ImGui::Button("Trash cache with Int"))
 	{
-		m_bFirstTrashFinished = false;
-		std::vector<GameObject> g(m_SampleSize);
+		m_bIntTrashFinished = false;
+		std::vector<int> g(m_IntSampleSize);
 		ImGui::Text("Trashing the cache");
-		FirstTrashYData.clear();
+		m_IntTrashCacheData.clear();
 		for (int StepSize{1}; StepSize < 1024; StepSize *= 2)
 		{
 			const auto start = std::chrono::high_resolution_clock::now();
 
 			for (int i = 0; i < g.size(); i += StepSize)
 			{
-				g[i].m_Name += 'a';
+				g[i] *= 2;
 			}
 			auto end = std::chrono::high_resolution_clock::now();
 			auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
-			FirstTrashYData.emplace_back(static_cast<float>(total));
+			m_IntTrashCacheData.emplace_back(static_cast<float>(total));
 		}
-		m_bFirstTrashFinished = true;
+		m_bIntTrashFinished = true;
 	}
 
-	if (m_bFirstTrashFinished)
+	if (m_bIntTrashFinished)
 	{
 		ImGui::PlotConfig conf;
-		//conf.values.xs = FirstTrashXData.data(); // this line is optional
-		conf.values.ys = FirstTrashYData.data();
-		conf.values.count = static_cast<int>(FirstTrashYData.size());
+		conf.values.ys = m_IntTrashCacheData.data();
+		conf.values.count = static_cast<int>(m_IntTrashCacheData.size());
 		conf.scale.min = 0;
 		conf.scale.max = 100;
 		conf.tooltip.show = true;
@@ -144,9 +145,122 @@ void dae::Minigin::ImGuiInterface()
 		conf.grid_y.show = true;
 		conf.frame_size = ImVec2(200, 100);
 		conf.line_thickness = 2.f;
+		conf.values.color = ImColor(255, 0, 0);
 
-		ImGui::Plot("plot", conf);
+		ImGui::Plot("IntTrashCache Data", conf);
 	}
+
+	ImGui::End();
+
+
+	// window 2
+
+
+	ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_Once);
+	ImGui::Begin("Exercise 2", NULL, ImGuiWindowFlags_None);
+
+	ImGui::InputInt("Sample size GameObject", &m_GameObject3DSampleSize);
+
+	if (ImGui::Button("Trash cache with GameObject3D"))
+	{
+		m_bIntTrashFinished = false;
+		std::vector<GameObject3D> g(m_GameObject3DSampleSize);
+		ImGui::Text("Trashing the cache");
+		m_GameObject3DTrashCacheData.clear();
+		for (int StepSize{ 1 }; StepSize < 1024; StepSize *= 2)
+		{
+			const auto start = std::chrono::high_resolution_clock::now();
+
+			for (int i = 0; i < g.size(); i += StepSize)
+			{
+				g[i].ID *= 2;
+			}
+			auto end = std::chrono::high_resolution_clock::now();
+			auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+			m_GameObject3DTrashCacheData.emplace_back(static_cast<float>(total));
+		}
+		m_bGameObjectTrashFinished = true;
+	}
+
+	if (m_bGameObjectTrashFinished)
+	{
+		ImGui::PlotConfig conf;
+		conf.values.ys = m_GameObject3DTrashCacheData.data();
+		conf.values.count = static_cast<int>(m_GameObject3DTrashCacheData.size());
+		conf.scale.min = 0;
+		conf.scale.max = 100;
+		conf.tooltip.show = true;
+		conf.tooltip.format = "x=%.2f, y=%.2f";
+		conf.grid_x.show = true;
+		conf.grid_y.show = true;
+		conf.frame_size = ImVec2(200, 100);
+		conf.line_thickness = 2.f;
+		conf.values.color = ImColor(0, 255, 0);
+
+		ImGui::Plot("Gameobject3DTrashCache Data", conf);
+	}
+
+	ImGui::InputInt("Sample size GameObject3DAlt", &m_GameObject3DAltSampleSize);
+
+	if (ImGui::Button("Trash cache with GameObject3DAlt"))
+	{
+		m_bIntTrashFinished = false;
+		std::vector<GameObject3D> g(m_GameObject3DAltSampleSize);
+		ImGui::Text("Trashing the cache");
+		m_GameObject3DAltTrashCacheData.clear();
+		for (int StepSize{ 1 }; StepSize < 1024; StepSize *= 2)
+		{
+			const auto start = std::chrono::high_resolution_clock::now();
+
+			for (int i = 0; i < g.size(); i += StepSize)
+			{
+				g[i].ID *= 2;
+			}
+			auto end = std::chrono::high_resolution_clock::now();
+			auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+			m_GameObject3DAltTrashCacheData.emplace_back(static_cast<float>(total));
+		}
+		m_bGameObjectAltTrashFinished = true;
+	}
+
+	if (m_bGameObjectAltTrashFinished)
+	{
+		ImGui::PlotConfig conf;
+		conf.values.ys = m_GameObject3DTrashCacheData.data();
+		conf.values.count = static_cast<int>(m_GameObject3DTrashCacheData.size());
+		conf.scale.min = 0;
+		conf.scale.max = 100;
+		conf.tooltip.show = true;
+		conf.tooltip.format = "x=%.2f, y=%.2f";
+		conf.grid_x.show = true;
+		conf.grid_y.show = true;
+		conf.frame_size = ImVec2(200, 100);
+		conf.line_thickness = 2.f;
+		conf.values.color = ImColor(0, 0, 255);
+		ImGui::Plot("Gameobject3DAltTrashCache Data", conf);
+	}
+
+	if (m_bGameObjectAltTrashFinished && m_bGameObjectTrashFinished)
+	{
+		const float* CombinedData[2] = {
+			m_GameObject3DTrashCacheData.data(),
+			m_GameObject3DAltTrashCacheData.data()
+		};
+		ImGui::PlotConfig conf;
+		conf.values.count = static_cast<int>(m_GameObject3DAltTrashCacheData.size()) + static_cast<int>(m_GameObject3DTrashCacheData.size());
+		conf.values.ys_list = CombinedData;
+		conf.scale.min = 0;
+		conf.scale.max = 100;
+		conf.tooltip.show = true;
+		conf.tooltip.format = "x=%.2f, y=%.2f";
+		conf.grid_x.show = true;
+		conf.grid_y.show = true;
+		conf.frame_size = ImVec2(200, 100);
+		conf.line_thickness = 2.f;
+		conf.values.color = ImColor(0, 0, 255);
+		ImGui::Plot("Combined Data", conf);
+	}
+
 
 	ImGui::End();
 	ImGui::Render();
@@ -206,8 +320,11 @@ void dae::Minigin::Run(const std::function<void()>& load)
 			lag -= FIXED_TIME_STEP;
 		}
 
-		ImGuiInterface();
+		if (AssigmentOne)
+		{
+			ImGuiInterface();
 
+		}
 
 		sceneManager.Update(deltaTime);
 		renderer.Render();

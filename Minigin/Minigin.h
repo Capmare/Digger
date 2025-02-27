@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <functional>
+static bool AssigmentOne{ true };
 
 namespace dae
 {
@@ -21,9 +22,17 @@ namespace dae
 
 		void ImGuiInterface();
 
-		int m_SampleSize{1000};
-		bool m_bFirstTrashFinished{};
-		std::vector<float> FirstTrashXData{};
-		std::vector<float> FirstTrashYData{};
+		std::vector<float> m_IntTrashCacheData{};
+		std::vector<float> m_GameObject3DTrashCacheData{};
+		std::vector<float> m_GameObject3DAltTrashCacheData{};
+
+		int m_IntSampleSize{ 1000000 };
+		int m_GameObject3DSampleSize{ 1000000 };
+		int m_GameObject3DAltSampleSize{ 1000000 };
+		
+		bool m_bIntTrashFinished{};
+		bool m_bGameObjectTrashFinished{};
+		bool m_bGameObjectAltTrashFinished{};
+
 	};
 }
