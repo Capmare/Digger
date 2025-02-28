@@ -102,6 +102,8 @@ dae::Minigin::Minigin(const std::string &dataPath)
 
 void dae::Minigin::ImGuiInterface()
 {
+
+
 	ImGui_ImplOpenGL2_NewFrame();
 	ImGui_ImplSDL2_NewFrame();
 	ImGui::NewFrame();
@@ -126,10 +128,20 @@ void dae::Minigin::ImGuiInterface()
 				g[i] *= 2;
 			}
 			auto end = std::chrono::high_resolution_clock::now();
-			auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+			auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() /10.f;
 			m_IntTrashCacheData.emplace_back(static_cast<float>(total));
 		}
 		m_bIntTrashFinished = true;
+
+		for (const auto& num : m_IntTrashCacheData)
+		{
+			std::wstringstream ws;
+			ws << num;
+			ws << "\n";
+			OutputDebugStringW(ws.str().c_str());
+		}
+		OutputDebugStringW(L"\n");
+
 	}
 
 	if (m_bIntTrashFinished)
@@ -138,9 +150,9 @@ void dae::Minigin::ImGuiInterface()
 		conf.values.ys = m_IntTrashCacheData.data();
 		conf.values.count = static_cast<int>(m_IntTrashCacheData.size());
 		conf.scale.min = 0;
-		conf.scale.max = 100;
+		conf.scale.max = *std::max_element(m_IntTrashCacheData.begin(), m_IntTrashCacheData.end());
 		conf.tooltip.show = true;
-		conf.tooltip.format = "x=%.2f, y=%.2f";
+		conf.tooltip.format = "x=%1.f, y=%1.f";
 		conf.grid_x.show = true;
 		conf.grid_y.show = true;
 		conf.frame_size = ImVec2(200, 100);
@@ -156,7 +168,7 @@ void dae::Minigin::ImGuiInterface()
 	// window 2
 
 
-	ImGui::SetNextWindowSize(ImVec2(400, 500), ImGuiCond_Once);
+	ImGui::SetNextWindowSize(ImVec2(600, 500), ImGuiCond_Once);
 	ImGui::Begin("Exercise 2", NULL, ImGuiWindowFlags_None);
 
 	ImGui::InputInt("Sample size GameObject", &m_GameObject3DSampleSize);
@@ -165,7 +177,6 @@ void dae::Minigin::ImGuiInterface()
 	{
 		m_bIntTrashFinished = false;
 		std::vector<GameObject3D> g(m_GameObject3DSampleSize);
-		ImGui::Text("Trashing the cache");
 		m_GameObject3DTrashCacheData.clear();
 		for (int StepSize{ 1 }; StepSize < 1024; StepSize *= 2)
 		{
@@ -176,10 +187,20 @@ void dae::Minigin::ImGuiInterface()
 				g[i].ID *= 2;
 			}
 			auto end = std::chrono::high_resolution_clock::now();
-			auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+			auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 10.f;
 			m_GameObject3DTrashCacheData.emplace_back(static_cast<float>(total));
 		}
 		m_bGameObjectTrashFinished = true;
+
+		for (const auto& num : m_GameObject3DTrashCacheData)
+		{
+			std::wstringstream ws;
+			ws << num; 
+			ws << "\n";
+			OutputDebugStringW(ws.str().c_str());
+		}
+		OutputDebugStringW(L"\n");
+
 	}
 
 	if (m_bGameObjectTrashFinished)
@@ -188,9 +209,9 @@ void dae::Minigin::ImGuiInterface()
 		conf.values.ys = m_GameObject3DTrashCacheData.data();
 		conf.values.count = static_cast<int>(m_GameObject3DTrashCacheData.size());
 		conf.scale.min = 0;
-		conf.scale.max = 100;
+		conf.scale.max = *std::max_element(m_GameObject3DTrashCacheData.begin(), m_GameObject3DTrashCacheData.end());
 		conf.tooltip.show = true;
-		conf.tooltip.format = "x=%.2f, y=%.2f";
+		conf.tooltip.format = "x=%1.f, y=%1.f";
 		conf.grid_x.show = true;
 		conf.grid_y.show = true;
 		conf.frame_size = ImVec2(200, 100);
@@ -204,9 +225,9 @@ void dae::Minigin::ImGuiInterface()
 
 	if (ImGui::Button("Trash cache with GameObject3DAlt"))
 	{
+
 		m_bIntTrashFinished = false;
-		std::vector<GameObject3D> g(m_GameObject3DAltSampleSize);
-		ImGui::Text("Trashing the cache");
+		std::vector<GameObject3DAlt> g(m_GameObject3DAltSampleSize);
 		m_GameObject3DAltTrashCacheData.clear();
 		for (int StepSize{ 1 }; StepSize < 1024; StepSize *= 2)
 		{
@@ -217,21 +238,30 @@ void dae::Minigin::ImGuiInterface()
 				g[i].ID *= 2;
 			}
 			auto end = std::chrono::high_resolution_clock::now();
-			auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count();
+			auto total = std::chrono::duration_cast<std::chrono::microseconds>(end - start).count() / 10.f;
 			m_GameObject3DAltTrashCacheData.emplace_back(static_cast<float>(total));
 		}
 		m_bGameObjectAltTrashFinished = true;
+
+		for (const auto& num : m_GameObject3DAltTrashCacheData)
+		{
+			std::wstringstream ws;
+			ws << num;
+			ws << "\n";
+			OutputDebugStringW(ws.str().c_str());
+		}
+		OutputDebugStringW(L"\n");
 	}
 
 	if (m_bGameObjectAltTrashFinished)
 	{
 		ImGui::PlotConfig conf;
-		conf.values.ys = m_GameObject3DTrashCacheData.data();
-		conf.values.count = static_cast<int>(m_GameObject3DTrashCacheData.size());
+		conf.values.ys = m_GameObject3DAltTrashCacheData.data();
+		conf.values.count = static_cast<int>(m_GameObject3DAltTrashCacheData.size());
 		conf.scale.min = 0;
-		conf.scale.max = 100;
+		conf.scale.max = *std::max_element(m_GameObject3DAltTrashCacheData.begin(), m_GameObject3DAltTrashCacheData.end());;
 		conf.tooltip.show = true;
-		conf.tooltip.format = "x=%.2f, y=%.2f";
+		conf.tooltip.format = "x=%1.f, y=%1.f";
 		conf.grid_x.show = true;
 		conf.grid_y.show = true;
 		conf.frame_size = ImVec2(200, 100);
@@ -242,22 +272,25 @@ void dae::Minigin::ImGuiInterface()
 
 	if (m_bGameObjectAltTrashFinished && m_bGameObjectTrashFinished)
 	{
-		const float* CombinedData[2] = {
-			m_GameObject3DTrashCacheData.data(),
-			m_GameObject3DAltTrashCacheData.data()
-		};
+		ImGui::Text("Combined graph");
+
+		const float* ys_list[2];
+		ys_list[0] = m_GameObject3DAltTrashCacheData.data();
+		ys_list[1] = m_GameObject3DTrashCacheData.data();
+		ImU32 colors[2] = { ImColor(0, 0, 255), ImColor(0, 255, 0) };
+
 		ImGui::PlotConfig conf;
-		conf.values.count = static_cast<int>(m_GameObject3DAltTrashCacheData.size()) + static_cast<int>(m_GameObject3DTrashCacheData.size());
-		conf.values.ys_list = CombinedData;
+		conf.values.ys_list = ys_list;
+		conf.values.ys_count = 2;
 		conf.scale.min = 0;
-		conf.scale.max = 100;
+		conf.scale.max = 10000;
 		conf.tooltip.show = true;
-		conf.tooltip.format = "x=%.2f, y=%.2f";
+		conf.tooltip.format = "x=%1.f, y=%1.f";
 		conf.grid_x.show = true;
 		conf.grid_y.show = true;
 		conf.frame_size = ImVec2(200, 100);
 		conf.line_thickness = 2.f;
-		conf.values.color = ImColor(0, 0, 255);
+		conf.values.colors = colors;
 		ImGui::Plot("Combined Data", conf);
 	}
 

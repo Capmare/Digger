@@ -123,7 +123,7 @@ namespace dae
 	class GameObject3DAlt
 	{
 	public:
-		TransformTrashTheCache transform;
+		TransformTrashTheCache* transform;
 		int ID;
 	};
 

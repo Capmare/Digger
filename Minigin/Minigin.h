@@ -26,9 +26,9 @@ namespace dae
 		std::vector<float> m_GameObject3DTrashCacheData{};
 		std::vector<float> m_GameObject3DAltTrashCacheData{};
 
-		int m_IntSampleSize{ 1000000 };
-		int m_GameObject3DSampleSize{ 1000000 };
-		int m_GameObject3DAltSampleSize{ 1000000 };
+		int m_IntSampleSize{ 10000000 };
+		int m_GameObject3DSampleSize{ 10000000 };
+		int m_GameObject3DAltSampleSize{ 10000000 };
 		
 		bool m_bIntTrashFinished{};
 		bool m_bGameObjectTrashFinished{};
