@@ -272,6 +272,10 @@ void dae::Minigin::ImGuiInterface()
 
 	if (m_bGameObjectAltTrashFinished && m_bGameObjectTrashFinished)
 	{
+#ifdef _DEBUG
+		ImGui::TextColored(ImVec4(1.0f, 0.0f, 0.0f, 1.0f), "Combined graph not showing properly while in debug mode, please use release");
+
+#else
 		ImGui::Text("Combined graph");
 
 		const float* ys_list[2];
@@ -292,6 +296,8 @@ void dae::Minigin::ImGuiInterface()
 		conf.line_thickness = 2.f;
 		conf.values.colors = colors;
 		ImGui::Plot("Combined Data", conf);
+#endif // DEBUG
+
 	}
 
 
