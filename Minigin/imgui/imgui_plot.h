@@ -30,9 +30,9 @@ struct PlotConfig {
     } values;
     struct Scale {
         // Minimum plot value
-        float min;
+        float min{};
         // Maximum plot value
-        float max;
+        float max{};
         enum Type {
             Linear,
             Log10,

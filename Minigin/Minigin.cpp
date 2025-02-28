@@ -76,6 +76,7 @@ dae::Minigin::Minigin(const std::string &dataPath)
 		960,
 		SDL_WINDOW_OPENGL
 	);
+
 	if (g_window == nullptr) 
 	{
 		throw std::runtime_error(std::string("SDL_CreateWindow Error: ") + SDL_GetError());
@@ -92,8 +93,6 @@ dae::Minigin::Minigin(const std::string &dataPath)
 	SDL_GL_GetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, &minorVersion);
 
 	std::cout << "OpenGl Version: " << majorVersion << "." << minorVersion << std::endl;
-
-
 
 	Renderer::GetInstance().Init(g_window);
 
@@ -169,6 +168,7 @@ void dae::Minigin::ImGuiInterface()
 
 
 	ImGui::SetNextWindowSize(ImVec2(600, 500), ImGuiCond_Once);
+	ImGui::SetNextWindowPos(ImVec2(500, 50));
 	ImGui::Begin("Exercise 2", NULL, ImGuiWindowFlags_None);
 
 	ImGui::InputInt("Sample size GameObject", &m_GameObject3DSampleSize);
@@ -278,7 +278,7 @@ void dae::Minigin::ImGuiInterface()
 #else
 		ImGui::Text("Combined graph");
 
-		const float* ys_list[2];
+		const float* ys_list[2]{};
 		ys_list[0] = m_GameObject3DAltTrashCacheData.data();
 		ys_list[1] = m_GameObject3DTrashCacheData.data();
 		ImU32 colors[2] = { ImColor(0, 0, 255), ImColor(0, 255, 0) };

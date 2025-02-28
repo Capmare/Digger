@@ -117,14 +117,14 @@ namespace dae
 	{
 	public:
 		TransformTrashTheCache transform;
-		int ID;
+		int ID{};
 	};
 
 	class GameObject3DAlt
 	{
 	public:
-		TransformTrashTheCache* transform;
-		int ID;
+		TransformTrashTheCache* transform{};
+		int ID{};
 	};
 
 }
