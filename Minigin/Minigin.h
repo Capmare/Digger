@@ -1,6 +1,10 @@
 #pragma once
 #include <string>
 #include <functional>
+
+
+
+
 static bool AssigmentOne{ true };
 
 namespace dae
@@ -12,6 +16,8 @@ namespace dae
 		~Minigin();
 		void Run(const std::function<void()>& load);
 
+		template <typename T> void TrashCacheWithData(std::vector<T>& dataset, std::vector<float>& cacheData, std::vector<float>& cacheDataAverage, int sampleSize, const char* datasetName);
+
 		Minigin(const Minigin& other) = delete;
 		Minigin(Minigin&& other) = delete;
 		Minigin& operator=(const Minigin& other) = delete;
@@ -20,15 +26,24 @@ namespace dae
 
 	private:
 
+		
+
+
 		void ImGuiInterface();
 
 		std::vector<float> m_IntTrashCacheData{};
-		std::vector<float> m_GameObject3DTrashCacheData{};
-		std::vector<float> m_GameObject3DAltTrashCacheData{};
+		std::vector<float> m_IntTrashCacheDataAverage{};
 
-		int m_IntSampleSize{ 10000000 };
-		int m_GameObject3DSampleSize{ 10000000 };
-		int m_GameObject3DAltSampleSize{ 10000000 };
+		std::vector<float> m_GameObject3DTrashCacheData{};
+		std::vector<float> m_GameObject3DTrashCacheDataAverage{};
+
+		std::vector<float> m_GameObject3DAltTrashCacheData{};
+		std::vector<float> m_GameObject3DAltTrashCacheDataAverage{};
+
+
+		int m_IntSampleSize{ 100 };
+		int m_GameObject3DSampleSize{ 100 };
+		int m_GameObject3DAltSampleSize{ 100 };
 		
 		bool m_bIntTrashFinished{};
 		bool m_bGameObjectTrashFinished{};
