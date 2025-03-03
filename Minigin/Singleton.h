@@ -17,6 +17,7 @@ namespace dae
 		Singleton& operator=(const Singleton& other) = delete;
 		Singleton& operator=(Singleton&& other) = delete;
 
+
 	protected:
 		Singleton() = default;
 	};

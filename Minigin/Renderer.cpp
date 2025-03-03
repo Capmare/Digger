@@ -37,7 +37,6 @@ void dae::Renderer::Render() const
 
 	SceneManager::GetInstance().Render();
 	
-
 	ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
 
 	SDL_RenderPresent(m_renderer);
