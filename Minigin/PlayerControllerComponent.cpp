@@ -4,6 +4,8 @@
 #include <windows.h>
 #include <Xinput.h>
 #include "Command.h"
+#include "imgui_impl_sdl2.h"
+#include <SDL.h>
 
 #pragma comment(lib, "Xinput9_1_0.lib")
 
@@ -23,9 +25,11 @@ namespace dae
 		std::unique_ptr<Command_Move> MoveLeftDown;
 		std::unique_ptr<Command_Move> MoveRightDown;
 
+		bool m_bIsKeyboard{false};
 	public:
-		Impl(GameObject* Owner) : 
+		Impl(GameObject* Owner,bool IsKeyboard) : 
 			m_Owner{ Owner },
+			m_bIsKeyboard{IsKeyboard},
 			MoveUp			{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,-1 }) },
 			MoveDown		{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,1 }) },
 			MoveRight		{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,0 }) },
@@ -51,39 +55,83 @@ namespace dae
 
 		Command* HandleInput()
 		{
-			if (IsPressed(DPadButton::DPAD_LEFT) && IsPressed(DPadButton::DPAD_UP))
+			if (m_bIsKeyboard == false)
 			{
-				return MoveLeftUp.get();
-			}
-			if (IsPressed(DPadButton::DPAD_RIGHT) && IsPressed(DPadButton::DPAD_UP))
-			{
-				return MoveRightUp.get();
-			}
-			if (IsPressed(DPadButton::DPAD_LEFT) && IsPressed(DPadButton::DPAD_DOWN))
-			{
-				return MoveLeftDown.get();
-			}
-			if (IsPressed(DPadButton::DPAD_RIGHT) && IsPressed(DPadButton::DPAD_DOWN))
-			{
-				return MoveRightDown.get();
-			}
+				// diagonal
+				if (IsPressed(DPadButton::DPAD_LEFT) && IsPressed(DPadButton::DPAD_UP))
+				{
+					return MoveLeftUp.get();
+				}
+				if (IsPressed(DPadButton::DPAD_RIGHT) && IsPressed(DPadButton::DPAD_UP))
+				{
+					return MoveRightUp.get();
+				}
+				if (IsPressed(DPadButton::DPAD_LEFT) && IsPressed(DPadButton::DPAD_DOWN))
+				{
+					return MoveLeftDown.get();
+				}
+				if (IsPressed(DPadButton::DPAD_RIGHT) && IsPressed(DPadButton::DPAD_DOWN))
+				{
+					return MoveRightDown.get();
+				}
 
-			// Normal movement
-			if (IsPressed(DPadButton::DPAD_UP))
-			{
-				return MoveUp.get();
+				// Normal movement
+				if (IsPressed(DPadButton::DPAD_UP))
+				{
+					return MoveUp.get();
+				}
+				if (IsPressed(DPadButton::DPAD_DOWN))
+				{
+					return MoveDown.get();
+				}
+				if (IsPressed(DPadButton::DPAD_LEFT))
+				{
+					return MoveLeft.get();
+				}
+				if (IsPressed(DPadButton::DPAD_RIGHT))
+				{
+					return MoveRight.get();
+				}
 			}
-			if (IsPressed(DPadButton::DPAD_DOWN))
+			else
 			{
-				return MoveDown.get();
-			}
-			if (IsPressed(DPadButton::DPAD_LEFT))
-			{
-				return MoveLeft.get();
-			}
-			if (IsPressed(DPadButton::DPAD_RIGHT))
-			{
-				return MoveRight.get();
+				const Uint8* keyState = SDL_GetKeyboardState(NULL);
+
+				// diagonal
+				if (keyState[SDL_SCANCODE_W] && keyState[SDL_SCANCODE_A]) 
+				{
+					return MoveLeftUp.get();
+				}
+				if (keyState[SDL_SCANCODE_W] && keyState[SDL_SCANCODE_D])
+				{
+					return MoveRightUp.get();
+				}
+				if (keyState[SDL_SCANCODE_S] && keyState[SDL_SCANCODE_A]) 
+				{
+					return MoveLeftDown.get();
+				}
+				if (keyState[SDL_SCANCODE_S] && keyState[SDL_SCANCODE_D])
+				{
+					return MoveRightDown.get();
+				}
+
+				// Normal movement
+				if (keyState[SDL_SCANCODE_W]) 
+				{
+					return MoveUp.get();
+				}
+				if (keyState[SDL_SCANCODE_S])  
+				{
+					return MoveDown.get();
+				}
+				if (keyState[SDL_SCANCODE_A])  
+				{
+					return MoveLeft.get();
+				}
+				if (keyState[SDL_SCANCODE_D])  
+				{
+					return MoveRight.get();
+				}
 			}
 
 			return nullptr;
@@ -148,7 +196,7 @@ namespace dae
 	};
 
 
-	PlayerControllerComponent::PlayerControllerComponent(GameObject* Owner) : BaseComponent(Owner), pImpl(std::make_unique<Impl>(Owner)) {};
+	PlayerControllerComponent::PlayerControllerComponent(GameObject* Owner, bool IsKeyboard) : BaseComponent(Owner), pImpl(std::make_unique<Impl>(Owner,IsKeyboard)) {};
 
 	PlayerControllerComponent::~PlayerControllerComponent() = default;
 

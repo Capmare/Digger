@@ -32,7 +32,7 @@ namespace dae
 	class PlayerControllerComponent : public BaseComponent
 	{
 	public:
-		PlayerControllerComponent(GameObject* Owner);
+		PlayerControllerComponent(GameObject* Owner, bool IsKeyboard = false);
 		virtual ~PlayerControllerComponent();
 
 		PlayerControllerComponent(const PlayerControllerComponent&) = delete;
@@ -43,11 +43,9 @@ namespace dae
 		void Update(const float deltaTime) override;
 		class Command* HandleInput();
 
-		GameObject* ReturnOwner() { return GetOwner(); }
 	private:
 		class Impl; 
 		std::unique_ptr<Impl> pImpl;  
-
 
 
 	};
