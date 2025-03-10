@@ -12,8 +12,30 @@ namespace dae
 	class PlayerControllerComponent::Impl
 	{
 		GameObject* m_Owner{};
+
+		std::unique_ptr<Command_Move> MoveUp;
+		std::unique_ptr<Command_Move> MoveDown;
+		std::unique_ptr<Command_Move> MoveRight;
+		std::unique_ptr<Command_Move> MoveLeft;
+													   
+		std::unique_ptr<Command_Move> MoveLeftUp;
+		std::unique_ptr<Command_Move> MoveRightUp;
+		std::unique_ptr<Command_Move> MoveLeftDown;
+		std::unique_ptr<Command_Move> MoveRightDown;
+
 	public:
-		Impl(GameObject* Owner) : m_Owner{ Owner } {};
+		Impl(GameObject* Owner) : 
+			m_Owner{ Owner },
+			MoveUp			{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,-1 }) },
+			MoveDown		{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,1 }) },
+			MoveRight		{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,0 }) },
+			MoveLeft		{ std::make_unique<dae::Command_Move>(glm::vec2{ -1,0 }) },
+
+			MoveLeftUp		{ std::make_unique<dae::Command_Move>(glm::vec2{ -1,-1 }) },
+			MoveRightUp		{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,-1 }) },
+			MoveLeftDown	{ std::make_unique<dae::Command_Move>(glm::vec2{ -1,1 }) },
+			MoveRightDown	{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,1 }) }
+		{};
 		~Impl() = default;
 
 		void Update(const float)
@@ -31,37 +53,37 @@ namespace dae
 		{
 			if (IsPressed(DPadButton::DPAD_LEFT) && IsPressed(DPadButton::DPAD_UP))
 			{
-				return new Command_Move({ -1,-1 });
+				return MoveLeftUp.get();
 			}
 			if (IsPressed(DPadButton::DPAD_RIGHT) && IsPressed(DPadButton::DPAD_UP))
 			{
-				return new Command_Move({ 1,-1 });
+				return MoveRightUp.get();
 			}
 			if (IsPressed(DPadButton::DPAD_LEFT) && IsPressed(DPadButton::DPAD_DOWN))
 			{
-				return new Command_Move({ -1,1 });
+				return MoveLeftDown.get();
 			}
 			if (IsPressed(DPadButton::DPAD_RIGHT) && IsPressed(DPadButton::DPAD_DOWN))
 			{
-				return new Command_Move({ 1,1 });
+				return MoveRightDown.get();
 			}
 
 			// Normal movement
 			if (IsPressed(DPadButton::DPAD_UP))
 			{
-				return new Command_Move({ 0,-1 });
+				return MoveUp.get();
 			}
 			if (IsPressed(DPadButton::DPAD_DOWN))
 			{
-				return new Command_Move({ 0,1 });
+				return MoveDown.get();
 			}
 			if (IsPressed(DPadButton::DPAD_LEFT))
 			{
-				return new Command_Move({ -1,0 });
+				return MoveLeft.get();
 			}
 			if (IsPressed(DPadButton::DPAD_RIGHT))
 			{
-				return new Command_Move({ 1,0 });
+				return MoveRight.get();
 			}
 
 			return nullptr;
