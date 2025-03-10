@@ -90,6 +90,18 @@
     <ClInclude Include="ImGui\imgui_impl_sdl2.h">
       <Filter>ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="imgui\imgui_plot.h">
+      <Filter>ImGui</Filter>
+    </ClInclude>
+    <ClInclude Include="MovementComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerControllerComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ResourceManager.cpp">
@@ -160,6 +172,15 @@
     </ClCompile>
     <ClCompile Include="ImGui\imgui_impl_sdl2.cpp">
       <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="imgui\imgui_plot.cpp">
+      <Filter>ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="MovementComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerControllerComponent.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
