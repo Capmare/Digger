@@ -48,7 +48,7 @@ namespace dae
 		void Exec(GameObject& GO) override
 		{
 			dae::ScoreComponent* ScoreComp = GO.GetAllComponentsOfType<ScoreComponent>().at(0);
-			ScoreComp->IncreaseScore(10);
+			ScoreComp->IncreaseScore(100);
 		}
 	};
 

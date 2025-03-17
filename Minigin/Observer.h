@@ -11,6 +11,7 @@ namespace dae
 		OnHealthChanged,
 		OnDeath,
 		OnScoreChanged,
+		Scored500
 	};
 
 	class Observer

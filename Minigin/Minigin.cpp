@@ -21,6 +21,7 @@
 #include "imgui_plot.h"
 #pragma endregion ImGui
 
+#include <steam_api.h>
 
 SDL_Window* g_window{};
 SDL_GLContext g_context;
@@ -139,6 +140,8 @@ void dae::Minigin::Run(const std::function<void()>& load)
 
 	while (doContinue)
 	{
+		SteamAPI_RunCallbacks();
+
 		const auto newTime = steady_clock::now();
 		const float deltaTime = duration<float>(newTime - currentTime).count();
 

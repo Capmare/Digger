@@ -2,7 +2,7 @@
 #include "HealthComponent.h"
 #include "GameObject.h"
 #include "ScoreComponent.h"
-
+#include <steam_api.h>
 
 
 void dae::HealthObserver::OnNotify(const GameObject& GO, const ObserverEvents& Event)
@@ -39,6 +39,11 @@ void dae::ScoreObserver::OnNotify(const GameObject& GO, const ObserverEvents& Ev
 			ScoreText += std::to_string(ScoreComp->GetScore());
 			ScoreComp->GetScoreText()->SetText(ScoreText);
 			break;
+		case ObserverEvents::Scored500:
+			if (SteamUserStats()->SetAchievement("ACH_WIN_ONE_GAME"))
+			{
+				SteamUserStats()->StoreStats();
+			}
 		default:
 			break;
 		}

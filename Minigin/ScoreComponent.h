@@ -24,7 +24,11 @@ namespace dae
 
 			m_Score += HealthIncreaseAmmount;
 			m_Subject.NotifyObservers(*GetOwner(), ObserverEvents::OnScoreChanged);
+			if (m_Score >= 500)
+			{
+				m_Subject.NotifyObservers(*GetOwner(), ObserverEvents::Scored500);
 
+			}
 
 			return m_Score;
 		}

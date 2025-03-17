@@ -9,6 +9,8 @@
 
 #pragma comment(lib, "Xinput9_1_0.lib")
 
+#include <steam_api.h>
+
 namespace dae
 {
 	class PlayerControllerComponent::Impl
@@ -168,7 +170,12 @@ namespace dae
 					return MoveRight.get();
 				}
 
-				
+				if (keyState[SDL_SCANCODE_K])
+				{
+					if (SteamUserStats()->ClearAchievement("ACH_WIN_ONE_GAME")) {
+						SteamUserStats()->StoreStats(); 
+					}
+				}
 				
 				
 				
