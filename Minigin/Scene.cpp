@@ -30,6 +30,14 @@ dae::GameObject* dae::Scene::CreateNewGameObject()
 	return m_objects.back().get();
 }
 
+
+
+dae::Observer* dae::Scene::CreateObserver(std::unique_ptr<Observer> observer)
+{
+	m_observers.emplace_back(std::move(observer));
+	return m_observers.back().get();
+}
+
 void dae::Scene::Update( const float deltaTime)
 {
 	for(auto& object : m_objects)

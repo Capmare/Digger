@@ -42,7 +42,6 @@ namespace dae
 
 		void Update(const float deltaTime) override;
 		class Command* HandleInput();
-
 	private:
 		class Impl; 
 		std::unique_ptr<Impl> pImpl;  

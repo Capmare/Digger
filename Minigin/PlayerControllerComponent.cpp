@@ -25,6 +25,9 @@ namespace dae
 		std::unique_ptr<Command_Move> MoveLeftDown;
 		std::unique_ptr<Command_Move> MoveRightDown;
 
+		std::unique_ptr<Command_DecreaseHealth> DecreaseHealth;
+		std::unique_ptr<Command_IncreaseScore> IncreaseScore;
+
 		bool m_bIsKeyboard{false};
 	public:
 		Impl(GameObject* Owner,bool IsKeyboard) : 
@@ -38,7 +41,9 @@ namespace dae
 			MoveLeftUp		{ std::make_unique<dae::Command_Move>(glm::vec2{ -1,-1 }) },
 			MoveRightUp		{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,-1 }) },
 			MoveLeftDown	{ std::make_unique<dae::Command_Move>(glm::vec2{ -1,1 }) },
-			MoveRightDown	{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,1 }) }
+			MoveRightDown	{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,1 }) },
+			DecreaseHealth	{ std::make_unique<dae::Command_DecreaseHealth>() },
+			IncreaseScore	{ std::make_unique<dae::Command_IncreaseScore>() }
 		{};
 		~Impl() = default;
 
@@ -51,51 +56,81 @@ namespace dae
 			{
 				CurrentCommand->Exec(*m_Owner);
 			}
+			
 		}
+
 
 		Command* HandleInput()
 		{
 			if (m_bIsKeyboard == false)
 			{
 				// diagonal
-				if (IsPressed(DPadButton::DPAD_LEFT) && IsPressed(DPadButton::DPAD_UP))
+				if (IsDpadPressed(DPadButton::DPAD_LEFT) && IsDpadPressed(DPadButton::DPAD_UP))
 				{
 					return MoveLeftUp.get();
 				}
-				if (IsPressed(DPadButton::DPAD_RIGHT) && IsPressed(DPadButton::DPAD_UP))
+				if (IsDpadPressed(DPadButton::DPAD_RIGHT) && IsDpadPressed(DPadButton::DPAD_UP))
 				{
 					return MoveRightUp.get();
 				}
-				if (IsPressed(DPadButton::DPAD_LEFT) && IsPressed(DPadButton::DPAD_DOWN))
+				if (IsDpadPressed(DPadButton::DPAD_LEFT) && IsDpadPressed(DPadButton::DPAD_DOWN))
 				{
 					return MoveLeftDown.get();
 				}
-				if (IsPressed(DPadButton::DPAD_RIGHT) && IsPressed(DPadButton::DPAD_DOWN))
+				if (IsDpadPressed(DPadButton::DPAD_RIGHT) && IsDpadPressed(DPadButton::DPAD_DOWN))
 				{
 					return MoveRightDown.get();
 				}
 
 				// Normal movement
-				if (IsPressed(DPadButton::DPAD_UP))
+				if (IsDpadPressed(DPadButton::DPAD_UP))
 				{
 					return MoveUp.get();
 				}
-				if (IsPressed(DPadButton::DPAD_DOWN))
+				if (IsDpadPressed(DPadButton::DPAD_DOWN))
 				{
 					return MoveDown.get();
 				}
-				if (IsPressed(DPadButton::DPAD_LEFT))
+				if (IsDpadPressed(DPadButton::DPAD_LEFT))
 				{
 					return MoveLeft.get();
 				}
-				if (IsPressed(DPadButton::DPAD_RIGHT))
+				if (IsDpadPressed(DPadButton::DPAD_RIGHT))
 				{
 					return MoveRight.get();
+				}
+
+				if (IsGamepadPressed(GamepadButton::A))
+				{
+					return DecreaseHealth.get();
+				}
+				if (IsGamepadPressed(GamepadButton::B))
+				{
+					return IncreaseScore.get();
 				}
 			}
 			else
 			{
 				const Uint8* keyState = SDL_GetKeyboardState(NULL);
+				
+				// on pressed
+				if (keyState[SDL_SCANCODE_X] && !previousKeyState[SDL_SCANCODE_X])
+				{
+					previousKeyState[SDL_SCANCODE_X] = true; 
+					return DecreaseHealth.get();
+				}
+				if (keyState[SDL_SCANCODE_C] && !previousKeyState[SDL_SCANCODE_C])
+				{
+					previousKeyState[SDL_SCANCODE_C] = true;
+					return IncreaseScore.get();
+				}
+				// on release
+				if (!keyState[SDL_SCANCODE_X]) {
+					previousKeyState[SDL_SCANCODE_X] = false;  
+				}
+				if (!keyState[SDL_SCANCODE_C]) {
+					previousKeyState[SDL_SCANCODE_C] = false;  
+				}
 
 				// diagonal
 				if (keyState[SDL_SCANCODE_W] && keyState[SDL_SCANCODE_A]) 
@@ -132,6 +167,11 @@ namespace dae
 				{
 					return MoveRight.get();
 				}
+
+				
+				
+				
+				
 			}
 
 			return nullptr;
@@ -170,7 +210,11 @@ namespace dae
 			m_PreviousFramePressedButtons = m_ThisFramePressedButtons;
 
 #ifdef _DEBUG
-			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_A) std::cout << "A button pressed" << std::endl;
+			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_A)
+			{
+
+				std::cout << "A button pressed" << std::endl;
+			}
 			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_B) std::cout << "B button pressed" << std::endl;
 			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_X) std::cout << "X button pressed" << std::endl;
 			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_Y) std::cout << "Y button pressed" << std::endl;
@@ -181,10 +225,17 @@ namespace dae
 #endif
 		}
 
-		bool IsPressed(DPadButton Button) const
+		bool IsDpadPressed(DPadButton Button) const
 		{
 			return m_CurrentState.Gamepad.wButtons & static_cast<int>(Button);
 		}
+
+		bool IsGamepadPressed(GamepadButton Button) const
+		{
+			return m_ThisFramePressedButtons & static_cast<int>(Button);
+
+		}
+
 
 		XINPUT_STATE m_CurrentState{};
 		XINPUT_STATE m_PrevState{};
@@ -193,6 +244,9 @@ namespace dae
 		int m_ThisFrameReleasedButtons{};
 		int m_PreviousFramePressedButtons{};
 		float m_DeadZonePercentage{};
+
+
+		bool previousKeyState[SDL_NUM_SCANCODES] = { false };
 	};
 
 

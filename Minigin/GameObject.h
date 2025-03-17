@@ -79,6 +79,8 @@ namespace dae
 		std::string m_Name{};
 		void RemoveSelfFromParent();
 
+
+
 	private:
 		bool DeleteUnregisteredComponents();
 

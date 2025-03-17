@@ -20,6 +20,7 @@ namespace dae
 		virtual void FixedUpdate(const float fixedDeltaTime);
 		virtual void Render() const;
 		
+		
 
 	protected:
 		GameObject* GetOwner() const { return m_Owner; }
