@@ -1,13 +1,12 @@
+#include "GameCommands.h"
 #include "PlayerControllerComponent.h"
 #include <iostream>
 #define WINDOWS_LEAN_AND_MEAN
 #include <windows.h>
 #include <Xinput.h>
-#include "Command.h"
 #include "imgui_impl_sdl2.h"
 #include <SDL.h>
 
-#pragma comment(lib, "Xinput9_1_0.lib")
 
 namespace dae
 {
