@@ -1,6 +1,8 @@
 #include "GameObservers.h"
 #include "HealthComponent.h"
 #include "ScoreComponent.h"
+#include "SoundSystem.h"
+#include "ServiceLocator.h"
 
 
 
@@ -17,6 +19,7 @@ void dae::HealthObserver::OnNotify(const GameObject& GO, const ObserverEvents& E
 			HealthComp->GetHealthText()->SetText(HealthText);
 			break;
 		case ObserverEvents::OnDeath:
+			dae::ServiceLocator::GetSoundSystem().PlaySound("Data/piano2.wav");
 			// player dead
 			break;
 		default:
