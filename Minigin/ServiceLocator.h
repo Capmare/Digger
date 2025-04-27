@@ -33,6 +33,12 @@ namespace dae
 			{
 				// invalid sound system
 			}
+
+			void StopAllSound() override
+			{
+				// invalid sound system
+			}
+
 		};
 
 		static inline std::unique_ptr<SoundSystem> m_SoundSystem{ nullptr };

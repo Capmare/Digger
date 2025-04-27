@@ -1,5 +1,6 @@
 #pragma once
 #include "Command.h"
+#include "ServiceLocator.h"
 
 
 namespace dae
@@ -35,6 +36,25 @@ namespace dae
 		{
 			dae::ScoreComponent* ScoreComp = GO.GetAllComponentsOfType<ScoreComponent>().at(0);
 			ScoreComp->IncreaseScore(10);
+		}
+	};
+
+	class Command_StopAllSound final : public Command
+	{
+		void Exec(GameObject& GO) override
+		{
+			(void)GO;
+			dae::ServiceLocator::GetSoundSystem().StopAllSound();
+		}
+	};
+
+	class Command_PlaySound final : public Command
+	{
+		void Exec(GameObject& GO) override
+		{
+			(void)GO;
+			dae::ServiceLocator::GetSoundSystem().PlaySound("../Data/piano2.wav");
+
 		}
 	};
 

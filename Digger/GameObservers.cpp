@@ -15,13 +15,12 @@ void dae::HealthObserver::OnNotify(const GameObject& GO, const ObserverEvents& E
 		switch (Event)
 		{
 		case ObserverEvents::OnHealthChanged:
-			dae::ServiceLocator::GetSoundSystem().PlaySound("../Data/piano2.wav");
 
+			dae::ServiceLocator::GetSoundSystem().PlaySound("../Data/piano2.wav");
 			HealthText += std::to_string(HealthComp->GetHealth());
 			HealthComp->GetHealthText()->SetText(HealthText);
 			break;
 		case ObserverEvents::OnDeath:
-
 			// player dead
 			break;
 		default:

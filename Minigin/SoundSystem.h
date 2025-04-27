@@ -17,7 +17,8 @@ namespace dae
 		SoundSystem();
 		virtual ~SoundSystem() = default;
 
-		virtual void PlaySound(const std::string& SoundFile, int Volume = 128) = 0;
+		virtual void PlaySound(const std::string& SoundFile, int Volume = 30) = 0;
+		virtual void StopAllSound() = 0;
 	};
 
 	class SDLSoundSystem final : public SoundSystem
@@ -26,8 +27,8 @@ namespace dae
 		SDLSoundSystem();
 		~SDLSoundSystem() override;
 
-		void PlaySound(const std::string& SoundFile, int Volume = 128) override;
-
+		void PlaySound(const std::string& SoundFile, int Volume = 30) override;
+		void StopAllSound() override;
 	private:
 		class Impl;
 		std::unique_ptr<Impl> m_pImpl;

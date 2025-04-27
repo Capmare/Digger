@@ -130,6 +130,11 @@ namespace dae
 		m_pImpl->PlaySound(soundFile, volume);
 	}
 
+	void SDLSoundSystem::StopAllSound()
+	{
+		Mix_HaltChannel(-1);
+	}
+
 	SoundSystem::SoundSystem() = default;
 
 }

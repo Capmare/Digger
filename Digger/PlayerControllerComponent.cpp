@@ -26,12 +26,13 @@ namespace dae
 
 		std::unique_ptr<Command_DecreaseHealth> DecreaseHealth;
 		std::unique_ptr<Command_IncreaseScore> IncreaseScore;
+		std::unique_ptr<Command_StopAllSound> StopAllSound;
 
 		bool m_bIsKeyboard{false};
 	public:
 		Impl(GameObject* Owner,bool IsKeyboard) : 
-			m_Owner{ Owner },
-			m_bIsKeyboard{IsKeyboard},
+			m_Owner			{ Owner },
+			m_bIsKeyboard	{IsKeyboard},
 			MoveUp			{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,-1 }) },
 			MoveDown		{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,1 }) },
 			MoveRight		{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,0 }) },
@@ -42,7 +43,9 @@ namespace dae
 			MoveLeftDown	{ std::make_unique<dae::Command_Move>(glm::vec2{ -1,1 }) },
 			MoveRightDown	{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,1 }) },
 			DecreaseHealth	{ std::make_unique<dae::Command_DecreaseHealth>() },
-			IncreaseScore	{ std::make_unique<dae::Command_IncreaseScore>() }
+			IncreaseScore	{ std::make_unique<dae::Command_IncreaseScore>() },
+			StopAllSound	{ std::make_unique<dae::Command_StopAllSound>() }
+
 		{};
 		~Impl() = default;
 
@@ -166,9 +169,12 @@ namespace dae
 				{
 					return MoveRight.get();
 				}
+				
 
-				
-				
+				if (keyState[SDL_SCANCODE_L])
+				{
+					return StopAllSound.get();
+				}
 				
 				
 			}
