@@ -24,13 +24,13 @@ namespace dae
 	protected:
 	private:
 
-		TextComponent* m_FpsText;
+		TextComponent* m_FpsText{};
 
 		int m_fps{};
 		bool bShowFpsText{ true };
 		float m_accumulatedTime{};
 		int m_frameCount{};
-		float m_smoothFps;
+		float m_smoothFps{};
 	};
 }
 

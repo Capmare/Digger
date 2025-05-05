@@ -67,6 +67,23 @@ namespace dae
 			return ComponentVector;
 		}
 
+		template<typename T>
+		bool HasComponentOfType() const
+		{
+			if (m_Components.empty()) return false;
+
+			for (const auto& Comp : m_Components)
+			{
+				if (typename(*Comp) == typeid(T))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+
 		void SetParent(GameObject* NewParent, bool bKeepWorldPosition);
 		GameObject* GetParent() const { return m_Parent; }
 
