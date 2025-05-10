@@ -3,9 +3,6 @@
 #include <functional>
 
 
-
-
-
 namespace dae
 {
 	class Minigin
