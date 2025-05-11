@@ -67,6 +67,23 @@ namespace dae
 			return ComponentVector;
 		}
 
+		template <typename T>
+		T* GetFirstComponentOfType() const
+		{
+			if (m_Components.empty()) return nullptr;
+
+			for (const auto& Comp : m_Components)
+			{
+				if (typeid(*Comp) == typeid(T)) // There is no way to avoid using typeid since i am using templates without constructing the object.
+				{
+					return static_cast<T*>(Comp.get());
+				}
+			}
+
+			return nullptr;
+		}
+
+
 		void SetParent(GameObject* NewParent, bool bKeepWorldPosition);
 		GameObject* GetParent() const { return m_Parent; }
 
