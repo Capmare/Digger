@@ -2,7 +2,8 @@
 #include "TextureComponent.h"
 #include "GameObject.h"
 
-dae::FlipBookComponent::FlipBookComponent(GameObject* Owner, TextureComponent* UsedTexture, const FlipBookConfig& Config) : BaseComponent(Owner), m_UsedTexture{ UsedTexture }, m_TextureConfig{ Config }
+dae::FlipBookComponent::FlipBookComponent(GameObject* ParentComponentOwner, TextureComponent* UsedTexture, const FlipBookConfig& Config) 
+	: m_ParentComponentOwner{ParentComponentOwner}, m_UsedTexture{ UsedTexture }, m_TextureConfig{ Config }
 {
 	if (UsedTexture == nullptr) throw std::runtime_error("m_UsedTexture is nullptr");
 
@@ -12,10 +13,10 @@ dae::FlipBookComponent::FlipBookComponent(GameObject* Owner, TextureComponent* U
 	}
 }
 
-dae::FlipBookComponent::FlipBookComponent(GameObject* Owner, const std::string& Path, const FlipBookConfig& Config) : BaseComponent(Owner), m_TextureConfig{ Config }
+dae::FlipBookComponent::FlipBookComponent(GameObject* ParentComponentOwner, const std::string& Path, const FlipBookConfig& Config) 
+	: m_ParentComponentOwner{ParentComponentOwner}, m_TextureConfig { Config }
 {
-	m_UsedTexture = std::make_unique<TextureComponent>(Owner,Path);
-
+	m_UsedTexture = std::make_unique<TextureComponent>(m_ParentComponentOwner,Path);
 
 	if (m_UsedTexture == nullptr) throw std::runtime_error("m_UsedTexture is nullptr");
 
@@ -67,7 +68,7 @@ void dae::FlipBookComponent::Update(const float deltaTime)
 
 	SDL_Rect DstParams
 	{
-			static_cast<int>(GetOwner()->GetWorldTransform().m_position.x),static_cast<int>(GetOwner()->GetWorldTransform().m_position.y),
+			static_cast<int>(m_ParentComponentOwner->GetWorldTransform().m_position.x),static_cast<int>(m_ParentComponentOwner->GetWorldTransform().m_position.y),
 			static_cast<int>(m_TextureConfig.FrameWidth) * m_TextureConfig.Scale, static_cast<int>(m_TextureConfig.FrameHeight) * m_TextureConfig.Scale
 	};
 

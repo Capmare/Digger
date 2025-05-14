@@ -17,12 +17,12 @@ namespace dae
 		int Scale{ 1 };
 	};
 
-	class FlipBookComponent : public BaseComponent
+	class FlipBookComponent final
 	{
 	public:
 		FlipBookComponent() = default;
-		FlipBookComponent(GameObject* Owner, TextureComponent* UsedTexture, const FlipBookConfig& Config);
-		FlipBookComponent(GameObject* Owner, const std::string& Path, const FlipBookConfig& Config);
+		FlipBookComponent(GameObject* ParentComponentOwner,TextureComponent* UsedTexture, const FlipBookConfig& Config);
+		FlipBookComponent(GameObject* ParentComponentOwner, const std::string& Path, const FlipBookConfig& Config);
 		virtual ~FlipBookComponent() = default;
 		
 		FlipBookComponent(const FlipBookComponent&) = delete;
@@ -35,11 +35,14 @@ namespace dae
 
 		void ChangeConfig(const FlipBookConfig& NewConfig) { m_TextureConfig = NewConfig; }
 
-		void Update(const float deltaTime) override;
+		void Update(const float deltaTime);
 
-		void Render() const override;
+		void Render() const;
 
 	private:
+		
+		GameObject* m_ParentComponentOwner{};
+
 		std::unique_ptr<TextureComponent> m_UsedTexture{};
 		FlipBookConfig m_TextureConfig{};
 		

@@ -1,6 +1,10 @@
 #pragma once
 #include <BaseComponent.h>
+#include <vector>
+#include <memory>
+#include <unordered_map>
 #include "AnimationState.h"
+#include "FlipBookComponent.h"
 
 namespace dae
 {
@@ -29,8 +33,18 @@ namespace dae
 			}
 		}
 
+		template<typename T>
+		void CreateState(const FlipBookConfig& FlipBook)
+		{
+			if constexpr (std::is_base_of<dae::AnimationState,T>::value)
+			{
+				
+				m_AnimationStates.insert({ T::GetStateName(),std::make_unique<T>(std::make_unique<dae::FlipBookComponent>(FlipBook)) });
+			}
 
+		};
 	private:
+		std::unordered_map<std::string, std::unique_ptr<AnimationState>> m_AnimationStates{};
 		AnimationState* m_CurrentState{};
 	};
 
