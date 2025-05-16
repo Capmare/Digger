@@ -1,5 +1,6 @@
 #pragma once
 #include <BaseComponent.h>
+#include <memory>
 
 namespace dae
 {
@@ -9,7 +10,8 @@ namespace dae
 	class AnimationState
 	{
 	public:
-		AnimationState(FlipBookComponent* Animation, const std::string& StateName) : m_FlipBook{ Animation }, m_StateName{StateName} {};
+		AnimationState(std::unique_ptr<FlipBookComponent>&& Animation, const std::string& StateName) : m_FlipBook{ std::move(Animation) }, m_StateName{StateName} {};
+
 		virtual ~AnimationState() = default;
 		
 		AnimationState(const AnimationState&) = delete;
@@ -22,11 +24,12 @@ namespace dae
 
 		std::string GetStateName() const { return m_StateName; }
 
+		FlipBookComponent* GetFlipBook() const { return m_FlipBook.get(); }
 	protected:
 		void SetEnterStateFlipBook(AnimControllerComponent* AnimController);
 		void SetExitStateFlipBook(AnimControllerComponent* AnimController);
 
-		FlipBookComponent* m_FlipBook{};
+		std::unique_ptr<FlipBookComponent> m_FlipBook{};
 		FlipBookComponent* m_PreviousFlipBook{};
 
 		const std::string m_StateName{ "Unnamed" };
@@ -36,7 +39,8 @@ namespace dae
 	class IdleState : public AnimationState
 	{
 	public:
-		IdleState(FlipBookComponent* Animation) : AnimationState(Animation,"Idle") {};
+		IdleState(std::unique_ptr<FlipBookComponent>&& Animation) : AnimationState(std::move(Animation),"Idle") {};
+
 		virtual ~IdleState() = default;
 		
 		IdleState(const IdleState&) = delete;
@@ -53,7 +57,7 @@ namespace dae
 	class FallingState : public AnimationState
 	{
 	public:
-		FallingState(FlipBookComponent* Animation) : AnimationState(Animation,"Falling") {};
+		FallingState(std::unique_ptr<FlipBookComponent>&& Animation) : AnimationState(std::move(Animation), "Falling") {};
 		virtual ~FallingState() = default;
 		
 		FallingState(const FallingState&) = delete;

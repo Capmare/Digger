@@ -12,7 +12,7 @@ namespace dae
 		public BaseComponent
 	{
 	public:
-		AnimControllerComponent(GameObject* Owner) : BaseComponent(Owner) {};
+		AnimControllerComponent(GameObject* Owner) : BaseComponent(Owner) { };
 		virtual ~AnimControllerComponent() = default;
 		
 		AnimControllerComponent(const AnimControllerComponent&) = delete;
@@ -20,15 +20,15 @@ namespace dae
 		AnimControllerComponent& operator=(const AnimControllerComponent&) = delete;
 		AnimControllerComponent& operator=(AnimControllerComponent&&) noexcept = delete;
 
-		void ChangeState(AnimationState* NewState)
+		void ChangeState(const std::string& State)
 		{
 			if (m_CurrentState)
 			{
 				m_CurrentState->ExitState(this);
 			}
-			if (NewState)
+			m_CurrentState = m_AnimationStates.at(State).get();
+			if (m_CurrentState)
 			{
-				m_CurrentState = NewState;
 				m_CurrentState->EnterState(this);
 			}
 		}
@@ -38,14 +38,26 @@ namespace dae
 		{
 			if constexpr (std::is_base_of<dae::AnimationState,T>::value)
 			{
-				
-				m_AnimationStates.insert({ T::GetStateName(),std::make_unique<T>(std::make_unique<dae::FlipBookComponent>(FlipBook)) });
+				auto FlipBookComp = std::make_unique<dae::FlipBookComponent>(this->GetOwner(), FlipBook.Path, FlipBook);
+				auto AnimState = std::make_unique<T>(std::move(FlipBookComp));
+				m_AnimationStates.insert({ AnimState->GetStateName(),std::move(AnimState) });
 			}
 
+
+			
 		};
+
+		void Update(const float deltaTime) override;
+
+
+		void Render() const override;
+
+
 	private:
 		std::unordered_map<std::string, std::unique_ptr<AnimationState>> m_AnimationStates{};
 		AnimationState* m_CurrentState{};
 	};
+
+	
 
 }

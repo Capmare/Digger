@@ -27,24 +27,14 @@ void dae::FallingState::ExitState(AnimControllerComponent* AnimController)
 	SetExitStateFlipBook(AnimController);
 }
 
-void dae::AnimationState::SetEnterStateFlipBook(AnimControllerComponent* AnimController)
+void dae::AnimationState::SetEnterStateFlipBook(AnimControllerComponent* )
 {
-	if (FlipBookComponent* CurrentFlipBook = AnimController->GetOwner()->GetFirstComponentOfType<FlipBookComponent>())
-	{
-		m_PreviousFlipBook = CurrentFlipBook;
-		CurrentFlipBook = m_FlipBook;
-		std::cout << "Entering state" << std::endl;
-		CurrentFlipBook->Play();
-	}
+	std::cout << "Entering state" << std::endl;
+	m_FlipBook->Play();
 }
 
-void dae::AnimationState::SetExitStateFlipBook(AnimControllerComponent* AnimController)
+void dae::AnimationState::SetExitStateFlipBook(AnimControllerComponent* )
 {
-	if (FlipBookComponent* CurrentFlipBook = AnimController->GetOwner()->GetFirstComponentOfType<FlipBookComponent>())
-	{
-		CurrentFlipBook->Stop();
-		CurrentFlipBook = m_PreviousFlipBook;
-		std::cout << "Exiting state" << std::endl;
-
-	}
+	m_FlipBook->Stop();
+	std::cout << "Exiting state" << std::endl;
 }

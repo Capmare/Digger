@@ -2,13 +2,14 @@
 #include "BaseComponent.h"
 #include <stdexcept>
 #include <memory>
+#include "TextureComponent.h"
 
 namespace dae
 {
-	class TextureComponent;
 
 	struct FlipBookConfig
 	{
+		std::string Path{};
 		int Frames{};
 		float FrameWidth{};
 		float FrameHeight{ -1 }; // If Height stays -1 it will use the height of the texture
