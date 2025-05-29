@@ -26,6 +26,8 @@ namespace dae  {
 
 		const glm::ivec2 GetTextureResolution() const { return m_Texture->GetSize(); }
 
+		bool bOverrideOwnerPosition{ false };
+		glm::vec3 OverridenPosition{};
 	private:
 		std::shared_ptr<Texture2D> m_Texture{};
 

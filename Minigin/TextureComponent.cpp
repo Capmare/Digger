@@ -4,7 +4,8 @@
 #include "GameObject.h"
 void dae::TextureComponent::Render() const
 {
-	const auto& pos = GetOwner()->GetWorldPosition();
+
+	const auto& pos = !bOverrideOwnerPosition ? GetOwner()->GetWorldPosition() : OverridenPosition;
 	if (m_RenderParams.w == 0 || m_RenderParams.h == 0)
 	{
 		Renderer::GetInstance().RenderTexture(*m_Texture, pos.x, pos.y);
