@@ -13,7 +13,10 @@ namespace dae
 		void Exec(GameObject& GO) override
 		{
 			MovementComponent* MovementComp = GO.GetAllComponentsOfType<MovementComponent>().at(0);
-			MovementComp->AddMovementInput(m_Direction);
+			if (MovementComp)
+			{
+				MovementComp->AddMovementInput(m_Direction);
+			}
 		}
 		glm::vec2 m_Direction{};
 	};
@@ -24,7 +27,10 @@ namespace dae
 		void Exec(GameObject& GO) override
 		{
 			HealthComponent* HealthComp = GO.GetAllComponentsOfType<HealthComponent>().at(0);
-			HealthComp->DecreaseHealth();
+			if (HealthComp)
+			{
+				HealthComp->DecreaseHealth();
+			}
 
 		}
 	};
@@ -35,7 +41,10 @@ namespace dae
 		void Exec(GameObject& GO) override
 		{
 			dae::ScoreComponent* ScoreComp = GO.GetAllComponentsOfType<ScoreComponent>().at(0);
-			ScoreComp->IncreaseScore(10);
+			if (ScoreComp)
+			{
+				ScoreComp->IncreaseScore(10);
+			}
 		}
 	};
 

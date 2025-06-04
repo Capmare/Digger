@@ -119,12 +119,12 @@ namespace dae
 				if (keyState[SDL_SCANCODE_X] && !previousKeyState[SDL_SCANCODE_X])
 				{
 					previousKeyState[SDL_SCANCODE_X] = true; 
-					return DecreaseHealth.get();
+					//return DecreaseHealth.get();
 				}
 				if (keyState[SDL_SCANCODE_C] && !previousKeyState[SDL_SCANCODE_C])
 				{
 					previousKeyState[SDL_SCANCODE_C] = true;
-					return IncreaseScore.get();
+					//return IncreaseScore.get();
 				}
 				// on release
 				if (!keyState[SDL_SCANCODE_X]) {
@@ -173,7 +173,7 @@ namespace dae
 
 				if (keyState[SDL_SCANCODE_L])
 				{
-					return StopAllSound.get();
+					//return StopAllSound.get();
 				}
 				
 				

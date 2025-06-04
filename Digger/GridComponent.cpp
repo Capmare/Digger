@@ -26,3 +26,8 @@ void dae::GridComponent::Render() const
 		m_TileTextures[idx]->Render();
 	}
 }
+
+void dae::GridComponent::CreateTileSize(int , TileType )
+{
+
+}

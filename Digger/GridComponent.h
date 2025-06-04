@@ -44,8 +44,8 @@ namespace dae
 				size_t x = idx % GridXSize;
 				size_t y = idx / GridXSize;
 
-				const int TileWidth = 20 * 5;
-				const int TileHeight = 4 * 5;
+				const int TileWidth = 10;
+				const int TileHeight = 10;
 
 				std::unique_ptr<TextureComponent> Texture = std::make_unique<TextureComponent>(Owner, Path);
 				Texture->bOverrideOwnerPosition = false;
@@ -83,7 +83,11 @@ namespace dae
 
 		void Render() const override;
 
+		
 	private:
+
+		void CreateTileSize(int size, TileType TyleType);
+
 		std::vector<TileType> m_Tiles{};
 		std::vector<std::unique_ptr<TextureComponent>> m_TileTextures{};
 		int m_Width{};
