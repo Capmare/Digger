@@ -67,22 +67,22 @@ namespace dae
 			if (m_bIsKeyboard == false)
 			{
 				// diagonal
-				if (IsDpadPressed(DPadButton::DPAD_LEFT) && IsDpadPressed(DPadButton::DPAD_UP))
-				{
-					return MoveLeftUp.get();
-				}
-				if (IsDpadPressed(DPadButton::DPAD_RIGHT) && IsDpadPressed(DPadButton::DPAD_UP))
-				{
-					return MoveRightUp.get();
-				}
-				if (IsDpadPressed(DPadButton::DPAD_LEFT) && IsDpadPressed(DPadButton::DPAD_DOWN))
-				{
-					return MoveLeftDown.get();
-				}
-				if (IsDpadPressed(DPadButton::DPAD_RIGHT) && IsDpadPressed(DPadButton::DPAD_DOWN))
-				{
-					return MoveRightDown.get();
-				}
+				//if (IsDpadPressed(DPadButton::DPAD_LEFT) && IsDpadPressed(DPadButton::DPAD_UP))
+				//{
+				//	return MoveLeftUp.get();
+				//}
+				//if (IsDpadPressed(DPadButton::DPAD_RIGHT) && IsDpadPressed(DPadButton::DPAD_UP))
+				//{
+				//	return MoveRightUp.get();
+				//}
+				//if (IsDpadPressed(DPadButton::DPAD_LEFT) && IsDpadPressed(DPadButton::DPAD_DOWN))
+				//{
+				//	return MoveLeftDown.get();
+				//}
+				//if (IsDpadPressed(DPadButton::DPAD_RIGHT) && IsDpadPressed(DPadButton::DPAD_DOWN))
+				//{
+				//	return MoveRightDown.get();
+				//}
 
 				// Normal movement
 				if (IsDpadPressed(DPadButton::DPAD_UP))
