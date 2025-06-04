@@ -48,6 +48,9 @@
     <ClCompile Include="GridComponent.cpp">
       <Filter>Components\Source</Filter>
     </ClCompile>
+    <ClCompile Include="DiggingComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommands.h">
@@ -79,6 +82,9 @@
     </ClInclude>
     <ClInclude Include="GridComponent.h">
       <Filter>Components\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="DiggingComponent.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

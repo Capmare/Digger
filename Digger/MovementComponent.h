@@ -21,10 +21,7 @@ namespace dae
 		void AddMovementInput(const glm::vec2& Value) const;
 
 
-		void SetGrid(class GridComponent* GridComp) { m_Grid = GridComp; }
-
 	private:
-		class GridComponent* m_Grid{};
 	};
 }
 

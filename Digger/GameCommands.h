@@ -1,6 +1,7 @@
 #pragma once
 #include "Command.h"
 #include "ServiceLocator.h"
+#include "DiggingComponent.h"
 
 
 namespace dae
@@ -16,6 +17,27 @@ namespace dae
 			if (MovementComp)
 			{
 				MovementComp->AddMovementInput(m_Direction);
+			}
+			DiggingComponent* DigComponent = GO.GetAllComponentsOfType<DiggingComponent>().at(0);
+			if (DigComponent)
+			{
+				if (m_Direction.x > 0)
+				{
+					DigComponent->DigRight(false);
+				}
+				if (m_Direction.x < 0)
+				{
+					DigComponent->DigRight(true);
+				}
+
+				if (m_Direction.y > 0)
+				{
+					DigComponent->DigUp(true);
+				}
+				if (m_Direction.y < 0)
+				{
+					DigComponent->DigUp(false);
+				}
 			}
 		}
 		glm::vec2 m_Direction{};
@@ -66,5 +88,4 @@ namespace dae
 
 		}
 	};
-
 }

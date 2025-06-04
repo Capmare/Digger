@@ -4,18 +4,37 @@
 
 void dae::GridComponent::UpdateTileType(const glm::ivec2 Tile, const TileType NewType)
 {
-	int TileIdx{ Tile.y * m_Width + Tile.x };
-	m_Tiles[TileIdx] = NewType;
-	switch (NewType)
+	int radius = 3;
+	for (int y = -radius; y <= radius; ++y)
 	{
-	default:
-		break;
-	case TileType::Dirt:
-		m_TileTextures[TileIdx]->SetTexture("cback1.png");
-		break;
-	case TileType::Tunnel:
-		m_TileTextures[TileIdx]->SetTexture("Black.png");
-		break;
+		for (int x = -radius; x <= radius; ++x)
+		{
+			glm::ivec2 offset{ x, y };
+			glm::ivec2 tile = Tile + offset;
+
+			// Check if the tile is within the circle
+			if (x * x + y * y <= radius * radius)
+			{
+				// Bounds check
+				if (tile.x < 0 || tile.y < 0 || tile.x >= m_Width || tile.y >= m_Height)
+					continue;
+
+				int tileIdx = tile.y * m_Width + tile.x;
+				m_Tiles[tileIdx] = NewType;
+
+				switch (NewType)
+				{
+				default:
+					break;
+				case TileType::Dirt:
+					m_TileTextures[tileIdx]->SetTexture("cback1.png");
+					break;
+				case TileType::Tunnel:
+					m_TileTextures[tileIdx]->SetTexture("Black.png");
+					break;
+				}
+			}
+		}
 	}
 
 	
