@@ -81,13 +81,10 @@ namespace dae
 
 		void Update(const float deltaTime) override;
 
+		glm::ivec2 GetTileAtPixel(int pixelX, int pixelY) const;
 		void Render() const override;
-
 		
 	private:
-
-		void CreateTileSize(int size, TileType TyleType);
-
 		std::vector<TileType> m_Tiles{};
 		std::vector<std::unique_ptr<TextureComponent>> m_TileTextures{};
 		int m_Width{};
