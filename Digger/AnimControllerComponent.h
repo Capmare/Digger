@@ -52,7 +52,7 @@ namespace dae
 
 		void Render() const override;
 
-
+		void RotateAnimation(const float Degrees);
 	private:
 		std::unordered_map<std::string, std::unique_ptr<AnimationState>> m_AnimationStates{};
 		AnimationState* m_CurrentState{};

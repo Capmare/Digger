@@ -25,6 +25,8 @@ namespace dae
 		std::string GetStateName() const { return m_StateName; }
 
 		FlipBookComponent* GetFlipBook() const { return m_FlipBook.get(); }
+
+		void Rotate(const float Degrees);
 	protected:
 		void SetEnterStateFlipBook(AnimControllerComponent* AnimController);
 		void SetExitStateFlipBook(AnimControllerComponent* AnimController);

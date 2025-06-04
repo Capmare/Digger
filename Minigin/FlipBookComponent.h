@@ -35,6 +35,7 @@ namespace dae
 		void Stop();
 
 		void ChangeConfig(const FlipBookConfig& NewConfig) { m_TextureConfig = NewConfig; }
+		void Rotate(const float Degrees);
 
 		void Update(const float deltaTime);
 

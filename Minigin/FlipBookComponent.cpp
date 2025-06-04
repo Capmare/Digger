@@ -37,6 +37,11 @@ void dae::FlipBookComponent::Stop()
 	bIsPlaying = false;
 }
 
+void dae::FlipBookComponent::Rotate(const float Degrees)
+{
+	m_UsedTexture->m_RotationAngle = Degrees;
+}
+
 void dae::FlipBookComponent::Update(const float deltaTime)
 {
 	if (!bIsPlaying) return;

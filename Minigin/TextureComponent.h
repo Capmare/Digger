@@ -9,7 +9,7 @@ namespace dae  {
 	class TextureComponent final: public BaseComponent
 	{
 	public:
-		TextureComponent(GameObject* Owner) : BaseComponent(Owner) {};
+		TextureComponent(GameObject* Owner, const float RotationAngle = 0) : BaseComponent(Owner), m_RotationAngle(RotationAngle) {};
 		TextureComponent(GameObject* Owner, const std::string& Path) : BaseComponent(Owner) { SetTexture(Path); };
 		virtual ~TextureComponent() = default;
 		
@@ -28,6 +28,9 @@ namespace dae  {
 
 		bool bOverrideOwnerPosition{ false };
 		glm::vec3 OverridenPosition{};
+
+		float m_RotationAngle = 0.f; 
+
 	private:
 		std::shared_ptr<Texture2D> m_Texture{};
 
