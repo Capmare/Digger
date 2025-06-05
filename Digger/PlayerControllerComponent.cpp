@@ -7,7 +7,7 @@
 #include "imgui_impl_sdl2.h"
 #include <SDL.h>
 
-constexpr int m_MoveSpeed{ 50 };
+constexpr int m_MoveDistance{ 20 };
 
 namespace dae
 {
@@ -37,10 +37,10 @@ namespace dae
 		Impl(GameObject* Owner,bool IsKeyboard) : 
 			m_Owner			{ Owner },
 			m_bIsKeyboard	{IsKeyboard},
-			MoveUp			{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,-m_MoveSpeed }) },
-			MoveDown		{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,m_MoveSpeed }) },
-			MoveRight		{ std::make_unique<dae::Command_Move>(glm::vec2{ m_MoveSpeed,0 }) },
-			MoveLeft		{ std::make_unique<dae::Command_Move>(glm::vec2{ -m_MoveSpeed,0 }) },
+			MoveUp			{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,-m_MoveDistance }) },
+			MoveDown		{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,m_MoveDistance }) },
+			MoveRight		{ std::make_unique<dae::Command_Move>(glm::vec2{ m_MoveDistance,0 }) },
+			MoveLeft		{ std::make_unique<dae::Command_Move>(glm::vec2{ -m_MoveDistance,0 }) },
 
 			MoveLeftUp		{ std::make_unique<dae::Command_Move>(glm::vec2{ -1,-1 }) },
 			MoveRightUp		{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,-1 }) },

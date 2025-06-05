@@ -24,7 +24,7 @@ namespace dae
 
 		void FixedUpdate(const float fixedDeltaTime) override;
 
-		float m_LerpSpeed{15};
+		float m_LerpSpeed{70};
 	private:
 
 		bool IsNearlyEqual(float a, float b, float tolerance = 0.001f) {
