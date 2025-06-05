@@ -57,6 +57,7 @@ namespace dae
 
 		void RotateAnimation(const float Degrees);
 
+		const dae::AnimationState* GetCurrentState() const { return m_CurrentState; }
 	private:
 		std::unordered_map<std::string, std::unique_ptr<AnimationState>> m_AnimationStates{};
 		AnimationState* m_CurrentState{};

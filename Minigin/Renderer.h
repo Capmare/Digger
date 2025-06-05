@@ -4,17 +4,13 @@
 
 namespace dae
 {
-
-
 	class Texture2D;
-	/**
-	 * Simple RAII wrapper for the SDL renderer
-	 */
+
 	class Renderer final : public Singleton<Renderer>
 	{
 		SDL_Renderer* m_renderer{};
 		SDL_Window* m_window{};
-		SDL_Color m_clearColor{};	
+		SDL_Color m_clearColor{};
 	public:
 		void Init(SDL_Window* window);
 		void Render() const;
@@ -22,6 +18,7 @@ namespace dae
 
 		void RenderTexture(const Texture2D& texture, float x, float y) const;
 		void RenderTexture(const Texture2D& texture, const SDL_Rect& DstRect, const SDL_Rect& SrcRect) const;
+		void RenderMaskedTexture(SDL_Texture* source, SDL_Texture* mask, const SDL_Rect& dstRect);
 
 		SDL_Renderer* GetSDLRenderer() const;
 
@@ -29,7 +26,5 @@ namespace dae
 		void SetBackgroundColor(const SDL_Color& color) { m_clearColor = color; }
 
 		void DrawPoint(int x, int y, int size);
-
 	};
 }
-

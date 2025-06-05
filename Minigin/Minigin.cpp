@@ -97,6 +97,8 @@ dae::Minigin::Minigin(const std::string &dataPath)
 
 	Renderer::GetInstance().Init(g_window);
 
+	SDL_RenderSetLogicalSize(Renderer::GetInstance().GetSDLRenderer(), 320, 200);
+
 	ResourceManager::GetInstance().Init(dataPath);
 }
 

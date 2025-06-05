@@ -23,7 +23,7 @@ void dae::Renderer::Init(SDL_Window* window)
 {
 	m_window = window;
 	m_renderer = SDL_CreateRenderer(window, GetOpenGLDriverIndex(), SDL_RENDERER_ACCELERATED);
-	if (m_renderer == nullptr) 
+	if (m_renderer == nullptr)
 	{
 		throw std::runtime_error(std::string("SDL_CreateRenderer Error: ") + SDL_GetError());
 	}
@@ -36,11 +36,10 @@ void dae::Renderer::Render() const
 	SDL_RenderClear(m_renderer);
 
 	SceneManager::GetInstance().Render();
-	
+
 	if (ImGui::GetDrawData())
 	{
 		ImGui_ImplOpenGL2_RenderDrawData(ImGui::GetDrawData());
-
 	}
 	SDL_RenderPresent(m_renderer);
 }
@@ -65,8 +64,44 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 
 void dae::Renderer::RenderTexture(const Texture2D& texture, const SDL_Rect& DstRect, const SDL_Rect& SrcRect) const
 {
-
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), &SrcRect, &DstRect);
+}
+
+void dae::Renderer::RenderMaskedTexture(SDL_Texture* source, SDL_Texture* mask, const SDL_Rect& dstRect)
+{
+	int w = dstRect.w;
+	int h = dstRect.h;
+
+	SDL_Texture* target = SDL_CreateTexture(
+		m_renderer,
+		SDL_PIXELFORMAT_RGBA8888,
+		SDL_TEXTUREACCESS_TARGET,
+		w,
+		h
+	);
+
+	if (!target)
+	{
+		SDL_Log("Failed to create render target: %s", SDL_GetError());
+		return;
+	}
+
+	SDL_Texture* previousTarget = SDL_GetRenderTarget(m_renderer);
+
+	SDL_SetRenderTarget(m_renderer, target);
+	SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 0);
+	SDL_RenderClear(m_renderer);
+
+	SDL_SetTextureBlendMode(mask, SDL_BLENDMODE_MOD);
+	SDL_RenderCopy(m_renderer, mask, nullptr, nullptr);
+
+	SDL_SetTextureBlendMode(source, SDL_BLENDMODE_MOD);
+	SDL_RenderCopy(m_renderer, source, nullptr, nullptr);
+
+	SDL_SetRenderTarget(m_renderer, previousTarget);
+	SDL_RenderCopy(m_renderer, target, nullptr, &dstRect);
+
+	SDL_DestroyTexture(target);
 }
 
 SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }

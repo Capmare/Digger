@@ -1,25 +1,25 @@
 #include "DiggingComponent.h"
 #include "glm.hpp"
 #include "GridComponent.h"
-#include "GameObject.h"
-#include "AnimControllerComponent.h"
+#include "AnimationState.h"
 
 void dae::DiggingComponent::DigRight(const bool bInvert)
 {
-	AnimControllerComponent* AnimControllerComp = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
-	if (AnimControllerComp)
+	if (m_AnimControllerComp)
 	{
-		bInvert ? AnimControllerComp->RotateAnimation(180) : AnimControllerComp->RotateAnimation(0);
+		bInvert ? m_AnimControllerComp->RotateAnimation(180) : m_AnimControllerComp->RotateAnimation(0);
 	}
 	
 	
 
 	if (m_Grid)
 	{
+	
+
 		glm::ivec2 CurrentTile = m_Grid->GetTileAtPixel
 		(
-			static_cast<int>((GetOwner()->GetLocalTransform().m_position).x + (bInvert ? 0 : 100)),
-			static_cast<int>((GetOwner()->GetLocalTransform().m_position).y + 50)
+			static_cast<int>((GetOwner()->GetLocalTransform().m_position).x + (bInvert ? 0 : m_TextureResolution.x)),
+			static_cast<int>((GetOwner()->GetLocalTransform().m_position).y + m_TextureResolution.y)
 		);
 
 		m_Grid->UpdateTileType(
@@ -31,10 +31,9 @@ void dae::DiggingComponent::DigRight(const bool bInvert)
 
 void dae::DiggingComponent::DigUp(const bool bInvert)
 {
-	AnimControllerComponent* AnimControllerComp = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
-	if (AnimControllerComp)
+	if (m_AnimControllerComp)
 	{
-		bInvert ? AnimControllerComp->RotateAnimation(90) : AnimControllerComp->RotateAnimation(270);
+		bInvert ? m_AnimControllerComp->RotateAnimation(90) : m_AnimControllerComp->RotateAnimation(270);
 	}
 	
 
@@ -42,8 +41,8 @@ void dae::DiggingComponent::DigUp(const bool bInvert)
 	{
 		glm::ivec2 CurrentTile = m_Grid->GetTileAtPixel
 		(
-			static_cast<int>((GetOwner()->GetLocalTransform().m_position).x + 50),
-			static_cast<int>((GetOwner()->GetLocalTransform().m_position).y + (bInvert ? 100 : 0))
+			static_cast<int>((GetOwner()->GetLocalTransform().m_position).x + m_TextureResolution.x),
+			static_cast<int>((GetOwner()->GetLocalTransform().m_position).y + (bInvert ? m_TextureResolution.y : 0))
 		);
 
 		m_Grid->UpdateTileType(

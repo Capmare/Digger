@@ -44,16 +44,18 @@ namespace dae
 				size_t x = idx % GridXSize;
 				size_t y = idx / GridXSize;
 
-				const int TileWidth = 10;
-				const int TileHeight = 10;
 
 				std::unique_ptr<TextureComponent> Texture = std::make_unique<TextureComponent>(Owner, Path);
 				Texture->bOverrideOwnerPosition = false;
 				
+
+				m_TileWidth = Texture->GetTextureResolution().x;
+				m_TileHeight = Texture->GetTextureResolution().y;
+
 				SDL_Rect dstRect = {
-					static_cast<int>(TileWidth * x),
-					static_cast<int>(TileHeight * y),
-					TileWidth, TileHeight
+					static_cast<int>(m_TileWidth * x),
+					static_cast<int>(m_TileHeight * y),
+					m_TileWidth, m_TileHeight
 				};
 				SDL_Rect srcRect = {
 					0, 0,
@@ -64,9 +66,7 @@ namespace dae
 				Texture->SetRenderParams(dstRect, srcRect);
 
 				m_TileTextures.emplace_back(std::move(Texture));
-
 			}
-
 		};
 
 
@@ -94,6 +94,9 @@ namespace dae
 		std::vector<std::unique_ptr<TextureComponent>> m_TileTextures{};
 		int m_Width{};
 		int m_Height{};
+
+		int m_TileWidth = 20;
+		int m_TileHeight = 4;
 	};
 
 }

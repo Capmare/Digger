@@ -41,6 +41,8 @@ namespace dae
 
 		void Render() const;
 
+		const dae::TextureComponent* GetUsedTexture() const { return m_UsedTexture.get(); }
+
 	private:
 		
 		GameObject* m_ParentComponentOwner{};
