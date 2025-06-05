@@ -1,23 +1,47 @@
 #include "MovementComponent.h"
 #include "GridComponent.h"
 
-void dae::MovementComponent::AddMovementInput(const glm::vec3& Value) const
+void dae::MovementComponent::AddMovementInput(const glm::vec3& Value)
 {
+	if (!bCanMoveAgain) return;
+
 	if (GetOwner())
 	{
-		GetOwner()->SetLocalPosition(GetOwner()->GetLocalTransform().m_position + Value);
+		double ValueLength = sqrt(pow(Value.x, 2) + pow(Value.y, 2) + pow(Value.z, 2));
+		if (ValueLength > 0)
+		{
+			bCanMoveAgain = false;
+		}
+		m_DesiredPosition = GetOwner()->GetLocalTransform().m_position + Value;
 		
 	}
 }
 
-void dae::MovementComponent::AddMovementInput(const glm::vec2& Value) const
+
+void dae::MovementComponent::FixedUpdate(const float fixedDeltaTime)
 {
-	AddMovementInput(glm::vec3(Value.x, Value.y,0));
 
-
+	if (GetOwner())
+	{
+		bool xLoc = IsNearlyEqual(m_DesiredPosition.x, GetOwner()->GetLocalTransform().m_position.x);
+		bool yLoc = IsNearlyEqual(m_DesiredPosition.y, GetOwner()->GetLocalTransform().m_position.y);
+		if (xLoc && yLoc)
+		{
+			bCanMoveAgain = true;
+		}
+		else
+		{
+			GetOwner()->SetLocalPosition(Lerp(GetOwner()->GetLocalTransform().m_position, m_DesiredPosition, fixedDeltaTime * m_LerpSpeed));
+		}
+	}
 }
 
-void dae::MovementComponent::AddMovementInput(const int x, const int y) const
+void dae::MovementComponent::AddMovementInput(const glm::vec2& Value)
+{
+	AddMovementInput(glm::vec3(Value.x, Value.y,0));
+}
+
+void dae::MovementComponent::AddMovementInput(const int x, const int y)
 {
 	AddMovementInput(glm::vec3(x, y, 0));
 }
