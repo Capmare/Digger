@@ -51,6 +51,9 @@
     <ClCompile Include="DiggingComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GravityComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameCommands.h">
@@ -84,6 +87,9 @@
       <Filter>Components\Headers</Filter>
     </ClInclude>
     <ClInclude Include="DiggingComponent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GravityComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

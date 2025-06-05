@@ -22,6 +22,9 @@ namespace dae
 
 		void ChangeState(const std::string& State)
 		{
+			// avoid getting back into the same state
+			if (m_CurrentState == m_AnimationStates.at(State).get()) return;
+
 			if (m_CurrentState)
 			{
 				m_CurrentState->ExitState(this);
@@ -53,6 +56,7 @@ namespace dae
 		void Render() const override;
 
 		void RotateAnimation(const float Degrees);
+
 	private:
 		std::unordered_map<std::string, std::unique_ptr<AnimationState>> m_AnimationStates{};
 		AnimationState* m_CurrentState{};

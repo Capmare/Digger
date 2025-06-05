@@ -1,6 +1,7 @@
 #include "FlipBookComponent.h"
 #include "TextureComponent.h"
 #include "GameObject.h"
+#include <iostream>
 
 dae::FlipBookComponent::FlipBookComponent(GameObject* ParentComponentOwner, TextureComponent* UsedTexture, const FlipBookConfig& Config) 
 	: m_ParentComponentOwner{ParentComponentOwner}, m_UsedTexture{ UsedTexture }, m_TextureConfig{ Config }
@@ -44,50 +45,55 @@ void dae::FlipBookComponent::Rotate(const float Degrees)
 
 void dae::FlipBookComponent::Update(const float deltaTime)
 {
-	if (!bIsPlaying) return;
-
 	m_UsedTexture->Update(deltaTime);
 
-	if (!m_TextureConfig.bRepeats && bPlayedOnce) return;
-	
-	
-	m_CurrentFrameTime += deltaTime;
-	if (m_CurrentFrameTime > m_TextureConfig.frameTime)
+	if (bIsPlaying)
 	{
-		m_CurrentFrameTime = 0;
-		if (m_CurrentFrame < m_TextureConfig.Frames-1)
+		if (!m_TextureConfig.bRepeats && bPlayedOnce)
 		{
-			++m_CurrentFrame;
+			// do nothing
 		}
 		else
 		{
-			m_CurrentFrame = 0;
+			m_CurrentFrameTime += deltaTime;
+			if (m_CurrentFrameTime > m_TextureConfig.frameTime)
+			{
+				m_CurrentFrameTime = 0;
+				if (m_CurrentFrame < m_TextureConfig.Frames - 1)
+				{
+					++m_CurrentFrame;
+				}
+				else
+				{
+					m_CurrentFrame = 0;
+				}
+			}
+
+			if (!bPlayedOnce && m_CurrentFrame == m_TextureConfig.Frames - 1)
+			{
+				bPlayedOnce = true;
+			}
 		}
-
 	}
 
-	if (!bPlayedOnce && m_CurrentFrame == m_TextureConfig.Frames-1)
-	{
-		bPlayedOnce = true;
-	}
-
+	// Always update position and rendering parameters
 	SDL_Rect DstParams
 	{
-			static_cast<int>(m_ParentComponentOwner->GetWorldTransform().m_position.x),static_cast<int>(m_ParentComponentOwner->GetWorldTransform().m_position.y),
-			static_cast<int>(m_TextureConfig.FrameWidth) * m_TextureConfig.Scale, static_cast<int>(m_TextureConfig.FrameHeight) * m_TextureConfig.Scale
+		static_cast<int>(m_ParentComponentOwner->GetWorldTransform().m_position.x),
+		static_cast<int>(m_ParentComponentOwner->GetWorldTransform().m_position.y),
+		static_cast<int>(m_TextureConfig.FrameWidth) * m_TextureConfig.Scale,
+		static_cast<int>(m_TextureConfig.FrameHeight) * m_TextureConfig.Scale
 	};
 
 	SDL_Rect SrcParams
 	{
-		static_cast<int>(m_CurrentFrame * m_TextureConfig.FrameWidth),0,
-		static_cast<int>(m_TextureConfig.FrameWidth),static_cast<int>(m_TextureConfig.FrameHeight)
+		static_cast<int>(m_CurrentFrame * m_TextureConfig.FrameWidth), 0,
+		static_cast<int>(m_TextureConfig.FrameWidth), static_cast<int>(m_TextureConfig.FrameHeight)
 	};
 
-	// change flipbook frame
-	m_UsedTexture->SetRenderParams(DstParams,SrcParams);
-
-
+	m_UsedTexture->SetRenderParams(DstParams, SrcParams);
 }
+
 
 void dae::FlipBookComponent::Render() const
 {

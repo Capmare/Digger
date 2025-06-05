@@ -84,6 +84,11 @@ namespace dae
 		glm::ivec2 GetTileAtPixel(int pixelX, int pixelY) const;
 		void Render() const override;
 		
+		TileType GetTileType(glm::ivec2 Tile) { 
+			int TileIdx = Tile.y * m_Width + Tile.x;
+			return m_Tiles.at(TileIdx); 
+		}
+
 	private:
 		std::vector<TileType> m_Tiles{};
 		std::vector<std::unique_ptr<TextureComponent>> m_TileTextures{};

@@ -90,6 +90,7 @@
     <ClCompile Include="AnimControllerComponent.cpp" />
     <ClCompile Include="DiggingComponent.cpp" />
     <ClCompile Include="GameObservers.cpp" />
+    <ClCompile Include="GravityComponent.cpp" />
     <ClCompile Include="GridComponent.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
@@ -102,6 +103,7 @@
     <ClInclude Include="DiggingComponent.h" />
     <ClInclude Include="GameCommands.h" />
     <ClInclude Include="GameObservers.h" />
+    <ClInclude Include="GravityComponent.h" />
     <ClInclude Include="GridComponent.h" />
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="MovementComponent.h" />

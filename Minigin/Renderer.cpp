@@ -70,3 +70,15 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const SDL_Rect& DstR
 }
 
 SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }
+
+void dae::Renderer::DrawPoint(int x, int y, int size)
+{
+	SDL_Rect rect;
+	rect.x = x - size / 2;
+	rect.y = y - size / 2;
+	rect.w = size;
+	rect.h = size;
+
+	SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 1);
+	SDL_RenderFillRect(m_renderer, &rect);
+}
