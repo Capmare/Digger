@@ -1,5 +1,5 @@
 #include "MovementComponent.h"
-#include "GridComponent.h"
+#include "MapComponent.h"
 
 void dae::MovementComponent::AddMovementInput(const glm::vec3& Value)
 {
@@ -32,9 +32,12 @@ void dae::MovementComponent::FixedUpdate(const float fixedDeltaTime)
 		else
 		{
 			GetOwner()->SetLocalPosition(Lerp(GetOwner()->GetLocalTransform().m_position, m_DesiredPosition, fixedDeltaTime * m_LerpSpeed));
+			m_GridComponent->ClearTunnelArea({ GetOwner()->GetLocalTransform().m_position.x + 10,GetOwner()->GetLocalTransform().m_position.y+10 }, 10);
 		}
 	}
 }
+
+
 
 void dae::MovementComponent::AddMovementInput(const glm::vec2& Value)
 {

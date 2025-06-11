@@ -55,3 +55,60 @@ void dae::ResourceManager::UnloadUnusedResources()
 			++it;
 	}
 }
+
+SDL_Texture* dae::ResourceManager::MergeTextures(const std::vector<std::unique_ptr<TextureComponent>>& Textures, size_t Width)
+{
+	if (Textures.empty()) return nullptr;
+
+	size_t height = Textures.size() / Width;
+
+	SDL_Renderer* renderer = Renderer::GetInstance().GetSDLRenderer();
+
+	// size of one tile
+	int tileW, tileH;
+	SDL_QueryTexture(Textures[0]->GetTexture(), nullptr, nullptr, &tileW, &tileH);
+
+	int mergedW = static_cast<int>(Width * tileW);
+	int mergedH = static_cast<int>(height * tileH);
+
+	// final texture
+	SDL_Texture* mergedTexture = SDL_CreateTexture(
+		renderer,
+		SDL_PIXELFORMAT_RGBA8888,
+		SDL_TEXTUREACCESS_TARGET,
+		mergedW,
+		mergedH
+	);
+
+	if (!mergedTexture) return nullptr;
+
+	// render target to merged texture
+	SDL_SetRenderTarget(renderer, mergedTexture);
+	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+	SDL_RenderClear(renderer);
+
+	for (size_t idx = 0; idx < Textures.size(); ++idx)
+	{
+		int row = static_cast<int>(idx / Width);
+		int col = static_cast<int>(idx % Width);
+
+		SDL_Texture* tex = Textures[idx]->GetTexture();
+
+		SDL_Rect dstRect{
+			col * tileW,
+			row * tileH,
+			tileW,
+			tileH
+		};
+
+		SDL_RenderCopy(renderer, tex, nullptr, &dstRect);
+	}
+
+	// Reset render target to default
+	SDL_SetRenderTarget(renderer, nullptr);
+
+
+	return mergedTexture;
+}
+
+

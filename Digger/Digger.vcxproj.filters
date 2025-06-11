@@ -45,7 +45,7 @@
     <ClCompile Include="AnimControllerComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GridComponent.cpp">
+    <ClCompile Include="MapComponent.cpp">
       <Filter>Components\Source</Filter>
     </ClCompile>
     <ClCompile Include="DiggingComponent.cpp">
@@ -83,7 +83,7 @@
     <ClInclude Include="AnimControllerComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GridComponent.h">
+    <ClInclude Include="MapComponent.h">
       <Filter>Components\Headers</Filter>
     </ClInclude>
     <ClInclude Include="DiggingComponent.h">

@@ -4,6 +4,7 @@
 #include <iostream>
 #include "glm.hpp"
 #include "TextureComponent.h"
+#include "ResourceManager.h"
 
 namespace dae
 {
@@ -13,11 +14,11 @@ namespace dae
 		Tunnel,
 	};
 
-	class GridComponent :
+	class MapComponent :
 		public BaseComponent
 	{
 	public:
-		GridComponent(GameObject* Owner, const int GridXSize, const int GridYSize, const std::vector<std::vector<TileType>>& TileVector) : BaseComponent(Owner), m_Width{ GridXSize }, m_Height{ GridYSize } {
+		MapComponent(GameObject* Owner, const int GridXSize, const int GridYSize, const std::vector<std::vector<TileType>>& TileVector) : BaseComponent(Owner), m_Width{ GridXSize }, m_Height{ GridYSize } {
 			
 			for (const auto& row : TileVector) {
 				m_Tiles.insert(m_Tiles.end(), row.begin(), row.end());
@@ -67,15 +68,50 @@ namespace dae
 
 				m_TileTextures.emplace_back(std::move(Texture));
 			}
+			m_SharedMergedTexture = std::make_shared<Texture2D>(ResourceManager::GetInstance().MergeTextures(m_TileTextures, 16));
+			m_MergedTexture = std::make_unique<TextureComponent>(Owner, m_SharedMergedTexture);
+
+			for (int idx{}; idx < m_Tiles.size(); ++idx)
+			{
+				
+				int col = idx % GridXSize;
+				int row = idx / GridXSize;
+
+				int centerX = col * m_TileWidth + m_TileWidth / 2;
+				int centerY = row * m_TileHeight + m_TileHeight / 2;
+
+				int offset = 7;
+				switch (m_Tiles[idx])
+				{
+				default:
+					break;
+				case TileType::Dirt:
+					break;
+				case TileType::Tunnel:
+					ClearTunnelArea({ centerX-offset, centerY },offset);
+					ClearTunnelArea({ centerX-offset-5, centerY },offset);
+					ClearTunnelArea({ centerX, centerY }, offset);
+					ClearTunnelArea({ centerX+offset, centerY }, offset)	;
+					ClearTunnelArea({ centerX+offset+5, centerY }, offset)	;
+					break;
+				}
+
+			}
+
+			// for (auto& t : m_TileTextures)
+			// {
+			// 	t.release();
+			// }
+
 		};
 
 
-		virtual ~GridComponent() = default;
+		virtual ~MapComponent() = default;
 		
-		GridComponent(const GridComponent&) = delete;
-		GridComponent(GridComponent&&) noexcept = delete;
-		GridComponent& operator=(const GridComponent&) = delete;
-		GridComponent& operator=(GridComponent&&) noexcept = delete;
+		MapComponent(const MapComponent&) = delete;
+		MapComponent(MapComponent&&) noexcept = delete;
+		MapComponent& operator=(const MapComponent&) = delete;
+		MapComponent& operator=(MapComponent&&) noexcept = delete;
 
 		void UpdateTileType(const glm::ivec2 Tile, const TileType NewType);
 
@@ -89,14 +125,21 @@ namespace dae
 			return m_Tiles.at(TileIdx); 
 		}
 
+
+		void ClearTunnelArea(glm::ivec2 Middle, int Rad) const;
+
 	private:
 		std::vector<TileType> m_Tiles{};
 		std::vector<std::unique_ptr<TextureComponent>> m_TileTextures{};
+		std::unique_ptr<TextureComponent> m_MergedTexture{};
+		std::shared_ptr<Texture2D> m_SharedMergedTexture{};
 		int m_Width{};
 		int m_Height{};
 
 		int m_TileWidth = 20;
 		int m_TileHeight = 4;
+
+		mutable int cnt{};
 	};
 
 }

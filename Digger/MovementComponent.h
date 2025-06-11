@@ -1,6 +1,7 @@
 #pragma once
 #include "BaseComponent.h"
 #include "GameObject.h"
+#include "MapComponent.h"
 
 namespace dae
 {
@@ -8,7 +9,7 @@ namespace dae
 
 	{
 	public:
-		MovementComponent(GameObject* Owner) : BaseComponent(Owner) {};
+		MovementComponent(GameObject* Owner, MapComponent* GridComp) : BaseComponent(Owner), m_GridComponent(GridComp) {};
 		virtual ~MovementComponent() = default;
 		
 		MovementComponent(const MovementComponent&) = delete;
@@ -20,11 +21,10 @@ namespace dae
 		void AddMovementInput(const int x, const int y);
 		void AddMovementInput(const glm::vec2& Value);
 
-
-
 		void FixedUpdate(const float fixedDeltaTime) override;
 
-		float m_LerpSpeed{70};
+		float m_LerpSpeed{20};
+
 	private:
 
 		bool IsNearlyEqual(float a, float b, float tolerance = 0.001f) {
@@ -36,7 +36,7 @@ namespace dae
 
 		bool bCanMoveAgain{ true };
 		glm::vec3 m_DesiredPosition{};
-		
+		MapComponent* m_GridComponent{};
 	};
 }
 

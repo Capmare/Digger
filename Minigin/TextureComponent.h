@@ -11,10 +11,11 @@ namespace dae  {
 	public:
 		TextureComponent(GameObject* Owner, const float RotationAngle = 0) : BaseComponent(Owner), m_RotationAngle(RotationAngle) {};
 		TextureComponent(GameObject* Owner, const std::string& Path) : BaseComponent(Owner) { SetTexture(Path); };
+		TextureComponent(GameObject* Owner, std::shared_ptr<Texture2D> Texture) : BaseComponent(Owner), m_Texture(std::move(Texture)) { };
 		virtual ~TextureComponent() = default;
 		
 		TextureComponent(const TextureComponent&) = delete;
-		TextureComponent(TextureComponent&&) noexcept = delete;
+		//TextureComponent(TextureComponent&&) noexcept = delete; // will need the move constructor for merging textures
 		TextureComponent& operator=(const TextureComponent&) = delete;
 		TextureComponent& operator=(TextureComponent&&) noexcept = delete;
 
@@ -31,9 +32,12 @@ namespace dae  {
 
 		float m_RotationAngle = 0.f; 
 
+		struct SDL_Texture* GetTexture() const { return m_Texture->GetSDLTexture(); }
+
+		void DrawFilledCircleOnTexture(glm::ivec2 Middle, int radius, SDL_Color color);
+
 	private:
 		std::shared_ptr<Texture2D> m_Texture{};
-
 		SDL_Rect m_RenderParams{};
 		SDL_Rect m_RegionRenderParams{};
 

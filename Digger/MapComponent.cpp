@@ -1,8 +1,8 @@
-#include "GridComponent.h"
+#include "MapComponent.h"
 #include "TextureComponent.h"
 #include <iostream>
 
-void dae::GridComponent::UpdateTileType(const glm::ivec2 Tile, const TileType NewType)
+void dae::MapComponent::UpdateTileType(const glm::ivec2 Tile, const TileType NewType)
 {
 	int radius = 3;
 	for (int y = -radius; y <= radius; ++y)
@@ -40,17 +40,17 @@ void dae::GridComponent::UpdateTileType(const glm::ivec2 Tile, const TileType Ne
 	
 }
 
-void dae::GridComponent::Update(const float deltaTime)
+void dae::MapComponent::Update(const float )
 {
-	for (size_t idx{}; idx < m_TileTextures.size(); ++idx)
-	{
-		if (!m_TileTextures[idx]) return;
-		m_TileTextures[idx]->Update(deltaTime);
-	}
+	// for (size_t idx{}; idx < m_TileTextures.size(); ++idx)
+	// {
+	// 	if (!m_TileTextures[idx]) return;
+	// 	m_TileTextures[idx]->Update(deltaTime);
+	// }
 }
 
 
-glm::ivec2 dae::GridComponent::GetTileAtPixel(int pixelX, int pixelY) const
+glm::ivec2 dae::MapComponent::GetTileAtPixel(int pixelX, int pixelY) const
 {
 	const int TileWidth = 10;
 	const int TileHeight = 10;
@@ -64,12 +64,25 @@ glm::ivec2 dae::GridComponent::GetTileAtPixel(int pixelX, int pixelY) const
 	return { tileX, tileY };
 }
 
-void dae::GridComponent::Render() const
+void dae::MapComponent::Render() const
 {
-	for (size_t idx{}; idx < m_TileTextures.size(); ++idx)
+	if (m_MergedTexture)
 	{
-		if (!m_TileTextures[idx]) return;
-		m_TileTextures[idx]->Render();
+		m_MergedTexture->Render();
+	}
+
+	//for (size_t idx{}; idx < m_TileTextures.size(); ++idx)
+	//{
+	//	if (!m_TileTextures[idx]) return;
+	//	m_TileTextures[idx]->Render();
+	//}
+}
+
+void dae::MapComponent::ClearTunnelArea(glm::ivec2 Middle, int Rad) const
+{
+	if (m_MergedTexture)
+	{
+		m_MergedTexture->DrawFilledCircleOnTexture(Middle, Rad, SDL_Color(0, 0, 0, 1));
 	}
 }
 

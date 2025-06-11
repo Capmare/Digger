@@ -1,10 +1,10 @@
 #include "GravityComponent.h"
-#include "GridComponent.h"
+#include "MapComponent.h"
 #include "GameObject.h"
 #include "Renderer.h"
 #include "AnimControllerComponent.h"
 
-dae::GravityComponent::GravityComponent(GameObject* Owner, class GridComponent* GridComp) : BaseComponent(Owner), m_GridComponent(GridComp)
+dae::GravityComponent::GravityComponent(GameObject* Owner, class MapComponent* GridComp) : BaseComponent(Owner), m_GridComponent(GridComp)
 {
 	AnimComponent = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
 }

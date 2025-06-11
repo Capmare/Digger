@@ -15,11 +15,13 @@ namespace dae
 	{
 	public:
 		SDL_Texture* GetSDLTexture() const;
+		void SetSDLTexture(SDL_Texture* NewTexture) { m_texture = NewTexture; }
 		explicit Texture2D(SDL_Texture* texture);
 		explicit Texture2D(const std::string& fullPath);
 		~Texture2D();
 
 		glm::ivec2 GetSize() const;
+
 
 		Texture2D(const Texture2D &) = delete;
 		Texture2D(Texture2D &&) = delete;

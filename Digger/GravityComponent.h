@@ -8,7 +8,7 @@ namespace dae
 		public BaseComponent
 	{
 	public:
-		GravityComponent(GameObject* Owner, class GridComponent* GridComp);
+		GravityComponent(GameObject* Owner, class MapComponent* GridComp);
 		virtual ~GravityComponent() = default;
 		
 		GravityComponent(const GravityComponent&) = delete;
@@ -22,7 +22,7 @@ namespace dae
 		void Render() const override;
 
 	private:
-		class GridComponent* m_GridComponent{};
+		class MapComponent* m_GridComponent{};
 		class AnimControllerComponent* AnimComponent{};
 
 		bool bIsFalling{ false };

@@ -9,7 +9,7 @@ namespace dae
 		public BaseComponent
 	{
 	public:
-		DiggingComponent(GameObject* Owner, class GridComponent* GridComp) : BaseComponent(Owner), m_Grid(GridComp) {
+		DiggingComponent(GameObject* Owner, class MapComponent* GridComp) : BaseComponent(Owner), m_Grid(GridComp) {
 
 			m_AnimControllerComp = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
 			const AnimationState* CurrentStateAnim = m_AnimControllerComp->GetCurrentState();
@@ -28,7 +28,7 @@ namespace dae
 		void DigUp(const bool bInvert);
 
 	private:
-		class GridComponent* m_Grid{};
+		class MapComponent* m_Grid{};
 		glm::ivec2 m_TextureResolution{};
 		AnimControllerComponent* m_AnimControllerComp{};
 	};
