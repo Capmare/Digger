@@ -5,6 +5,18 @@
 #include <iostream>
 
 
+void dae::AnimationState::SetEnterStateFlipBook(AnimControllerComponent*)
+{
+	std::cout << "Entering state" << std::endl;
+	m_FlipBook->Play();
+}
+
+void dae::AnimationState::SetExitStateFlipBook(AnimControllerComponent*)
+{
+	m_FlipBook->Stop();
+	std::cout << "Exiting state" << std::endl;
+}
+
 void dae::IdleState::EnterState(AnimControllerComponent* AnimController)
 {
 	SetEnterStateFlipBook(AnimController);
@@ -42,16 +54,14 @@ void dae::AnimationState::Rotate(const float Degrees)
 	m_FlipBook->Rotate(Degrees);
 }
 
-void dae::AnimationState::SetEnterStateFlipBook(AnimControllerComponent* )
+void dae::DeathState::EnterState(AnimControllerComponent* AnimController)
 {
-	std::cout << "Entering state" << std::endl;
-	m_FlipBook->Play();
+	SetEnterStateFlipBook(AnimController);
+	
 }
 
-void dae::AnimationState::SetExitStateFlipBook(AnimControllerComponent* )
+void dae::DeathState::ExitState(AnimControllerComponent* AnimController)
 {
-	m_FlipBook->Stop();
-	std::cout << "Exiting state" << std::endl;
+	SetExitStateFlipBook(AnimController);
+
 }
-
-

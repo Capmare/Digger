@@ -87,5 +87,21 @@ namespace dae
 		void ExitState(AnimControllerComponent* AnimController) override;
 
 	};
+
+	class DeathState : public AnimationState
+	{
+	public:
+		DeathState(std::unique_ptr<FlipBookComponent>&& Animation) : AnimationState(std::move(Animation), "Dead") {};
+		virtual ~DeathState() = default;
+
+		DeathState(const DeathState&) = delete;
+		DeathState(DeathState&&) noexcept = delete;
+		DeathState& operator=(const DeathState&) = delete;
+		DeathState& operator=(DeathState&&) noexcept = delete;
+
+		void EnterState(AnimControllerComponent* AnimController) override;
+		void ExitState(AnimControllerComponent* AnimController) override;
+
+	};
 	
 }

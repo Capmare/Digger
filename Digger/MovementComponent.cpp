@@ -1,6 +1,7 @@
 #include "MovementComponent.h"
 #include "MapComponent.h"
 #include <MathUtils.h>
+#include "AnimControllerComponent.h"
 
 void dae::MovementComponent::AddMovementInput(const glm::vec3& Value)
 {
@@ -21,6 +22,26 @@ void dae::MovementComponent::AddMovementInput(const glm::vec3& Value)
 
 void dae::MovementComponent::FixedUpdate(const float fixedDeltaTime)
 {
+	AnimControllerComponent* AnimController = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
+	if (AnimController->GetCurrentState()->GetStateName() == "Dead") 
+	{
+		TimeOfDeath += fixedDeltaTime;
+		if (TimeOfDeath > 2)
+		{
+			TimeOfDeath = 0;
+			GetOwner()->SetLocalPosition(0, 140);
+			AnimController->ChangeState("Idle");
+			bIsSpawning = true;
+		}
+		return;
+	}
+
+	if (GetOwner() && bIsSpawning)
+	{
+		m_DesiredPosition = GetOwner()->GetLocalTransform().m_position;
+		bIsSpawning = false;
+		return;
+	}
 
 	if (GetOwner())
 	{
@@ -35,6 +56,7 @@ void dae::MovementComponent::FixedUpdate(const float fixedDeltaTime)
 			GetOwner()->SetLocalPosition(dae::MathUtils::Lerp(GetOwner()->GetLocalTransform().m_position, m_DesiredPosition, fixedDeltaTime * m_LerpSpeed));
 			m_GridComponent->ClearTunnelArea({ GetOwner()->GetLocalTransform().m_position.x + 10,GetOwner()->GetLocalTransform().m_position.y+10 }, 10);
 		}
+		return;
 	}
 }
 

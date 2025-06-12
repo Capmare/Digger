@@ -9,7 +9,8 @@ namespace dae
 
 	{
 	public:
-		MovementComponent(GameObject* Owner, MapComponent* GridComp) : BaseComponent(Owner), m_GridComponent(GridComp) {};
+		MovementComponent(GameObject* Owner, MapComponent* GridComp) : BaseComponent(Owner), m_GridComponent(GridComp) {
+		};
 		virtual ~MovementComponent() = default;
 		
 		MovementComponent(const MovementComponent&) = delete;
@@ -25,10 +26,12 @@ namespace dae
 
 		float m_LerpSpeed{20};
 
+		bool bIsSpawning{true};
+
 	private:
 
+		float TimeOfDeath{};
 		
-
 		bool bCanMoveAgain{ true };
 		glm::vec3 m_DesiredPosition{};
 		MapComponent* m_GridComponent{};

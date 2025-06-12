@@ -23,10 +23,10 @@ void dae::DamageComponent::Update(const float )
 				const glm::ivec2 Resolution = AnimComponent->GetCurrentState()->GetFlipBook()->GetUsedTexture()->GetTextureResolution();
 				if (
 					
-					dae::MathUtils::CheckPointInSquare(DmgLocation, Actors->GetWorldPosition()) ||
-					dae::MathUtils::CheckPointInSquare(DmgLocation, { Actors->GetWorldPosition().x + Resolution.x,Actors->GetWorldPosition().y }) ||
-					dae::MathUtils::CheckPointInSquare(DmgLocation, { Actors->GetWorldPosition().x ,Actors->GetWorldPosition().y + Resolution.y }) ||
-					dae::MathUtils::CheckPointInSquare(DmgLocation, { Actors->GetWorldPosition().x + Resolution.x ,Actors->GetWorldPosition().y + Resolution.y })
+					dae::MathUtils::CheckPointInSquare(DmgLocation, {Actors->GetWorldPosition().x + 5, Actors->GetWorldPosition().y + 5}) ||
+					dae::MathUtils::CheckPointInSquare(DmgLocation, { Actors->GetWorldPosition().x + Resolution.x - 5,Actors->GetWorldPosition().y + 5 }) ||
+					dae::MathUtils::CheckPointInSquare(DmgLocation, { Actors->GetWorldPosition().x + 5 ,Actors->GetWorldPosition().y + Resolution.y - 5 }) ||
+					dae::MathUtils::CheckPointInSquare(DmgLocation, { Actors->GetWorldPosition().x + Resolution.x - 5 ,Actors->GetWorldPosition().y + Resolution.y-5 })
 					)
 				{
 					HealthComponent* HealthComp = Actors->GetFirstComponentOfType<HealthComponent>();
