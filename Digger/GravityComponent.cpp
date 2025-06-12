@@ -74,9 +74,7 @@ void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
 				}
 			}
 		}
-		
 		bIsFalling = false;
-
 	}
 }
 

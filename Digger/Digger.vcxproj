@@ -88,6 +88,7 @@
   <ItemGroup>
     <ClCompile Include="AnimationState.cpp" />
     <ClCompile Include="AnimControllerComponent.cpp" />
+    <ClCompile Include="DamageComponent.cpp" />
     <ClCompile Include="DiggingComponent.cpp" />
     <ClCompile Include="GameObservers.cpp" />
     <ClCompile Include="GravityComponent.cpp" />
@@ -100,6 +101,7 @@
   <ItemGroup>
     <ClInclude Include="AnimationState.h" />
     <ClInclude Include="AnimControllerComponent.h" />
+    <ClInclude Include="DamageComponent.h" />
     <ClInclude Include="DiggingComponent.h" />
     <ClInclude Include="GameCommands.h" />
     <ClInclude Include="GameObservers.h" />

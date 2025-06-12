@@ -42,23 +42,23 @@
     <ClCompile Include="AnimationState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AnimControllerComponent.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="MapComponent.cpp">
       <Filter>Components\Source</Filter>
     </ClCompile>
-    <ClCompile Include="DiggingComponent.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="AnimControllerComponent.cpp">
+      <Filter>Components\Source</Filter>
     </ClCompile>
     <ClCompile Include="GravityComponent.cpp">
+      <Filter>Components\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="DiggingComponent.cpp">
+      <Filter>Components\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="DamageComponent.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GameCommands.h">
-      <Filter>Components\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="HealthComponent.h">
       <Filter>Components\Headers</Filter>
     </ClInclude>
@@ -74,22 +74,28 @@
     <ClInclude Include="ScoreComponent.h">
       <Filter>Components\Headers</Filter>
     </ClInclude>
-    <ClInclude Include="GameObservers.h">
-      <Filter>Components\Headers</Filter>
-    </ClInclude>
     <ClInclude Include="AnimationState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimControllerComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MapComponent.h">
       <Filter>Components\Headers</Filter>
     </ClInclude>
+    <ClInclude Include="AnimControllerComponent.h">
+      <Filter>Components\Headers</Filter>
+    </ClInclude>
     <ClInclude Include="DiggingComponent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Components\Headers</Filter>
     </ClInclude>
     <ClInclude Include="GravityComponent.h">
+      <Filter>Components\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObservers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameCommands.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DamageComponent.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
