@@ -61,7 +61,7 @@ namespace dae
 	public:
 		FallingState(std::unique_ptr<FlipBookComponent>&& Animation) : AnimationState(std::move(Animation), "Falling") {};
 		virtual ~FallingState() = default;
-		
+
 		FallingState(const FallingState&) = delete;
 		FallingState(FallingState&&) noexcept = delete;
 		FallingState& operator=(const FallingState&) = delete;
@@ -72,5 +72,20 @@ namespace dae
 
 	};
 
+	class DestroyedState : public AnimationState
+	{
+	public:
+		DestroyedState(std::unique_ptr<FlipBookComponent>&& Animation) : AnimationState(std::move(Animation), "Destroyed") {};
+		virtual ~DestroyedState() = default;
+
+		DestroyedState(const DestroyedState&) = delete;
+		DestroyedState(DestroyedState&&) noexcept = delete;
+		DestroyedState& operator=(const DestroyedState&) = delete;
+		DestroyedState& operator=(DestroyedState&&) noexcept = delete;
+
+		void EnterState(AnimControllerComponent* AnimController) override;
+		void ExitState(AnimControllerComponent* AnimController) override;
+
+	};
 	
 }

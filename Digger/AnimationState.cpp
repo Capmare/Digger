@@ -27,6 +27,16 @@ void dae::FallingState::ExitState(AnimControllerComponent* AnimController)
 	SetExitStateFlipBook(AnimController);
 }
 
+void dae::DestroyedState::EnterState(AnimControllerComponent* AnimController)
+{
+	SetEnterStateFlipBook(AnimController);
+}
+
+void dae::DestroyedState::ExitState(AnimControllerComponent* AnimController)
+{
+	SetExitStateFlipBook(AnimController);
+}
+
 void dae::AnimationState::Rotate(const float Degrees)
 {
 	m_FlipBook->Rotate(Degrees);
@@ -43,3 +53,5 @@ void dae::AnimationState::SetExitStateFlipBook(AnimControllerComponent* )
 	m_FlipBook->Stop();
 	std::cout << "Exiting state" << std::endl;
 }
+
+

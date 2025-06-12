@@ -127,6 +127,7 @@ namespace dae
 
 
 		void ClearTunnelArea(glm::ivec2 Middle, int Rad) const;
+		SDL_Texture* GetMapTexture() { return m_MergedTexture->GetTexture(); }
 
 	private:
 		std::vector<TileType> m_Tiles{};

@@ -117,3 +117,35 @@ void dae::Renderer::DrawPoint(int x, int y, int size)
 	SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 1);
 	SDL_RenderFillRect(m_renderer, &rect);
 }
+
+SDL_Color dae::Renderer::ReadPixelColor(SDL_Texture* texture, int x, int y)
+{
+	if (!texture) return SDL_Color{ 0, 0, 0, 0 };
+
+	void* pixels = nullptr;
+	int pitch = 0;
+
+	if (SDL_LockTexture(texture, nullptr, &pixels, &pitch) != 0) {
+		SDL_Log("Failed to lock texture: %s", SDL_GetError());
+		return SDL_Color{ 0, 0, 0, 0 };
+	}
+
+	int texW = 0, texH = 0;
+	SDL_QueryTexture(texture, nullptr, nullptr, &texW, &texH);
+	if (x < 0 || y < 0 || x >= texW || y >= texH) {
+		SDL_UnlockTexture(texture);
+		return SDL_Color{ 0, 0, 0, 0 };
+	}
+
+	Uint32* pixelData = static_cast<Uint32*>(pixels);
+	int index = y * (pitch / sizeof(Uint32)) + x;
+	Uint32 pixel = pixelData[index];
+
+	SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888);
+	SDL_Color color;
+	SDL_GetRGBA(pixel, format, &color.r, &color.g, &color.b, &color.a);
+	SDL_FreeFormat(format);
+
+	SDL_UnlockTexture(texture);
+	return color;
+}

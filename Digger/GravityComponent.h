@@ -26,6 +26,8 @@ namespace dae
 		class AnimControllerComponent* AnimComponent{};
 
 		bool bIsFalling{ false };
+		bool bIsBroken{ false };
+		float m_StartFallingYPosition{};
 	};
 }
 

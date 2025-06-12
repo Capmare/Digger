@@ -26,5 +26,7 @@ namespace dae
 		void SetBackgroundColor(const SDL_Color& color) { m_clearColor = color; }
 
 		void DrawPoint(int x, int y, int size);
+
+		SDL_Color ReadPixelColor(SDL_Texture* texture, int x, int y);
 	};
 }

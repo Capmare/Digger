@@ -13,30 +13,77 @@ void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
 {
 	if (m_GridComponent)
 	{
-		glm::ivec2 LeftSide = m_GridComponent->GetTileAtPixel(static_cast<int>(GetOwner()->GetWorldPosition().x ), static_cast<int>(GetOwner()->GetWorldPosition().y + 50));
-		glm::ivec2 Middle = m_GridComponent->GetTileAtPixel(static_cast<int>(GetOwner()->GetWorldPosition().x + 25), static_cast<int>(GetOwner()->GetWorldPosition().y + 50));
-		glm::ivec2 RightSide = m_GridComponent->GetTileAtPixel(static_cast<int>(GetOwner()->GetWorldPosition().x + 50), static_cast<int>(GetOwner()->GetWorldPosition().y + 50));
-		
-		// this becomes true 
-		if (m_GridComponent->GetTileType(LeftSide) == TileType::Tunnel && m_GridComponent->GetTileType(Middle) == TileType::Tunnel && m_GridComponent->GetTileType(RightSide) == TileType::Tunnel)
+			
+		int emptyCount = 0;
+		const int totalChecks = 20;
+
+		for (int idx = 0; idx < totalChecks; ++idx)
 		{
-			if (AnimComponent)
+			SDL_Color color = Renderer::GetInstance().ReadPixelColor(
+				m_GridComponent->GetMapTexture(),
+				static_cast<int>(GetOwner()->GetWorldPosition().x + idx),
+				static_cast<int>(GetOwner()->GetWorldPosition().y + 20)
+			);
+
+			if (color.r < 10 && color.g < 10 && color.b < 10)
 			{
-				AnimComponent->ChangeState("Falling");
+				++emptyCount;
 			}
+		}
+
+		bool bCanFall = (emptyCount >= totalChecks * 0.6);
+
+		if (bCanFall)
+		{
+
+			if (!bIsFalling) m_StartFallingYPosition = GetOwner()->GetLocalTransform().m_position.x;
+
+			if (!bIsBroken)
+			{
+				if (AnimComponent)
+				{
+					AnimComponent->ChangeState("Falling");
+				}
+			}
+			
 			bIsFalling = true;
-			GetOwner()->SetLocalPosition(static_cast<int>(GetOwner()->GetLocalTransform().m_position.x), static_cast<int>(GetOwner()->GetLocalTransform().m_position.y + 150 * fixedDeltaTime));
+			
+			GetOwner()->SetLocalPosition(static_cast<int>(GetOwner()->GetLocalTransform().m_position.x), static_cast<int>(GetOwner()->GetLocalTransform().m_position.y + 80 * fixedDeltaTime));
 			return;
 		}
-		if (AnimComponent)
+		else
 		{
-			AnimComponent->ChangeState("Idle");
+			if (bIsBroken) return;
+			if (bIsFalling)
+			{
+				if ((GetOwner()->GetLocalTransform().m_position.y - m_StartFallingYPosition) > 50)
+				{
+					if (AnimComponent)
+					{
+						AnimComponent->ChangeState("Destroyed");
+						bIsBroken = true;
+
+					}
+				}
+				else
+				{
+					if (AnimComponent)
+					{
+						AnimComponent->ChangeState("Idle");
+					}
+				}
+			}
 		}
+		
 		bIsFalling = false;
+
 	}
 }
 
 void dae::GravityComponent::Render() const
 {
-
+	// for (int idx{}; idx < 20; ++idx)
+	// {
+	// 	Renderer::GetInstance().DrawPoint(static_cast<int>(GetOwner()->GetWorldPosition().x + idx), static_cast<int>(GetOwner()->GetWorldPosition().y+20), 2);
+	// }
 }

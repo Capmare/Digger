@@ -20,6 +20,7 @@ namespace dae
 		void UnloadUnusedResources();
 
 		SDL_Texture* MergeTextures(const std::vector<std::unique_ptr<TextureComponent>>& Textures, size_t Width);
+		
 	private:
 		friend class Singleton<ResourceManager>;
 		ResourceManager() = default;
