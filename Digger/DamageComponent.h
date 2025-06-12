@@ -27,12 +27,7 @@ namespace dae
 		bool bShouldDamage{};
 
 	private:
-		constexpr bool CheckPointInSquare(const glm::ivec4& rect, const glm::ivec2& point) {
-			return point.x >= rect.x &&
-				point.y >= rect.y &&
-				point.x < rect.x + rect.z &&
-				point.y < rect.y + rect.w;
-		}
+		
 
 		std::vector<GameObject*> m_OtherActors{};
 		glm::ivec4 m_DamageSquare{};

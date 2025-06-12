@@ -3,6 +3,7 @@
 #include "GameObject.h"
 #include "Renderer.h"
 #include "AnimControllerComponent.h"
+#include "DamageComponent.h"
 
 dae::GravityComponent::GravityComponent(GameObject* Owner, class MapComponent* GridComp) : BaseComponent(Owner), m_GridComponent(GridComp)
 {
@@ -47,7 +48,6 @@ void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
 			}
 			
 			bIsFalling = true;
-			
 			GetOwner()->SetLocalPosition(static_cast<int>(GetOwner()->GetLocalTransform().m_position.x), static_cast<int>(GetOwner()->GetLocalTransform().m_position.y + 80 * fixedDeltaTime));
 			return;
 		}
@@ -56,7 +56,8 @@ void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
 			if (bIsBroken) return;
 			if (bIsFalling)
 			{
-				if ((GetOwner()->GetLocalTransform().m_position.y - m_StartFallingYPosition) > 50)
+				std::cout << GetOwner()->GetLocalTransform().m_position.y - m_StartFallingYPosition << std::endl;
+				if ((abs(GetOwner()->GetLocalTransform().m_position.y - m_StartFallingYPosition)) > 40)
 				{
 					if (AnimComponent)
 					{
@@ -82,6 +83,6 @@ void dae::GravityComponent::Render() const
 {
 	// for (int idx{}; idx < 20; ++idx)
 	// {
-	// 	Renderer::GetInstance().DrawPoint(static_cast<int>(GetOwner()->GetWorldPosition().x + idx), static_cast<int>(GetOwner()->GetWorldPosition().y+20), 2);
+	// 	Renderer::GetInstance().DrawPoint(static_cast<int>(GetOwner()->GetWorldPosition().x + idx), static_cast<int>(GetOwner()->GetWorldPosition().y + 20), 2);
 	// }
 }

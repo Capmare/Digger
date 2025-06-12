@@ -96,6 +96,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MovementComponent.cpp" />
     <ClCompile Include="PlayerControllerComponent.cpp" />
+    <ClCompile Include="PushComponent.cpp" />
     <ClCompile Include="RotatingComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -110,6 +111,7 @@
     <ClInclude Include="HealthComponent.h" />
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="PlayerControllerComponent.h" />
+    <ClInclude Include="PushComponent.h" />
     <ClInclude Include="RotatingComponent.h" />
     <ClInclude Include="ScoreComponent.h" />
   </ItemGroup>

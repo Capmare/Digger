@@ -21,6 +21,8 @@ namespace dae
 
 		void Render() const override;
 
+		bool GetIsFalling() const { return bIsFalling; }
+
 	private:
 		class MapComponent* m_GridComponent{};
 		class AnimControllerComponent* AnimComponent{};

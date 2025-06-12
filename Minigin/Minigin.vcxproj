@@ -215,6 +215,7 @@ xcopy "$(SolutionDir)3rdParty\SDL2\lib\$(PlatformTarget)\SDL2_mixer.dll" "$(Targ
     <ClInclude Include="ImGui\imstb_textedit.h" />
     <ClInclude Include="ImGui\imstb_truetype.h" />
     <ClInclude Include="InputManager.h" />
+    <ClInclude Include="MathUtils.h" />
     <ClInclude Include="Minigin.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="Renderer.h" />

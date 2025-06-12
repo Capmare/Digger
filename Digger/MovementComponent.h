@@ -27,12 +27,7 @@ namespace dae
 
 	private:
 
-		bool IsNearlyEqual(float a, float b, float tolerance = 0.001f) {
-			return std::fabs(a - b) <= tolerance;
-		}
-		constexpr glm::vec3 Lerp(const glm::vec3& a, const glm::vec3& b, float t) {
-			return a + (b - a) * t;
-		}
+		
 
 		bool bCanMoveAgain{ true };
 		glm::vec3 m_DesiredPosition{};

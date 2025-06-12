@@ -1,5 +1,6 @@
 #include "MovementComponent.h"
 #include "MapComponent.h"
+#include <MathUtils.h>
 
 void dae::MovementComponent::AddMovementInput(const glm::vec3& Value)
 {
@@ -23,15 +24,15 @@ void dae::MovementComponent::FixedUpdate(const float fixedDeltaTime)
 
 	if (GetOwner())
 	{
-		bool xLoc = IsNearlyEqual(m_DesiredPosition.x, GetOwner()->GetLocalTransform().m_position.x);
-		bool yLoc = IsNearlyEqual(m_DesiredPosition.y, GetOwner()->GetLocalTransform().m_position.y);
+		bool xLoc = dae::MathUtils::IsNearlyEqual(m_DesiredPosition.x, GetOwner()->GetLocalTransform().m_position.x);
+		bool yLoc = dae::MathUtils::IsNearlyEqual(m_DesiredPosition.y, GetOwner()->GetLocalTransform().m_position.y);
 		if (xLoc && yLoc)
 		{
 			bCanMoveAgain = true;
 		}
 		else
 		{
-			GetOwner()->SetLocalPosition(Lerp(GetOwner()->GetLocalTransform().m_position, m_DesiredPosition, fixedDeltaTime * m_LerpSpeed));
+			GetOwner()->SetLocalPosition(dae::MathUtils::Lerp(GetOwner()->GetLocalTransform().m_position, m_DesiredPosition, fixedDeltaTime * m_LerpSpeed));
 			m_GridComponent->ClearTunnelArea({ GetOwner()->GetLocalTransform().m_position.x + 10,GetOwner()->GetLocalTransform().m_position.y+10 }, 10);
 		}
 	}

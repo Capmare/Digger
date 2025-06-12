@@ -55,7 +55,10 @@
       <Filter>Components\Source</Filter>
     </ClCompile>
     <ClCompile Include="DamageComponent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Components\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="PushComponent.cpp">
+      <Filter>Components\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -96,7 +99,10 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="DamageComponent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Components\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="PushComponent.h">
+      <Filter>Components\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
