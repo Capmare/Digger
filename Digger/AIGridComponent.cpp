@@ -161,14 +161,27 @@ std::vector<glm::ivec2> dae::AIGridComponent::FindPathFreeTilesFromPixels(const 
 {
 	glm::ivec2 tileStart = glm::ivec2(pixelStart.x / m_TileSize.x, pixelStart.y / m_TileSize.y);
 	glm::ivec2 tileGoal = glm::ivec2(pixelGoal.x / m_TileSize.x, pixelGoal.y / m_TileSize.y);
-	return FindPathFreeTiles(tileStart, tileGoal);
+	std::vector<glm::ivec2> Path{};
+	for (auto& tile : FindPathFreeTiles(tileStart, tileGoal))
+	{
+		Path.emplace_back(TileToPixels(tile));
+	}
+
+	return Path;
 }
 
 std::vector<glm::ivec2> dae::AIGridComponent::FindPathAllMapFromPixels(const glm::ivec2& pixelStart, const glm::ivec2& pixelGoal) const
 {
 	glm::ivec2 tileStart = glm::ivec2(pixelStart.x / m_TileSize.x, pixelStart.y / m_TileSize.y);
 	glm::ivec2 tileGoal = glm::ivec2(pixelGoal.x / m_TileSize.x, pixelGoal.y / m_TileSize.y);
-	return FindPathAllMap(tileStart, tileGoal);
+
+	std::vector<glm::ivec2> Path{};
+	for (auto& tile : FindPathAllMap(tileStart, tileGoal))
+	{
+		Path.emplace_back(TileToPixels(tile));
+	}
+
+	return Path;
 }
 
 std::vector<glm::ivec2> dae::AIGridComponent::FindPathFreeTiles(const glm::ivec2& start, const glm::ivec2& goal) const
@@ -239,6 +252,11 @@ std::vector<glm::ivec2> dae::AIGridComponent::FindPathFreeTiles(const glm::ivec2
 	return {};
 }
 
+
+glm::ivec2 dae::AIGridComponent::TileToPixels(const glm::ivec2& tileCoord) const
+{
+	return glm::ivec2(tileCoord.x * m_TileSize.x, tileCoord.y * m_TileSize.y);
+}
 
 void dae::AIGridComponent::RebuildFreeTiles()
 {

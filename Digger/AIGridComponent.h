@@ -53,8 +53,8 @@ namespace dae
 		std::vector<glm::ivec2> FindPathFreeTilesFromPixels(const glm::ivec2& pixelStart, const glm::ivec2& pixelGoal) const;
 		std::vector<glm::ivec2> FindPathAllMapFromPixels(const glm::ivec2& pixelStart, const glm::ivec2& pixelGoal) const;
 		std::vector<glm::ivec2> FindPathFreeTiles(const glm::ivec2& start, const glm::ivec2& goal) const;
+		glm::ivec2 TileToPixels(const glm::ivec2& tileCoord) const;
 		void RebuildFreeTiles();
-
 	private:
 
 		bool CheckIfTileEmpty(int Tile, const LockedTexture& locked, SDL_PixelFormat* fmt) const;

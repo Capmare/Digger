@@ -64,7 +64,7 @@
       <Filter>Components\Source</Filter>
     </ClCompile>
     <ClCompile Include="AIMovementComponent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Components\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -114,7 +114,7 @@
       <Filter>Components\Headers</Filter>
     </ClInclude>
     <ClInclude Include="AIMovementComponent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Components\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
