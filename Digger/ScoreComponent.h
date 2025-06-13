@@ -19,12 +19,27 @@ namespace dae
 		ScoreComponent& operator=(const ScoreComponent&) = delete;
 		ScoreComponent& operator=(ScoreComponent&&) noexcept = delete;
 
-		int IncreaseScore(int HealthIncreaseAmmount = 1)
+		int IncreaseScore(int ScoreIncreaseAmmount = 1)
 		{
 
-			m_Score += HealthIncreaseAmmount;
+			m_Score += ScoreIncreaseAmmount;
 			m_Subject.NotifyObservers(*GetOwner(), ObserverEvents::OnScoreChanged);
+			
+			std::string ScoreString{};
 
+
+			if (m_Score < 1000)
+			{
+				ScoreString += "00";
+
+			}
+			else if (m_Score < 10000)
+			{
+				ScoreString += "0";
+			}
+
+			ScoreString += std::to_string(m_Score);
+			m_ScoreText->SetText(ScoreString);
 
 			return m_Score;
 		}
