@@ -65,3 +65,27 @@ void dae::DeathState::ExitState(AnimControllerComponent* AnimController)
 	SetExitStateFlipBook(AnimController);
 
 }
+
+void dae::HobbinState::EnterState(AnimControllerComponent* AnimController)
+{
+	SetEnterStateFlipBook(AnimController);
+
+}
+
+void dae::HobbinState::ExitState(AnimControllerComponent* AnimController)
+{
+	SetExitStateFlipBook(AnimController);
+
+}
+
+void dae::NobbinState::EnterState(AnimControllerComponent* AnimController)
+{
+	SetEnterStateFlipBook(AnimController);
+
+}
+
+void dae::NobbinState::ExitState(AnimControllerComponent* AnimController)
+{
+	SetExitStateFlipBook(AnimController);
+
+}

@@ -103,5 +103,37 @@ namespace dae
 		void ExitState(AnimControllerComponent* AnimController) override;
 
 	};
+
+	class HobbinState : public AnimationState
+	{
+	public:
+		HobbinState(std::unique_ptr<FlipBookComponent>&& Animation) : AnimationState(std::move(Animation), "Hobbin") {};
+		virtual ~HobbinState() = default;
+
+		HobbinState(const HobbinState&) = delete;
+		HobbinState(HobbinState&&) noexcept = delete;
+		HobbinState& operator=(const HobbinState&) = delete;
+		HobbinState& operator=(HobbinState&&) noexcept = delete;
+
+		void EnterState(AnimControllerComponent* AnimController) override;
+		void ExitState(AnimControllerComponent* AnimController) override;
+
+	};
+
+	class NobbinState : public AnimationState
+	{
+	public:
+		NobbinState(std::unique_ptr<FlipBookComponent>&& Animation) : AnimationState(std::move(Animation), "Nobbin") {};
+		virtual ~NobbinState() = default;
+
+		NobbinState(const NobbinState&) = delete;
+		NobbinState(NobbinState&&) noexcept = delete;
+		NobbinState& operator=(const NobbinState&) = delete;
+		NobbinState& operator=(NobbinState&&) noexcept = delete;
+
+		void EnterState(AnimControllerComponent* AnimController) override;
+		void ExitState(AnimControllerComponent* AnimController) override;
+
+	};
 	
 }

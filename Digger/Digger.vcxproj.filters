@@ -63,6 +63,9 @@
     <ClCompile Include="AIGridComponent.cpp">
       <Filter>Components\Source</Filter>
     </ClCompile>
+    <ClCompile Include="AIMovementComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HealthComponent.h">
@@ -109,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="AIGridComponent.h">
       <Filter>Components\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="AIMovementComponent.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
