@@ -60,6 +60,7 @@ void dae::Renderer::RenderTexture(const Texture2D& texture, const float x, const
 	dst.y = static_cast<int>(y);
 	SDL_QueryTexture(texture.GetSDLTexture(), nullptr, nullptr, &dst.w, &dst.h);
 	SDL_RenderCopy(GetSDLRenderer(), texture.GetSDLTexture(), nullptr, &dst);
+
 }
 
 void dae::Renderer::RenderTexture(const Texture2D& texture, const SDL_Rect& DstRect, const SDL_Rect& SrcRect) const
@@ -99,9 +100,11 @@ void dae::Renderer::RenderMaskedTexture(SDL_Texture* source, SDL_Texture* mask, 
 	SDL_RenderCopy(m_renderer, source, nullptr, nullptr);
 
 	SDL_SetRenderTarget(m_renderer, previousTarget);
+
 	SDL_RenderCopy(m_renderer, target, nullptr, &dstRect);
 
 	SDL_DestroyTexture(target);
+
 }
 
 SDL_Renderer* dae::Renderer::GetSDLRenderer() const { return m_renderer; }
@@ -116,6 +119,32 @@ void dae::Renderer::DrawPoint(int x, int y, int size)
 
 	SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 1);
 	SDL_RenderFillRect(m_renderer, &rect);
+}
+
+
+bool dae::Renderer::LockTexture(SDL_Texture* texture, LockedTexture& outLocked)
+{
+	if (!texture) return false;
+
+	int w = 0, h = 0;
+	SDL_QueryTexture(texture, nullptr, nullptr, &w, &h);
+
+	void* pixels = nullptr;
+	int pitch = 0;
+	if (SDL_LockTexture(texture, nullptr, &pixels, &pitch) != 0) {
+		SDL_Log("Failed to lock texture: %s", SDL_GetError());
+		return false;
+	}
+
+	outLocked = { pixels, pitch, w, h, texture };
+	return true;
+}
+
+void dae::Renderer::UnlockTexture(const LockedTexture& locked)
+{
+	if (locked.texture) {
+		SDL_UnlockTexture(locked.texture);
+	}
 }
 
 SDL_Color dae::Renderer::ReadPixelColor(SDL_Texture* texture, int x, int y)
@@ -147,5 +176,23 @@ SDL_Color dae::Renderer::ReadPixelColor(SDL_Texture* texture, int x, int y)
 	SDL_FreeFormat(format);
 
 	SDL_UnlockTexture(texture);
+	return color;
+}
+
+
+SDL_Color dae::Renderer::FastReadPixel(const LockedTexture& locked, int x, int y)
+{
+	if (x < 0 || y < 0 || x >= locked.width || y >= locked.height) {
+		return SDL_Color{ 0, 0, 0, 0 };
+	}
+
+	Uint32* pixelData = static_cast<Uint32*>(locked.pixels);
+	int index = y * (locked.pitch / sizeof(Uint32)) + x;
+	Uint32 pixel = pixelData[index];
+
+	SDL_Color color;
+	SDL_PixelFormat* format = SDL_AllocFormat(SDL_PIXELFORMAT_RGBA8888);
+	SDL_GetRGBA(pixel, format, &color.r, &color.g, &color.b, &color.a);
+	SDL_FreeFormat(format);
 	return color;
 }

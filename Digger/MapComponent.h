@@ -2,6 +2,7 @@
 #include <BaseComponent.h>
 #include <vector>
 #include <iostream>
+#include "SDL_surface.h"
 #include "glm.hpp"
 #include "TextureComponent.h"
 #include "ResourceManager.h"
@@ -102,7 +103,8 @@ namespace dae
 			{
 				t.release();
 			}
-
+			CreateSurface();
+			
 		};
 
 
@@ -118,13 +120,21 @@ namespace dae
 		void Render() const override;
 		
 		void ClearTunnelArea(glm::ivec2 Middle, int Rad) const;
+		void UpdateSurfaceFromTexture();
 		SDL_Texture* GetMapTexture() { return m_MergedTexture->GetTexture(); }
 
+		SDL_Surface* GetMapSurface() const { return m_MapSurface; }
+
 	private:
+		void CreateSurface();
+
+
 		std::vector<TileType> m_Tiles{};
 		std::vector<std::unique_ptr<TextureComponent>> m_TileTextures{};
 		std::unique_ptr<TextureComponent> m_MergedTexture{};
 		std::shared_ptr<Texture2D> m_SharedMergedTexture{};
+		SDL_Texture* m_MapTunnelTexture{};
+		SDL_Surface* m_MapSurface{};
 		int m_Width{};
 		int m_Height{};
 

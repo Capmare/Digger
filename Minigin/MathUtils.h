@@ -17,5 +17,17 @@ namespace dae::MathUtils
 		return a + (b - a) * t;
 	}
 
+	
+}
 
+namespace std {
+	// hash specialization for glm::ivec2
+	template <>
+	struct hash<glm::ivec2> {
+		size_t operator()(const glm::ivec2& v) const noexcept {
+			size_t h1 = std::hash<int>{}(v.x);
+			size_t h2 = std::hash<int>{}(v.y);
+			return h1 ^ (h2 << 1);
+		}
+	};
 }

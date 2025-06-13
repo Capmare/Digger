@@ -22,6 +22,8 @@ namespace dae
 		SDL_Texture* MergeTextures(const std::vector<std::unique_ptr<TextureComponent>>& Textures, size_t Width);
 		
 	private:
+		SDL_Texture* m_LockedImage{};
+
 		friend class Singleton<ResourceManager>;
 		ResourceManager() = default;
 		std::filesystem::path m_dataPath;

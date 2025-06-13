@@ -60,6 +60,9 @@
     <ClCompile Include="PushComponent.cpp">
       <Filter>Components\Source</Filter>
     </ClCompile>
+    <ClCompile Include="AIGridComponent.cpp">
+      <Filter>Components\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HealthComponent.h">
@@ -102,6 +105,9 @@
       <Filter>Components\Headers</Filter>
     </ClInclude>
     <ClInclude Include="PushComponent.h">
+      <Filter>Components\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="AIGridComponent.h">
       <Filter>Components\Headers</Filter>
     </ClInclude>
   </ItemGroup>

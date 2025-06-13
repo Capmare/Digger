@@ -102,11 +102,11 @@ SDL_Texture* dae::ResourceManager::MergeTextures(const std::vector<std::unique_p
 		};
 
 		SDL_RenderCopy(renderer, tex, nullptr, &dstRect);
+
 	}
 
 	// Reset render target to default
 	SDL_SetRenderTarget(renderer, nullptr);
-
 
 	return mergedTexture;
 }

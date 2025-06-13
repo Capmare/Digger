@@ -86,6 +86,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="AIGridComponent.cpp" />
     <ClCompile Include="AnimationState.cpp" />
     <ClCompile Include="AnimControllerComponent.cpp" />
     <ClCompile Include="DamageComponent.cpp" />
@@ -100,6 +101,7 @@
     <ClCompile Include="RotatingComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AIGridComponent.h" />
     <ClInclude Include="AnimationState.h" />
     <ClInclude Include="AnimControllerComponent.h" />
     <ClInclude Include="DamageComponent.h" />
