@@ -28,9 +28,15 @@ namespace dae
 		class MapComponent* m_MapComponent{};
 		class AnimControllerComponent* AnimComponent{};
 
+		float shakeTimer = 0.0f;
+		float shakeDuration = 1.0f;
+		float shakeInterval = 0.05f; 
+		float timeSinceLastShake = 0.0f;
+		int shakeDirection = 1;
+		float m_StartFallingYPosition{};
+
 		bool bIsFalling{ false };
 		bool bIsBroken{ false };
-		float m_StartFallingYPosition{};
 	};
 }
 

@@ -25,7 +25,7 @@ namespace dae
 		void AddNewDamageRecevingActor(GameObject* NewActor) { m_OtherActors.emplace_back(NewActor); }
 
 		bool bShouldDamage{};
-
+		bool bDoesDamageWithoutCondition{ false };
 	private:
 		
 		const int m_CollisionOffset{0};

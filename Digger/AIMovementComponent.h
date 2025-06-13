@@ -51,7 +51,7 @@ namespace dae
 		glm::vec2 m_TargetPos{};
 		float m_SegmentDuration{ 0.0f };
 		float m_MoveLerpTime{ 0.0f };
-		const float speed{ 20.f };
+		const float speed{ 30.f };
 		bool m_MovingToTarget{ false };
 
 		float m_MaxTime{.5};

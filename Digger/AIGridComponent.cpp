@@ -67,6 +67,7 @@ void dae::AIGridComponent::Render() const
 	
 }
 
+// A* star is good here since it does not care about dirt
 std::vector<glm::ivec2> dae::AIGridComponent::FindPathAllMap(const glm::ivec2& start, const glm::ivec2& goal) const
 {
 
@@ -184,78 +185,59 @@ std::vector<glm::ivec2> dae::AIGridComponent::FindPathAllMapFromPixels(const glm
 	return Path;
 }
 
+// use BFS for nobbin instead of A* because AStar fails when getting stuck
 std::vector<glm::ivec2> dae::AIGridComponent::FindPathFreeTiles(const glm::ivec2& start, const glm::ivec2& goal) const
 {
 
 	if (!m_FreeTiles.contains(start) || !m_FreeTiles.contains(goal))
 		return {};
 
-	std::unordered_map<glm::ivec2, Node, IVec2Hash> allNodes;
-	std::priority_queue<std::pair<int, glm::ivec2>, std::vector<std::pair<int, glm::ivec2>>, ComparePair> openSet;
-	std::unordered_set<glm::ivec2, IVec2Hash> closedSet;
+	std::unordered_map<glm::ivec2, glm::ivec2, IVec2Hash> cameFrom;
+	std::queue<glm::ivec2> frontier;
+	std::unordered_set<glm::ivec2, IVec2Hash> visited;
 
-	Node startNode{ start };
-	startNode.gCost = 0;
-	startNode.hCost = Heuristic(start, goal);
-	allNodes[start] = startNode;
-	openSet.emplace(startNode.fCost(), start);
+	frontier.push(start);
+	visited.insert(start);
 
-	while (!openSet.empty())
+	while (!frontier.empty())
 	{
-		glm::ivec2 current = openSet.top().second;
-		openSet.pop();
-
-		if (closedSet.contains(current))
-			continue;
+		glm::ivec2 current = frontier.front();
+		frontier.pop();
 
 		if (current == goal)
 		{
+			// Reconstruct path
 			std::vector<glm::ivec2> path;
 			glm::ivec2 step = goal;
 			while (step != start)
 			{
-				auto it = allNodes.find(step);
-				if (it == allNodes.end())
-					return {};
 				path.push_back(step);
-				step = it->second.parent;
+				step = cameFrom[step];
 			}
 			path.push_back(start);
 			std::reverse(path.begin(), path.end());
 			return path;
 		}
 
-		closedSet.insert(current);
-
 		for (const auto& neighbor : GetNeighbors(current))
 		{
-			if (!m_FreeTiles.contains(neighbor) || closedSet.contains(neighbor))
+			if (!m_FreeTiles.contains(neighbor) || visited.contains(neighbor))
 				continue;
 
-			int tentativeG = allNodes[current].gCost + 1;
-
-			auto it = allNodes.find(neighbor);
-			if (it == allNodes.end() || tentativeG < it->second.gCost)
-			{
-				Node neighborNode;
-				neighborNode.position = neighbor;
-				neighborNode.gCost = tentativeG;
-				neighborNode.hCost = Heuristic(neighbor, goal);
-				neighborNode.parent = current;
-				allNodes[neighbor] = neighborNode;
-
-				openSet.emplace(neighborNode.fCost(), neighbor);
-			}
+			frontier.push(neighbor);
+			visited.insert(neighbor);
+			cameFrom[neighbor] = current;
 		}
 	}
 
+	// No path found
 	return {};
 }
 
 
 glm::ivec2 dae::AIGridComponent::TileToPixels(const glm::ivec2& tileCoord) const
 {
-	return glm::ivec2(tileCoord.x * m_TileSize.x, tileCoord.y * m_TileSize.y);
+	return {tileCoord.x * m_TileSize.x, tileCoord.y * m_TileSize.y};
 }
 
 void dae::AIGridComponent::RebuildFreeTiles()

@@ -12,68 +12,83 @@ dae::GravityComponent::GravityComponent(GameObject* Owner, class MapComponent* M
 
 void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
 {
-	if (m_MapComponent)
+	if (!m_MapComponent) return;
+
+	int emptyCount = 0;
+	const int totalChecks = 20;
+
+	for (int idx = 0; idx < totalChecks; ++idx)
 	{
-			
-		int emptyCount = 0;
-		const int totalChecks = 20;
+		SDL_Color color = Renderer::GetInstance().ReadPixelColor(
+			m_MapComponent->GetMapTexture(),
+			static_cast<int>(GetOwner()->GetWorldPosition().x + idx),
+			static_cast<int>(GetOwner()->GetWorldPosition().y + 20)
+		);
 
-		for (int idx = 0; idx < totalChecks; ++idx)
+		if (color.r < 10 && color.g < 10 && color.b < 10)
+			++emptyCount;
+	}
+
+	bool bCanFall = (emptyCount >= totalChecks * 0.6f);
+
+	if (bCanFall)
+	{
+		if (!bIsFalling)
 		{
-			SDL_Color color = Renderer::GetInstance().ReadPixelColor(
-				m_MapComponent->GetMapTexture(),
-				static_cast<int>(GetOwner()->GetWorldPosition().x + idx),
-				static_cast<int>(GetOwner()->GetWorldPosition().y + 20)
-			);
-
-			if (color.r < 10 && color.g < 10 && color.b < 10)
+			// Start shaking before falling
+			if (shakeTimer < shakeDuration)
 			{
-				++emptyCount;
+				shakeTimer += fixedDeltaTime;
+				timeSinceLastShake += fixedDeltaTime;
+
+				if (timeSinceLastShake >= shakeInterval)
+				{
+					timeSinceLastShake = 0.0f;
+					shakeDirection *= -1; // Flip shake direction
+				}
+
+				auto pos = GetOwner()->GetLocalTransform().m_position;
+				pos.x += shakeDirection * .5f; 
+				GetOwner()->SetLocalPosition(pos);
+
+				return; 
 			}
+
+			m_StartFallingYPosition = GetOwner()->GetLocalTransform().m_position.y;
+			if (!bIsBroken && AnimComponent)
+				AnimComponent->ChangeState("Falling");
+
+			bIsFalling = true;
+			shakeTimer = 0.0f; 
+			timeSinceLastShake = 0.0f;
 		}
 
-		bool bCanFall = (emptyCount >= totalChecks * 0.6);
+		// Apply fall
+		auto pos = GetOwner()->GetLocalTransform().m_position;
+		pos.y += 80.0f * fixedDeltaTime;
+		GetOwner()->SetLocalPosition(static_cast<int>(pos.x), static_cast<int>(pos.y));
+		return;
+	}
+	else
+	{
+		if (bIsBroken) return;
 
-		if (bCanFall)
+		if (bIsFalling)
 		{
-
-			if (!bIsFalling) m_StartFallingYPosition = GetOwner()->GetLocalTransform().m_position.x;
-
-			if (!bIsBroken)
+			if (abs(GetOwner()->GetLocalTransform().m_position.y - m_StartFallingYPosition) > 30)
 			{
 				if (AnimComponent)
-				{
-					AnimComponent->ChangeState("Falling");
-				}
-			}
-			
-			bIsFalling = true;
-			GetOwner()->SetLocalPosition(static_cast<int>(GetOwner()->GetLocalTransform().m_position.x), static_cast<int>(GetOwner()->GetLocalTransform().m_position.y + 80 * fixedDeltaTime));
-			return;
-		}
-		else
-		{
-			if (bIsBroken) return;
-			if (bIsFalling)
-			{
-				if ((abs(GetOwner()->GetLocalTransform().m_position.y - m_StartFallingYPosition)) > 30)
-				{
-					if (AnimComponent)
-					{
-						AnimComponent->ChangeState("Destroyed");
-						bIsBroken = true;
+					AnimComponent->ChangeState("Destroyed");
 
-					}
-				}
-				else
-				{
-					if (AnimComponent)
-					{
-						AnimComponent->ChangeState("Idle");
-					}
-				}
+				bIsBroken = true;
+			}
+			else
+			{
+				if (AnimComponent)
+					AnimComponent->ChangeState("Idle");
 			}
 		}
+
 		bIsFalling = false;
 	}
 }

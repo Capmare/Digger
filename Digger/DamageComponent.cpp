@@ -13,9 +13,9 @@ void dae::DamageComponent::Update(const float )
 		m_DamageSquare.z - 3,
 		m_DamageSquare.w - 3
 	};
-
+	bShouldDamage = bDoesDamageWithoutCondition;
 	GravityComponent* GravityComp = GetOwner()->GetFirstComponentOfType<GravityComponent>();
-	if (GravityComp)
+	if (GravityComp && !bDoesDamageWithoutCondition)
 	{
 		bShouldDamage = GravityComp->GetIsFalling() && !GravityComp->GetIsBroken();
 	}
@@ -72,7 +72,7 @@ void dae::DamageComponent::Render() const
 	// 	m_DamageSquare.w
 	// };
 	// 
-	// SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); 
+	// SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 	// SDL_RenderDrawRect(renderer, &dmgRect);
 	// 
 	// // Draw each actor's collision bounds
@@ -91,7 +91,7 @@ void dae::DamageComponent::Render() const
 	// 			Resolution.y - 2 * m_CollisionOffset
 	// 		};
 	// 
-	// 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); 
+	// 		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
 	// 		SDL_RenderDrawRect(renderer, &actorRect);
 	// 	}
 	// }
