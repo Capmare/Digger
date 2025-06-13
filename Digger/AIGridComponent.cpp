@@ -22,56 +22,53 @@ void dae::AIGridComponent::Update(const float deltaTime)
 
 void dae::AIGridComponent::Render() const
 {
-	auto Renderer = Renderer::GetInstance().GetSDLRenderer();
-	SDL_SetRenderDrawColor(Renderer, 150, 150, 150, 255); // R, G, B, A
-
-	const int gridWidth = m_ScreenResolution.x;
-	const int gridHeight = m_ScreenResolution.y;
-	const int tileWidth = m_TileSize.x;
-	const int tileHeight = m_TileSize.y;
-
-	for (int x = 0; x <= gridWidth; x += tileWidth)
-	{
-		SDL_RenderDrawLine(Renderer, x, 0, x, gridHeight);
-	}
-
-	for (int y = 0; y <= gridHeight; y += tileHeight)
-	{
-		SDL_RenderDrawLine(Renderer, 0, y, gridWidth, y);
-	}
-
-	if (bCanUpdatePath)
-	{
-		// auto path = FindPathAllMap({ 2, 3 }, { 10, 5 });
-		// 
-		// SDL_SetRenderDrawColor(Renderer, 255, 0, 0, 255);
-		// for (const auto& p : path)
-		// {
-		// 	SDL_Rect rect{};
-		// 	rect.x = p.x * m_TileSize.x;
-		// 	rect.y = p.y * m_TileSize.y;
-		// 	rect.w = m_TileSize.x;
-		// 	rect.h = m_TileSize.y;
-		// 	SDL_RenderFillRect(Renderer, &rect);
-		// }
-
-		SDL_SetRenderDrawColor(Renderer, 0, 255, 0, 100);
-		for (const auto& tile : m_FreeTiles)
-		{
-			SDL_Rect rect{};
-			rect.x = tile.x * m_TileSize.x;
-			rect.y = tile.y * m_TileSize.y;
-			rect.w = m_TileSize.x;
-			rect.h = m_TileSize.y;
-			SDL_RenderFillRect(Renderer, &rect);
-		}
-	}
+	//auto Renderer = Renderer::GetInstance().GetSDLRenderer();
+	//SDL_SetRenderDrawColor(Renderer, 150, 150, 150, 255); // R, G, B, A
+	//
+	//const int gridWidth = m_ScreenResolution.x;
+	//const int gridHeight = m_ScreenResolution.y;
+	//const int tileWidth = m_TileSize.x;
+	//const int tileHeight = m_TileSize.y;
+	//
+	//for (int x = 0; x <= gridWidth; x += tileWidth)
+	//{
+	//	SDL_RenderDrawLine(Renderer, x, 0, x, gridHeight);
+	//}
+	//
+	//for (int y = 0; y <= gridHeight; y += tileHeight)
+	//{
+	//	SDL_RenderDrawLine(Renderer, 0, y, gridWidth, y);
+	//}
+	//
+	//auto path = FindPathAllMap({ 0,11 }, { 0,12 });
+	//
+	//SDL_SetRenderDrawColor(Renderer, 255, 0, 0, 255);
+	//for (const auto& p : path)
+	//{
+	//	SDL_Rect rect{};
+	//	rect.x = p.x * m_TileSize.x;
+	//	rect.y = p.y * m_TileSize.y;
+	//	rect.w = m_TileSize.x;
+	//	rect.h = m_TileSize.y;
+	//	SDL_RenderFillRect(Renderer, &rect);
+	//}
+	//
+	//auto freePath = FindPathFreeTiles({ 0,11 }, { 0,12 });
+	//SDL_SetRenderDrawColor(Renderer, 0, 255, 0, 100);
+	//for (const auto& tile : freePath)
+	//{
+	//	SDL_Rect rect{};
+	//	rect.x = tile.x * m_TileSize.x;
+	//	rect.y = tile.y * m_TileSize.y;
+	//	rect.w = m_TileSize.x;
+	//	rect.h = m_TileSize.y;
+	//	SDL_RenderFillRect(Renderer, &rect);
+	//}
 	
 }
 
 std::vector<glm::ivec2> dae::AIGridComponent::FindPathAllMap(const glm::ivec2& start, const glm::ivec2& goal) const
 {
-	bCanUpdatePath = false;
 
 	using namespace glm;
 
@@ -160,9 +157,22 @@ std::vector<glm::ivec2> dae::AIGridComponent::FindPathAllMap(const glm::ivec2& s
 	return {};
 }
 
+std::vector<glm::ivec2> dae::AIGridComponent::FindPathFreeTilesFromPixels(const glm::ivec2& pixelStart, const glm::ivec2& pixelGoal) const
+{
+	glm::ivec2 tileStart = glm::ivec2(pixelStart.x / m_TileSize.x, pixelStart.y / m_TileSize.y);
+	glm::ivec2 tileGoal = glm::ivec2(pixelGoal.x / m_TileSize.x, pixelGoal.y / m_TileSize.y);
+	return FindPathFreeTiles(tileStart, tileGoal);
+}
+
+std::vector<glm::ivec2> dae::AIGridComponent::FindPathAllMapFromPixels(const glm::ivec2& pixelStart, const glm::ivec2& pixelGoal) const
+{
+	glm::ivec2 tileStart = glm::ivec2(pixelStart.x / m_TileSize.x, pixelStart.y / m_TileSize.y);
+	glm::ivec2 tileGoal = glm::ivec2(pixelGoal.x / m_TileSize.x, pixelGoal.y / m_TileSize.y);
+	return FindPathAllMap(tileStart, tileGoal);
+}
+
 std::vector<glm::ivec2> dae::AIGridComponent::FindPathFreeTiles(const glm::ivec2& start, const glm::ivec2& goal) const
 {
-	bCanUpdatePath = false;
 
 	if (!m_FreeTiles.contains(start) || !m_FreeTiles.contains(goal))
 		return {};
