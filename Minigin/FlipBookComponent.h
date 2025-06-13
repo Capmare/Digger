@@ -41,6 +41,11 @@ namespace dae
 
 		void Render() const;
 
+		void ResetFlipBook(){
+			m_CurrentFrame = 1;
+			bPlayedOnce = false;
+		}
+
 		const dae::TextureComponent* GetUsedTexture() const { return m_UsedTexture.get(); }
 
 	private:

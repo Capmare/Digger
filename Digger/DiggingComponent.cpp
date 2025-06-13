@@ -5,6 +5,8 @@
 
 void dae::DiggingComponent::DigRight(const bool bInvert)
 {
+	if (m_AnimControllerComp->GetCurrentState()->GetStateName() == "Dead") return;
+	
 	if (m_AnimControllerComp)
 	{
 		bInvert ? m_AnimControllerComp->RotateAnimation(180) : m_AnimControllerComp->RotateAnimation(0);
@@ -25,6 +27,8 @@ void dae::DiggingComponent::DigRight(const bool bInvert)
 
 void dae::DiggingComponent::DigUp(const bool bInvert)
 {
+	if (m_AnimControllerComp->GetCurrentState()->GetStateName() == "Dead") return;
+
 	if (m_AnimControllerComp)
 	{
 		bInvert ? m_AnimControllerComp->RotateAnimation(90) : m_AnimControllerComp->RotateAnimation(270);

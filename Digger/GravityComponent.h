@@ -22,6 +22,7 @@ namespace dae
 		void Render() const override;
 
 		bool GetIsFalling() const { return bIsFalling; }
+		bool GetIsBroken() const { return bIsBroken; }
 
 	private:
 		class MapComponent* m_GridComponent{};

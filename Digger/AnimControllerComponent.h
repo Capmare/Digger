@@ -33,6 +33,7 @@ namespace dae
 			if (m_CurrentState)
 			{
 				m_CurrentState->EnterState(this);
+				m_CurrentState->Rotate(0);
 			}
 		}
 

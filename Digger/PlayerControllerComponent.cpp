@@ -7,7 +7,7 @@
 #include "imgui_impl_sdl2.h"
 #include <SDL.h>
 
-constexpr int m_MoveDistance{ 20 };
+constexpr int m_MoveDistance{ 15 };
 
 namespace dae
 {

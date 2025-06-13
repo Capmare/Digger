@@ -28,6 +28,9 @@ void dae::PushComponent::Update(const float )
 	for (GameObject* Actor : m_OtherActors)
 	{
 		AnimControllerComponent* AnimController = Actor->GetFirstComponentOfType<AnimControllerComponent>();
+		std::cout << AnimController->GetCurrentState()->GetStateName() << std::endl;
+		if (AnimController->GetCurrentState()->GetStateName() == "Dead") continue;
+
 		glm::ivec2 ActorSize = AnimController->GetCurrentState()->GetFlipBook()->GetUsedTexture()->GetTextureResolution();
 		ActorSize.x /= 4;
 		glm::ivec4 CollisionSize
@@ -40,6 +43,7 @@ void dae::PushComponent::Update(const float )
 		};
 		if (dae::MathUtils::CheckPointInSquare(CollisionSize, m_CollisionPoint))
 		{
+			
 			AnimControllerComponent* AnimControlerBag = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
 			if (AnimControlerBag->GetCurrentState()->GetStateName() == "Destroyed")
 			{
@@ -60,10 +64,10 @@ void dae::PushComponent::Update(const float )
 
 void dae::PushComponent::Render() const
 {
-	SDL_SetRenderDrawColor(Renderer::GetInstance().GetSDLRenderer(), 255, 0, 0, 255);
-
-	SDL_RenderDrawPoint(Renderer::GetInstance().GetSDLRenderer(), m_CollisionPoint.x, m_CollisionPoint.y);
-	SDL_SetRenderDrawColor(Renderer::GetInstance().GetSDLRenderer(), 0, 0, 0, 255);
+	// SDL_SetRenderDrawColor(Renderer::GetInstance().GetSDLRenderer(), 255, 0, 0, 255);
+	// 
+	// SDL_RenderDrawPoint(Renderer::GetInstance().GetSDLRenderer(), m_CollisionPoint.x, m_CollisionPoint.y);
+	// SDL_SetRenderDrawColor(Renderer::GetInstance().GetSDLRenderer(), 0, 0, 0, 255);
 
 }
 
