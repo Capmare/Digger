@@ -77,15 +77,18 @@ void dae::FlipBookComponent::Update(const float deltaTime)
 	}
 
 	// Always update position and rendering parameters
-	SDL_Rect DstParams
+	
+	const glm::ivec2 OverridenPos = bPositionOverriden ? m_OverridenPosition : glm::ivec2{ m_ParentComponentOwner->GetWorldTransform().m_position.x, m_ParentComponentOwner->GetWorldTransform().m_position.y };
+
+	const SDL_Rect DstParams
 	{
-		static_cast<int>(m_ParentComponentOwner->GetWorldTransform().m_position.x),
-		static_cast<int>(m_ParentComponentOwner->GetWorldTransform().m_position.y),
+		static_cast<int>(OverridenPos.x),
+		static_cast<int>(OverridenPos.y),
 		static_cast<int>(m_TextureConfig.FrameWidth) * m_TextureConfig.Scale,
 		static_cast<int>(m_TextureConfig.FrameHeight) * m_TextureConfig.Scale
 	};
 
-	SDL_Rect SrcParams
+	const SDL_Rect SrcParams
 	{
 		static_cast<int>(m_CurrentFrame * m_TextureConfig.FrameWidth), 0,
 		static_cast<int>(m_TextureConfig.FrameWidth), static_cast<int>(m_TextureConfig.FrameHeight)
@@ -97,7 +100,5 @@ void dae::FlipBookComponent::Update(const float deltaTime)
 
 void dae::FlipBookComponent::Render() const
 {
-
 	m_UsedTexture->Render();
-
 }

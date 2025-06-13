@@ -28,7 +28,6 @@ void dae::PushComponent::Update(const float )
 	for (GameObject* Actor : m_OtherActors)
 	{
 		AnimControllerComponent* AnimController = Actor->GetFirstComponentOfType<AnimControllerComponent>();
-		std::cout << AnimController->GetCurrentState()->GetStateName() << std::endl;
 		if (AnimController->GetCurrentState()->GetStateName() == "Dead") continue;
 
 		glm::ivec2 ActorSize = AnimController->GetCurrentState()->GetFlipBook()->GetUsedTexture()->GetTextureResolution();

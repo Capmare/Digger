@@ -56,7 +56,6 @@ void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
 			if (bIsBroken) return;
 			if (bIsFalling)
 			{
-				std::cout << GetOwner()->GetLocalTransform().m_position.y - m_StartFallingYPosition << std::endl;
 				if ((abs(GetOwner()->GetLocalTransform().m_position.y - m_StartFallingYPosition)) > 30)
 				{
 					if (AnimComponent)

@@ -28,7 +28,7 @@ namespace dae
 
 	private:
 		
-
+		const int m_CollisionOffset{0};
 		std::vector<GameObject*> m_OtherActors{};
 		glm::ivec4 m_DamageSquare{};
 

@@ -46,8 +46,10 @@ namespace dae
 			bPlayedOnce = false;
 		}
 
-		const dae::TextureComponent* GetUsedTexture() const { return m_UsedTexture.get(); }
+		dae::TextureComponent* GetUsedTexture() const { return m_UsedTexture.get(); }
 
+		bool bPositionOverriden{};
+		glm::ivec2 m_OverridenPosition{};
 	private:
 		
 		GameObject* m_ParentComponentOwner{};

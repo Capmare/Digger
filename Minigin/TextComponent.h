@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <memory>
+#include "SDL_pixels.h"
 #include "GameObject.h"
 #include "Transform.h"
 #include "BaseComponent.h"
@@ -12,7 +13,7 @@ namespace dae
 	class TextComponent final : public BaseComponent
 	{
 	public:
-		TextComponent(GameObject* Owner, const std::string& text, std::shared_ptr<Font> font);
+		TextComponent(GameObject* Owner, const std::string& text, std::shared_ptr<Font> font, const SDL_Color& Color);
 		virtual ~TextComponent() = default;
 		TextComponent(const TextComponent& other) = delete;
 		TextComponent(TextComponent&& other) = delete;
@@ -31,5 +32,6 @@ namespace dae
 		Transform m_transform{};
 		std::shared_ptr<Font> m_font;
 		std::shared_ptr<Texture2D> m_textTexture;
+		SDL_Color m_Color = { 255,255,255,255 };
 	};
 }
