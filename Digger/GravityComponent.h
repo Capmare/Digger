@@ -25,7 +25,7 @@ namespace dae
 		bool GetIsBroken() const { return bIsBroken; }
 
 	private:
-		class MapComponent* m_GridComponent{};
+		class MapComponent* m_MapComponent{};
 		class AnimControllerComponent* AnimComponent{};
 
 		bool bIsFalling{ false };

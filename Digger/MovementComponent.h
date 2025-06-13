@@ -9,7 +9,7 @@ namespace dae
 
 	{
 	public:
-		MovementComponent(GameObject* Owner, MapComponent* GridComp) : BaseComponent(Owner), m_GridComponent(GridComp) {
+		MovementComponent(GameObject* Owner, MapComponent* MapComp) : BaseComponent(Owner), m_MapComponent(MapComp) {
 		};
 		virtual ~MovementComponent() = default;
 		
@@ -34,7 +34,7 @@ namespace dae
 		
 		bool bCanMoveAgain{ true };
 		glm::vec3 m_DesiredPosition{};
-		MapComponent* m_GridComponent{};
+		MapComponent* m_MapComponent{};
 	};
 }
 

@@ -98,10 +98,10 @@ namespace dae
 
 			}
 
-			// for (auto& t : m_TileTextures)
-			// {
-			// 	t.release();
-			// }
+			for (auto& t : m_TileTextures)
+			{
+				t.release();
+			}
 
 		};
 
@@ -113,19 +113,10 @@ namespace dae
 		MapComponent& operator=(const MapComponent&) = delete;
 		MapComponent& operator=(MapComponent&&) noexcept = delete;
 
-		void UpdateTileType(const glm::ivec2 Tile, const TileType NewType);
-
 		void Update(const float deltaTime) override;
 
-		glm::ivec2 GetTileAtPixel(int pixelX, int pixelY) const;
 		void Render() const override;
 		
-		TileType GetTileType(glm::ivec2 Tile) { 
-			int TileIdx = Tile.y * m_Width + Tile.x;
-			return m_Tiles.at(TileIdx); 
-		}
-
-
 		void ClearTunnelArea(glm::ivec2 Middle, int Rad) const;
 		SDL_Texture* GetMapTexture() { return m_MergedTexture->GetTexture(); }
 

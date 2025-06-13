@@ -58,7 +58,6 @@ void dae::DamageComponent::Update(const float )
 			}
 		}
 	}
-	
 }
 
 void dae::DamageComponent::Render() const

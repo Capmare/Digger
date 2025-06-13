@@ -5,14 +5,14 @@
 #include "AnimControllerComponent.h"
 #include "DamageComponent.h"
 
-dae::GravityComponent::GravityComponent(GameObject* Owner, class MapComponent* GridComp) : BaseComponent(Owner), m_GridComponent(GridComp)
+dae::GravityComponent::GravityComponent(GameObject* Owner, class MapComponent* MapComp) : BaseComponent(Owner), m_MapComponent(MapComp)
 {
 	AnimComponent = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
 }
 
 void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
 {
-	if (m_GridComponent)
+	if (m_MapComponent)
 	{
 			
 		int emptyCount = 0;
@@ -21,7 +21,7 @@ void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
 		for (int idx = 0; idx < totalChecks; ++idx)
 		{
 			SDL_Color color = Renderer::GetInstance().ReadPixelColor(
-				m_GridComponent->GetMapTexture(),
+				m_MapComponent->GetMapTexture(),
 				static_cast<int>(GetOwner()->GetWorldPosition().x + idx),
 				static_cast<int>(GetOwner()->GetWorldPosition().y + 20)
 			);
