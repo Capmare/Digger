@@ -30,8 +30,6 @@ dae::GameObject* dae::Scene::CreateNewGameObject()
 	return m_objects.back().get();
 }
 
-
-
 dae::Observer* dae::Scene::CreateObserver(std::unique_ptr<Observer> observer)
 {
 	m_observers.emplace_back(std::move(observer));
@@ -44,6 +42,22 @@ void dae::Scene::Update( const float deltaTime)
 	{
 		object->Update(deltaTime);
 	}
+
+	auto it = std::remove_if(m_objects.begin(), m_objects.end(),
+		[](const std::unique_ptr<GameObject>& obj)
+		{
+			if (obj->IsMarkedForDestroy())
+			{
+				std::cout << "Checking " << obj->m_Name << " -> " << "Destroyed" << "\n";
+				return true;
+			}
+			return false;
+		});
+
+
+	m_objects.erase(it, m_objects.end());
+
+
 }
 
 void Scene::FixedUpdate( const float fixedDeltaTime)

@@ -83,6 +83,8 @@ namespace dae
 			return nullptr;
 		}
 
+		bool IsMarkedForDestroy() const { return m_bIsMarkedForDestroy; }
+		void Destroy() { m_bIsMarkedForDestroy = true; }
 
 		void SetParent(GameObject* NewParent, bool bKeepWorldPosition);
 		GameObject* GetParent() const { return m_Parent; }
@@ -120,6 +122,7 @@ namespace dae
 		std::vector<std::unique_ptr<BaseComponent>> m_UnregisteredComponents{};
 
 		bool m_bPositionDirty{ false };
+		bool m_bIsMarkedForDestroy{ false };
 	};
 
 	struct TransformTrashTheCache

@@ -2,6 +2,7 @@
 #include <BaseComponent.h>
 #include <vector>
 #include "glm.hpp"
+#include "Observer.h"
 
 namespace dae
 {
@@ -28,10 +29,15 @@ namespace dae
 		void Render() const override;
 
 	private:
-		int m_Direction{};
+		
+		std::vector<GameObject*> m_OtherActors{};
+
+
 		glm::ivec2 m_PushingPoint{};
 		glm::ivec2 m_CollisionPoint{};
-		std::vector<GameObject*> m_OtherActors{};
+		
+		int m_Direction{};
+
 	};
 }
 

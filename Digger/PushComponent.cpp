@@ -5,6 +5,7 @@
 #include "SDL_render.h"
 #include "Renderer.h"
 #include "GravityComponent.h"
+#include "ScoreComponent.h"
 
 void dae::PushComponent::Push(float PushAmmount)
 {
@@ -39,7 +40,20 @@ void dae::PushComponent::Update(const float )
 		};
 		if (dae::MathUtils::CheckPointInSquare(CollisionSize, m_CollisionPoint))
 		{
-			Push(2);
+			AnimControllerComponent* AnimControlerBag = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
+			if (AnimControlerBag->GetCurrentState()->GetStateName() == "Destroyed")
+			{
+				ScoreComponent* ScoreComp = Actor->GetFirstComponentOfType<ScoreComponent>();
+				if (ScoreComp)
+				{
+					ScoreComp->IncreaseScore(500);
+					GetOwner()->Destroy();
+				}
+			}
+			else
+			{
+				Push(10);
+			}
 		}
 	}
 }
