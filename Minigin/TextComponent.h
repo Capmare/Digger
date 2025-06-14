@@ -25,6 +25,7 @@ namespace dae
 
 		void SetText(const std::string& text);
 		void SetPosition(float x, float y);
+		std::string GetText() const { return m_text; }
 
 	private:
 		bool m_needsUpdate;

@@ -70,7 +70,7 @@
       <Filter>Components\Source</Filter>
     </ClCompile>
     <ClCompile Include="CombatInformationComponent.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Components\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -126,7 +126,7 @@
       <Filter>Components\Headers</Filter>
     </ClInclude>
     <ClInclude Include="CombatInformationComponent.h">
-      <Filter>Header Files</Filter>
+      <Filter>Components\Headers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

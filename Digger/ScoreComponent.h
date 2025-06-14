@@ -21,7 +21,7 @@ namespace dae
 
 		int IncreaseScore(int ScoreIncreaseAmmount = 1)
 		{
-
+			m_Score = std::stoi(m_ScoreText->GetText());
 			m_Score += ScoreIncreaseAmmount;
 			m_Subject.NotifyObservers(*GetOwner(), ObserverEvents::OnScoreChanged);
 			

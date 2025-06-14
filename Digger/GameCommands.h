@@ -13,12 +13,12 @@ namespace dae
 
 		void Exec(GameObject& GO) override
 		{
-			MovementComponent* MovementComp = GO.GetAllComponentsOfType<MovementComponent>().at(0);
+			MovementComponent* MovementComp = GO.GetFirstComponentOfType<MovementComponent>();
 			if (MovementComp)
 			{
 				MovementComp->AddMovementInput(m_Direction);
 			}
-			DiggingComponent* DigComponent = GO.GetAllComponentsOfType<DiggingComponent>().at(0);
+			DiggingComponent* DigComponent = GO.GetFirstComponentOfType<DiggingComponent>();
 			if (DigComponent)
 			{
 				if (m_Direction.x > 0)

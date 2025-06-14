@@ -50,7 +50,7 @@ void dae::DamageComponent::Update(const float )
 			{
 				if (HealthComponent* HealthComp = Actors->GetFirstComponentOfType<HealthComponent>())
 				{
-					if (Actors->m_Name == "Digger" && GetOwner()->m_Name == "Monster")
+					if (Actors->m_Name != "Digger" && GetOwner()->m_Name == "Monster")
 					{
 						ScoreComponent* ScoreComp = Actors->GetFirstComponentOfType<ScoreComponent>();
 						if (ScoreComp)

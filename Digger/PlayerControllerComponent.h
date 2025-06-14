@@ -32,7 +32,7 @@ namespace dae
 	class PlayerControllerComponent : public BaseComponent
 	{
 	public:
-		PlayerControllerComponent(GameObject* Owner, bool IsKeyboard = false);
+		PlayerControllerComponent(GameObject* Owner, int ControllerIdx);
 		virtual ~PlayerControllerComponent();
 
 		PlayerControllerComponent(const PlayerControllerComponent&) = delete;

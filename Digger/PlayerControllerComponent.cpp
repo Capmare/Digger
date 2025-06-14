@@ -29,14 +29,13 @@ namespace dae
 		std::unique_ptr<Command_IncreaseScore> IncreaseScore;
 		std::unique_ptr<Command_StopAllSound> StopAllSound;
 
-		bool m_bIsKeyboard{false};
+		bool m_bIsSecondController{false};
 
 
 	public:
 
-		Impl(GameObject* Owner,bool IsKeyboard) : 
+		Impl(GameObject* Owner,int ControllerIdx) : 
 			m_Owner			{ Owner },
-			m_bIsKeyboard	{IsKeyboard},
 			MoveUp			{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,-m_MoveDistance }) },
 			MoveDown		{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,m_MoveDistance }) },
 			MoveRight		{ std::make_unique<dae::Command_Move>(glm::vec2{ m_MoveDistance,0 }) },
@@ -48,7 +47,8 @@ namespace dae
 			MoveRightDown	{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,1 }) },
 			DecreaseHealth	{ std::make_unique<dae::Command_DecreaseHealth>() },
 			IncreaseScore	{ std::make_unique<dae::Command_IncreaseScore>() },
-			StopAllSound	{ std::make_unique<dae::Command_StopAllSound>() }
+			StopAllSound	{ std::make_unique<dae::Command_StopAllSound>() },
+			m_ControllerIdx	{ ControllerIdx }
 
 		{};
 		~Impl() = default;
@@ -56,7 +56,7 @@ namespace dae
 		void Update(const float)
 		{
 			ThumbInputReturn ThumbInput = HandleThumbXInput();
-			HandleButtonXInput();
+			HandleButtonXInput();			
 			Command* CurrentCommand = HandleInput();
 			if (CurrentCommand)
 			{
@@ -68,7 +68,7 @@ namespace dae
 
 		Command* HandleInput()
 		{
-			if (m_bIsKeyboard == false)
+			if (m_bIsSecondController == false)
 			{
 				// diagonal
 				//if (IsDpadPressed(DPadButton::DPAD_LEFT) && IsDpadPressed(DPadButton::DPAD_UP))
@@ -259,7 +259,7 @@ namespace dae
 	};
 
 
-	PlayerControllerComponent::PlayerControllerComponent(GameObject* Owner, bool IsKeyboard) : BaseComponent(Owner), pImpl(std::make_unique<Impl>(Owner,IsKeyboard)) {};
+	PlayerControllerComponent::PlayerControllerComponent(GameObject* Owner, int ControllerIdx) : BaseComponent(Owner), pImpl(std::make_unique<Impl>(Owner,ControllerIdx)) {};
 
 	PlayerControllerComponent::~PlayerControllerComponent() = default;
 
