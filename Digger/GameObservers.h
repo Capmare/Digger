@@ -10,7 +10,7 @@ namespace dae
 	public:
 		virtual ~HealthObserver() = default;
 
-		void OnNotify(const GameObject& GO, const ObserverEvents& Event) override;
+		void OnNotify(GameObject& GO, const ObserverEvents& Event) override;
 
 	};
 
@@ -19,7 +19,7 @@ namespace dae
 	public:
 		virtual ~ScoreObserver() = default;
 
-		void OnNotify(const GameObject& GO, const ObserverEvents& Event) override;
+		void OnNotify(GameObject& GO, const ObserverEvents& Event) override;
 
 	};
 

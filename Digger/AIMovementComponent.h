@@ -27,13 +27,13 @@ namespace dae
 		AIMovementComponent(AIMovementComponent&&) noexcept = delete;
 		AIMovementComponent& operator=(const AIMovementComponent&) = delete;
 		AIMovementComponent& operator=(AIMovementComponent&&) noexcept = delete;
+		void RecreatePath();
 
 
 		void FixedUpdate(const float fixedDeltaTime) override;
 		void Render() const override;
 
 	private:
-		void RecreatePath();
 
 		std::string m_DefaultState = "Nobbin";
 		std::string m_AlternateState = "Hobbin";

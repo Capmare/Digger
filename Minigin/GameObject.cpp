@@ -5,7 +5,10 @@
 #include "BaseComponent.h"
 
 
-dae::GameObject::GameObject() = default;
+dae::GameObject::GameObject()
+{
+	m_UnregisteredComponents.reserve(10);
+};
 
 
 void dae::GameObject::Update( const float deltaTime)
@@ -168,6 +171,7 @@ void dae::GameObject::RemoveSelfFromParent()
 
 bool dae::GameObject::DeleteUnregisteredComponents()
 {
+	
 	if (m_UnregisteredComponents.empty()) return true;
 
 	std::erase_if(m_Components, [](const auto& Component) { return Component.get() == nullptr; });

@@ -22,6 +22,7 @@ void dae::DamageComponent::Update(const float )
 
 	for (GameObject* Actors : m_OtherActors)
 	{
+		if (!Actors) return;
 		if (!bShouldDamage) continue;
 
 		if (AnimControllerComponent* AnimComponent = Actors->GetFirstComponentOfType<AnimControllerComponent>())

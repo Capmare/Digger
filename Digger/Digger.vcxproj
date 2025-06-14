@@ -100,6 +100,7 @@
     <ClCompile Include="PlayerControllerComponent.cpp" />
     <ClCompile Include="PushComponent.cpp" />
     <ClCompile Include="RotatingComponent.cpp" />
+    <ClCompile Include="SpawnerComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AIGridComponent.h" />
@@ -118,6 +119,7 @@
     <ClInclude Include="PushComponent.h" />
     <ClInclude Include="RotatingComponent.h" />
     <ClInclude Include="ScoreComponent.h" />
+    <ClInclude Include="SpawnerComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

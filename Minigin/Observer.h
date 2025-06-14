@@ -17,7 +17,7 @@ namespace dae
 	{
 	public:
 		virtual ~Observer() = default;
-		virtual void OnNotify(const GameObject& GO,const ObserverEvents& Event) = 0; 
+		virtual void OnNotify(GameObject& GO,const ObserverEvents& Event) = 0; 
 	};
 
 	class Subject
@@ -44,7 +44,7 @@ namespace dae
 			m_Observers.erase(std::remove(m_Observers.begin(), m_Observers.end(), observer), m_Observers.end());
 		}
 
-		void NotifyObservers(const GameObject& GO, const ObserverEvents& Event)
+		void NotifyObservers(GameObject& GO, const ObserverEvents& Event)
 		{
 			for (const auto& observer : m_Observers)
 			{

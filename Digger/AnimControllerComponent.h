@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
+#include <iostream>
 #include "AnimationState.h"
 #include "FlipBookComponent.h"
 
@@ -22,14 +23,24 @@ namespace dae
 
 		void ChangeState(const std::string& State)
 		{
+			auto it = m_AnimationStates.find(State);
+			if (it == m_AnimationStates.end())
+			{
+				std::cout << "ChangeState: State '" << State << "' not found!\n";
+				return;
+			}
+
 			// avoid getting back into the same state
-			if (m_CurrentState == m_AnimationStates.at(State).get()) return;
+			if (m_CurrentState == it->second.get())
+				return;
 
 			if (m_CurrentState)
 			{
 				m_CurrentState->ExitState(this);
 			}
-			m_CurrentState = m_AnimationStates.at(State).get();
+
+			m_CurrentState = it->second.get();
+
 			if (m_CurrentState)
 			{
 				m_CurrentState->EnterState(this);

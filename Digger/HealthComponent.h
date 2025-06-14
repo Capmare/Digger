@@ -44,19 +44,19 @@ namespace dae
 
 		int DecreaseHealth(int HealthDecreaseAmmount = 1)
 		{
-
 			if (m_Health > 0)
 			{
 				m_Health -= HealthDecreaseAmmount;
 				m_Subject.NotifyObservers(*GetOwner(), ObserverEvents::OnHealthChanged);
-
-
 			}
 			if (m_Health <= 0)
 			{
 				m_Health = 0;
 				m_Subject.NotifyObservers(*GetOwner(), ObserverEvents::OnDeath);
-				// is dead
+				if (GetOwner()->m_Name == "Monster")
+				{
+					GetOwner()->Destroy();
+				}
 			}
 
 			return m_Health;

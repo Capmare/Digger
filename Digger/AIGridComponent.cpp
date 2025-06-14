@@ -235,6 +235,30 @@ std::vector<glm::ivec2> dae::AIGridComponent::FindPathFreeTiles(const glm::ivec2
 }
 
 
+std::vector<glm::ivec2> dae::AIGridComponent::FindPathToRandomFreeTile(const glm::ivec2& start, int maxAttempts) const
+{
+	
+	if (m_FreeTiles.empty())
+		return {};
+
+	std::vector<glm::ivec2> freeTiles(m_FreeTiles.begin(), m_FreeTiles.end());
+
+	for (int attempt = 0; attempt < maxAttempts; ++attempt)
+	{
+		int index = rand() % freeTiles.size();
+		const glm::ivec2& randomGoal = freeTiles[index];
+
+		if (randomGoal == start)
+			continue;
+
+		auto path = FindPathFreeTilesFromPixels(start, randomGoal);
+		if (!path.empty())
+			return path;
+	}
+
+	return {}; 
+}
+
 glm::ivec2 dae::AIGridComponent::TileToPixels(const glm::ivec2& tileCoord) const
 {
 	return {tileCoord.x * m_TileSize.x, tileCoord.y * m_TileSize.y};
