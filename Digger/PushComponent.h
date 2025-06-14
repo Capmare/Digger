@@ -10,7 +10,7 @@ namespace dae
 		public BaseComponent
 	{
 	public:
-		PushComponent(GameObject* Owner, glm::ivec2 PushingPoint, int Direction) : BaseComponent(Owner), m_PushingPoint(PushingPoint),m_Direction(Direction) {};
+		PushComponent(GameObject* Owner, glm::ivec2 PushingPoint, int Direction, int ScoreToIncrease) : BaseComponent(Owner), m_PushingPoint(PushingPoint),m_Direction(Direction), m_Score(ScoreToIncrease) {};
 		virtual ~PushComponent() = default;
 		
 		PushComponent(const PushComponent&) = delete;
@@ -38,7 +38,7 @@ namespace dae
 		glm::ivec2 m_CollisionPoint{};
 		
 		int m_Direction{};
-
+		int m_Score{};
 	};
 }
 

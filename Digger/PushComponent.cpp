@@ -78,7 +78,7 @@ void dae::PushComponent::Update(const float )
 				ScoreComponent* ScoreComp = Actor->GetFirstComponentOfType<ScoreComponent>();
 				if (ScoreComp)
 				{
-					ScoreComp->IncreaseScore(500);
+					ScoreComp->IncreaseScore(m_Score);
 					GetOwner()->Destroy();
 				}
 			}

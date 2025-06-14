@@ -4,6 +4,7 @@
 #include "MathUtils.h"
 #include "HealthComponent.h"
 #include "GravityComponent.h"
+#include "ScoreComponent.h"
 
 void dae::DamageComponent::Update(const float )
 {
@@ -49,12 +50,24 @@ void dae::DamageComponent::Update(const float )
 			{
 				if (HealthComponent* HealthComp = Actors->GetFirstComponentOfType<HealthComponent>())
 				{
+					if (Actors->m_Name == "Digger" && GetOwner()->m_Name == "Monster")
+					{
+						ScoreComponent* ScoreComp = Actors->GetFirstComponentOfType<ScoreComponent>();
+						if (ScoreComp)
+						{
+							ScoreComp->IncreaseScore(500);
+							GetOwner()->Destroy();
+						}
+					}
+
 					if (AnimComponent->GetCurrentState()->GetStateName() != "Dead")
 					{
 						HealthComp->DecreaseHealth(1);
 						AnimComponent->GetCurrentState()->GetFlipBook()->ResetFlipBook();
 						AnimComponent->ChangeState("Dead");
 					}
+
+					
 				}
 			}
 		}
