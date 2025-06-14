@@ -31,41 +31,60 @@ void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
 
 	bool bCanFall = (emptyCount >= totalChecks * 0.6f);
 
+	if (!bCanFall)
+	{
+		shakeTimer = 0.0f; // prevent shaking on solid ground
+	}
+
 	if (bCanFall)
 	{
-		if (!bIsFalling)
+		if (!bIsFalling && !bIsBroken && shakeTimer < shakeDuration)
 		{
-			// Start shaking before falling
-			if (shakeTimer < shakeDuration)
+			shakeTimer += fixedDeltaTime;
+			timeSinceLastShake += fixedDeltaTime;
+
+			if (timeSinceLastShake >= shakeInterval)
 			{
-				shakeTimer += fixedDeltaTime;
-				timeSinceLastShake += fixedDeltaTime;
-
-				if (timeSinceLastShake >= shakeInterval)
-				{
-					timeSinceLastShake = 0.0f;
-					shakeDirection *= -1; // Flip shake direction
-				}
-
-				auto pos = GetOwner()->GetLocalTransform().m_position;
-				pos.x += shakeDirection * .5f; 
-				GetOwner()->SetLocalPosition(pos);
-
-				return; 
+				timeSinceLastShake = 0.0f;
+				shakeDirection *= -1; // Flip shake direction
 			}
 
+			auto pos = GetOwner()->GetLocalTransform().m_position;
+			pos.x += shakeDirection * 0.5f;
+			GetOwner()->SetLocalPosition(pos);
+
+			return;
+		}
+
+		if (!bIsFalling)
+		{
 			m_StartFallingYPosition = GetOwner()->GetLocalTransform().m_position.y;
 			if (!bIsBroken && AnimComponent)
 				AnimComponent->ChangeState("Falling");
 
 			bIsFalling = true;
-			shakeTimer = 0.0f; 
+			shakeTimer = 0.0f;
 			timeSinceLastShake = 0.0f;
 		}
 
 		// Apply fall
-		auto pos = GetOwner()->GetLocalTransform().m_position;
+		auto pos = GetOwner()->GetWorldPosition();
 		pos.y += 80.0f * fixedDeltaTime;
+
+		const int screenBottom = 200;
+		const int objectHeight = 20;
+		if (pos.y > screenBottom - objectHeight)
+		{
+			pos.y = screenBottom - objectHeight;
+
+			bIsFalling = false;
+
+			if (!bIsBroken && AnimComponent)
+				AnimComponent->ChangeState("Destroyed");
+
+			bIsBroken = true;
+		}
+
 		GetOwner()->SetLocalPosition(static_cast<int>(pos.x), static_cast<int>(pos.y));
 		return;
 	}
