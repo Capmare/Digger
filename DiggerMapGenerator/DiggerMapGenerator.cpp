@@ -64,7 +64,6 @@ void ProcessImage(const wchar_t* filename, UINT xStep, UINT yStep)
 
 void PrintGrid(std::ostream& out = std::cout)
 {
-
 	if (blackPixels.size() != sampledWidth * sampledHeight)
 	{
 		out << "Error: pixel vector size does not match grid size!\n";
@@ -73,20 +72,11 @@ void PrintGrid(std::ostream& out = std::cout)
 
 	for (UINT row = 0; row < sampledHeight; ++row)
 	{
-		out << "    { ";
 		for (UINT col = 0; col < sampledWidth; ++col)
 		{
-			char c = blackPixels[row * sampledWidth + col];
-			out << c;
-
-			if (col != sampledWidth - 1)
-				out << ", ";
+			out << blackPixels[row * sampledWidth + col];
 		}
-		out << " }";
-
-		if (row != sampledHeight - 1)
-			out << ",";
-		out << std::endl;
+		out << '\n';
 	}
 }
 
@@ -99,7 +89,6 @@ int main()
 
 	ProcessImage(filename, xStep, yStep);
 
-	std::cout << sampledWidth << " x " << sampledHeight << std::endl;
 	PrintGrid();
 
 

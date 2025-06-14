@@ -76,40 +76,40 @@ void dae::DamageComponent::Update(const float )
 
 void dae::DamageComponent::Render() const
 {
-	auto* renderer = Renderer::GetInstance().GetSDLRenderer();
-	
-	// Draw the damage rectangle
-	SDL_Rect dmgRect = {
-		static_cast<int>(GetOwner()->GetWorldPosition().x + m_DamageSquare.x),
-		static_cast<int>(GetOwner()->GetWorldPosition().y + m_DamageSquare.y),
-		m_DamageSquare.z,
-		m_DamageSquare.w
-	};
-	
-	SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-	SDL_RenderDrawRect(renderer, &dmgRect);
-	
-	// Draw each actor's collision bounds
-	for (GameObject* Actors : m_OtherActors)
-	{
-		const AnimControllerComponent* AnimComponent = Actors->GetFirstComponentOfType<AnimControllerComponent>();
-		if (AnimComponent)
-		{
-			glm::ivec2 Resolution = AnimComponent->GetCurrentState()->GetFlipBook()->GetUsedTexture()->GetTextureResolution();
-			Resolution.x /= 4;
-	
-			SDL_Rect actorRect = {
-				static_cast<int>(Actors->GetWorldPosition().x + m_CollisionOffset),
-				static_cast<int>(Actors->GetWorldPosition().y + m_CollisionOffset),
-				Resolution.x - 2 * m_CollisionOffset,
-				Resolution.y - 2 * m_CollisionOffset
-			};
-	
-			SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-			SDL_RenderDrawRect(renderer, &actorRect);
-		}
-	}
-	
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	//auto* renderer = Renderer::GetInstance().GetSDLRenderer();
+	//
+	//// Draw the damage rectangle
+	//SDL_Rect dmgRect = {
+	//	static_cast<int>(GetOwner()->GetWorldPosition().x + m_DamageSquare.x),
+	//	static_cast<int>(GetOwner()->GetWorldPosition().y + m_DamageSquare.y),
+	//	m_DamageSquare.z,
+	//	m_DamageSquare.w
+	//};
+	//
+	//SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+	//SDL_RenderDrawRect(renderer, &dmgRect);
+	//
+	//// Draw each actor's collision bounds
+	//for (GameObject* Actors : m_OtherActors)
+	//{
+	//	const AnimControllerComponent* AnimComponent = Actors->GetFirstComponentOfType<AnimControllerComponent>();
+	//	if (AnimComponent)
+	//	{
+	//		glm::ivec2 Resolution = AnimComponent->GetCurrentState()->GetFlipBook()->GetUsedTexture()->GetTextureResolution();
+	//		Resolution.x /= 4;
+	//
+	//		SDL_Rect actorRect = {
+	//			static_cast<int>(Actors->GetWorldPosition().x + m_CollisionOffset),
+	//			static_cast<int>(Actors->GetWorldPosition().y + m_CollisionOffset),
+	//			Resolution.x - 2 * m_CollisionOffset,
+	//			Resolution.y - 2 * m_CollisionOffset
+	//		};
+	//
+	//		SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+	//		SDL_RenderDrawRect(renderer, &actorRect);
+	//	}
+	//}
+	//
+	//SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 
 }
