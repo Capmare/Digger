@@ -29,7 +29,7 @@ void dae::MovementComponent::FixedUpdate(const float fixedDeltaTime)
 		if (TimeOfDeath > 2)
 		{
 			TimeOfDeath = 0;
-			GetOwner()->SetLocalPosition(0, 140);
+			GetOwner()->SetLocalPosition(0, 10);
 			AnimController->GetCurrentState()->GetFlipBook()->ResetFlipBook();
 			AnimController->ChangeState("Idle");
 			bIsSpawning = true;

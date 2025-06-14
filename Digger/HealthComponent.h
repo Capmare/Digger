@@ -8,6 +8,8 @@
 #include <algorithm>
 #include <ranges>
 #include "FlipBookComponent.h"
+#include "CombatInformationComponent.h"
+#include "SpawnerComponent.h"
 
 namespace dae
 {
@@ -48,6 +50,10 @@ namespace dae
 			{
 				m_Health -= HealthDecreaseAmmount;
 				m_Subject.NotifyObservers(*GetOwner(), ObserverEvents::OnHealthChanged);
+				if (CombatInformationComponent* CIC = GetOwner()->GetFirstComponentOfType<CombatInformationComponent>())
+				{
+					CIC->m_Spawner->ResetSpawns();
+				}
 			}
 			if (m_Health <= 0)
 			{

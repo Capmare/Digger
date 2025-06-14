@@ -3,6 +3,7 @@
 #include "AIMovementComponent.h"
 #include "DamageComponent.h"
 #include "HealthComponent.h"
+#include "CombatInformationComponent.h"
 
 void dae::SpawnerComponent::SpawnMonster()
 {
@@ -50,16 +51,12 @@ void dae::SpawnerComponent::ResetSpawns()
 	{
 		Actor->Destroy();
 	}
-
-	for (size_t idx{ 1 }; idx < m_MonstersToSpawn + 1; ++idx)
+	m_SpawnLocation = {270,0};
+	for (size_t idx{ 1 }; idx < m_MonstersToSpawn-1; ++idx)
 	{
 		SpawnMonster();
 		m_SpawnLocation += glm::ivec2{ 150 * idx,0 };
 	}
 }
 
-void dae::SpawnerComponent::Update(const float )
-{
-	
-}
 

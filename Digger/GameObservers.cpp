@@ -16,9 +16,9 @@ void dae::HealthObserver::OnNotify(GameObject& GO, const ObserverEvents& Event)
 		{
 		case ObserverEvents::OnHealthChanged:
 
-			//dae::ServiceLocator::GetSoundSystem().PlaySound("../Data/piano2.wav");
 			HealthText += std::to_string(HealthComp->GetHealth());
 			HealthComp->GetHealthText()->SetText(HealthText);
+			
 			break;
 		case ObserverEvents::OnDeath:
 			GO.Destroy();

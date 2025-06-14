@@ -35,11 +35,10 @@ namespace dae
 
 		void ResetSpawns();
 
-		void Update(const float deltaTime) override;
+		std::vector<GameObject*> m_MonstersSpawned{};
 
 	private:
 		std::vector<GameObject*> m_DamagingMonsterObject{};
-		std::vector<GameObject*> m_MonstersSpawned{};
 		Scene* m_Scene{};
 		AIGridComponent* m_AIGridComp{};
 		MapComponent* m_MapComp{};

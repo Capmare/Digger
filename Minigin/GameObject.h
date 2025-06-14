@@ -71,9 +71,9 @@ namespace dae
 		T* GetFirstComponentOfType() const
 		{
 			if (m_Components.empty()) return nullptr;
-
 			for (const auto& Comp : m_Components)
 			{
+				if (!Comp) continue;
 				if (typeid(*Comp) == typeid(T)) // There is no way to avoid using typeid since i am using templates without constructing the object.
 				{
 					return static_cast<T*>(Comp.get());

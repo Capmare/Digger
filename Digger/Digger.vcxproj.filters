@@ -69,6 +69,9 @@
     <ClCompile Include="SpawnerComponent.cpp">
       <Filter>Components\Source</Filter>
     </ClCompile>
+    <ClCompile Include="CombatInformationComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HealthComponent.h">
@@ -121,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="SpawnerComponent.h">
       <Filter>Components\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="CombatInformationComponent.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

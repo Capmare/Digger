@@ -130,8 +130,7 @@ void dae::AIMovementComponent::RecreatePath()
 
 	if (m_Destination.empty())
 	{
-		std::cout << "cannot find path";
-		m_Destination = m_GridComponent->FindPathToRandomFreeTile(aiPos, 1);
+		m_Destination = m_GridComponent->FindPathFreeTilesFromPixels(aiPos, {5, 140});
 	}
 
 }
