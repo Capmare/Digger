@@ -10,6 +10,7 @@
 #include "FlipBookComponent.h"
 #include "CombatInformationComponent.h"
 #include "SpawnerComponent.h"
+#include "ServiceLocator.h"
 
 namespace dae
 {
@@ -50,8 +51,10 @@ namespace dae
 			{
 				m_Health -= HealthDecreaseAmmount;
 				m_Subject.NotifyObservers(*GetOwner(), ObserverEvents::OnHealthChanged);
+
 				if (GetOwner()->m_Name == "Digger")
 				{
+					dae::ServiceLocator::GetSoundSystem().PlaySound("../Data/DeathSound.wav");
 					if (CombatInformationComponent* CIC = GetOwner()->GetFirstComponentOfType<CombatInformationComponent>())
 					{
 						CIC->m_Spawner->ResetSpawns();

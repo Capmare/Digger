@@ -21,7 +21,6 @@ void dae::HealthObserver::OnNotify(GameObject& GO, const ObserverEvents& Event)
 			
 			break;
 		case ObserverEvents::OnDeath:
-			GO.Destroy();
 			std::cout << GO.m_Name << " has died";
 			// player dead
 			break;
