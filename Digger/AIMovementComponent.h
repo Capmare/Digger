@@ -27,12 +27,13 @@ namespace dae
 		AIMovementComponent(AIMovementComponent&&) noexcept = delete;
 		AIMovementComponent& operator=(const AIMovementComponent&) = delete;
 		AIMovementComponent& operator=(AIMovementComponent&&) noexcept = delete;
-		void RecreatePath();
+		void RecreatePath(int idx = 1);
 
 
 		void FixedUpdate(const float fixedDeltaTime) override;
 		void Render() const override;
 
+		bool bStopPathFinding{};
 	private:
 
 		std::string m_DefaultState = "Nobbin";
@@ -47,8 +48,10 @@ namespace dae
 		AnimControllerComponent* m_AnimControllerComp{};
 		AIGridComponent* m_GridComponent{};
 		MapComponent* m_MapComponent{};
+
 		glm::vec2 m_StartPos{};
 		glm::vec2 m_TargetPos{};
+
 		float m_SegmentDuration{ 0.0f };
 		float m_MoveLerpTime{ 0.0f };
 		const float speed{ 30.f };

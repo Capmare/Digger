@@ -27,24 +27,53 @@ void dae::PushComponent::Update(const float )
 
 	for (GameObject* Actor : m_OtherActors)
 	{
-		AnimControllerComponent* AnimController = Actor->GetFirstComponentOfType<AnimControllerComponent>();
-		if (AnimController->GetCurrentState()->GetStateName() == "Dead") continue;
-
-		glm::ivec2 ActorSize = AnimController->GetCurrentState()->GetFlipBook()->GetUsedTexture()->GetTextureResolution();
-		ActorSize.x /= 4;
-		glm::ivec4 CollisionSize
+		if (!bIsInstantlyPickup)
 		{
-			Actor->GetWorldPosition().x,
-			Actor->GetWorldPosition().y,
-			ActorSize.x,
-			ActorSize.y
+			AnimControllerComponent* AnimController = Actor->GetFirstComponentOfType<AnimControllerComponent>();
+			if (AnimController->GetCurrentState()->GetStateName() == "Dead") continue;
 
-		};
-		if (dae::MathUtils::CheckPointInSquare(CollisionSize, m_CollisionPoint))
+			glm::ivec2 ActorSize = AnimController->GetCurrentState()->GetFlipBook()->GetUsedTexture()->GetTextureResolution();
+			ActorSize.x /= 4;
+			glm::ivec4 CollisionSize
+			{
+				Actor->GetWorldPosition().x,
+				Actor->GetWorldPosition().y,
+				ActorSize.x,
+				ActorSize.y
+
+			};
+			if (dae::MathUtils::CheckPointInSquare(CollisionSize, m_CollisionPoint))
+			{
+
+				AnimControllerComponent* AnimControlerBag = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
+				if (AnimControlerBag->GetCurrentState()->GetStateName() == "Destroyed")
+				{
+					ScoreComponent* ScoreComp = Actor->GetFirstComponentOfType<ScoreComponent>();
+					if (ScoreComp)
+					{
+						ScoreComp->IncreaseScore(500);
+						GetOwner()->Destroy();
+					}
+				}
+				else
+				{
+					Push(10);
+				}
+			}
+		}
+		else
 		{
-			
-			AnimControllerComponent* AnimControlerBag = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
-			if (AnimControlerBag->GetCurrentState()->GetStateName() == "Destroyed")
+			glm::ivec2 ActorSize{ 20,20 };
+			glm::ivec4 CollisionSize
+			{
+				Actor->GetWorldPosition().x,
+				Actor->GetWorldPosition().y,
+				ActorSize.x,
+				ActorSize.y
+
+			};
+
+			if (dae::MathUtils::CheckPointInSquare(CollisionSize, m_CollisionPoint))
 			{
 				ScoreComponent* ScoreComp = Actor->GetFirstComponentOfType<ScoreComponent>();
 				if (ScoreComp)
@@ -53,11 +82,8 @@ void dae::PushComponent::Update(const float )
 					GetOwner()->Destroy();
 				}
 			}
-			else
-			{
-				Push(10);
-			}
 		}
+		
 	}
 }
 

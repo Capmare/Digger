@@ -38,9 +38,10 @@ dae::Observer* dae::Scene::CreateObserver(std::unique_ptr<Observer> observer)
 
 void dae::Scene::Update( const float deltaTime)
 {
-	for(auto& object : m_objects)
+	for (auto& object : m_objects)
 	{
-		object->Update(deltaTime);
+		if (!object->IsMarkedForDestroy())
+			object->Update(deltaTime);
 	}
 
 	auto it = std::remove_if(m_objects.begin(), m_objects.end(),
@@ -54,8 +55,9 @@ void dae::Scene::Update( const float deltaTime)
 			return false;
 		});
 
-
 	m_objects.erase(it, m_objects.end());
+
+
 
 
 }

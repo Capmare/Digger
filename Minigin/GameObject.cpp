@@ -18,6 +18,7 @@ void dae::GameObject::Update( const float deltaTime)
 	{
 		components->Update(deltaTime);
 	}
+	
 
 
 }

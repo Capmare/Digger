@@ -7,6 +7,7 @@
 
 void dae::AIMovementComponent::FixedUpdate(const float fixedDeltaTime)
 {
+	if (bStopPathFinding) return;
 
 	m_StateChangeTimer += fixedDeltaTime;
 
@@ -104,11 +105,18 @@ void dae::AIMovementComponent::Render() const
 	// }
 }
 
-void dae::AIMovementComponent::RecreatePath()
+void dae::AIMovementComponent::RecreatePath(int idx /*= 1*/)
 {
+	
 	if (!m_Player || !GetOwner() || !m_GridComponent || !m_AnimControllerComp)
 		return;
-
+	
+	if (bStopPathFinding)
+	{
+		m_StartPos = {270*idx,10};
+		m_TargetPos = {270*idx,10};
+	}
+	
 	m_Destination.clear();
 
 	glm::vec2 aiPos = glm::vec2(GetOwner()->GetWorldPosition());
@@ -130,7 +138,7 @@ void dae::AIMovementComponent::RecreatePath()
 
 	if (m_Destination.empty())
 	{
-		m_Destination = m_GridComponent->FindPathFreeTilesFromPixels(aiPos, {5, 140});
+		m_Destination = m_GridComponent->FindPathFreeTilesFromPixels(aiPos, {5, 10});
 	}
 
 }

@@ -28,6 +28,7 @@ namespace dae
 
 		void Render() const override;
 
+		bool bIsInstantlyPickup{};
 	private:
 		
 		std::vector<GameObject*> m_OtherActors{};

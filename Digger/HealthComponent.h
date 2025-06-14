@@ -50,12 +50,15 @@ namespace dae
 			{
 				m_Health -= HealthDecreaseAmmount;
 				m_Subject.NotifyObservers(*GetOwner(), ObserverEvents::OnHealthChanged);
-				if (CombatInformationComponent* CIC = GetOwner()->GetFirstComponentOfType<CombatInformationComponent>())
+				if (GetOwner()->m_Name == "Digger")
 				{
-					CIC->m_Spawner->ResetSpawns();
+					if (CombatInformationComponent* CIC = GetOwner()->GetFirstComponentOfType<CombatInformationComponent>())
+					{
+						CIC->m_Spawner->ResetSpawns();
+					}
 				}
 			}
-			if (m_Health <= 0)
+			else if (m_Health <= 0)
 			{
 				m_Health = 0;
 				m_Subject.NotifyObservers(*GetOwner(), ObserverEvents::OnDeath);
