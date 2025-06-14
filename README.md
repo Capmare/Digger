@@ -5,14 +5,14 @@ Minigin is a very small project using [SDL2](https://www.libsdl.org/) and [glm](
 [![Build Status](https://github.com/avadae/minigin/actions/workflows/msbuild.yml/badge.svg)](https://github.com/avadae/msbuild/actions)
 [![GitHub Release](https://img.shields.io/github/v/release/avadae/minigin?logo=github&sort=semver)](https://github.com/avadae/minigin/releases/latest)
 
-# Goal
+# Design choices
+## Map generation
+To generate the map i decided to create a single file script that that converts a black and white image to the correct tile type and exports as a txt format.
+## Map creation && digging
+The map is being created by using multiple textures tiles that are 20x4, i take all those textures at start and combine them into a singular texture, to dig trough the dirt we just change the pixel color.
+## Pathfinding
+The AI uses 2 different algorithms, the first one is BFS, it will be used for when the AI cannot dig, it also helps with avoiding getting stuck in the corners, when it changes its state it starts using the A* for faster lookup since it doesnt care about getting stuck.
+## Animation
+The animation is being controlled by the ```AnimControllerComponent``` this specific component holds all the states of each object in the world and decides which animation should play on the current state.
 
-Minigin can/may be used as a start project for the exam assignment in the course [Programming 4](https://youtu.be/j96Oh6vzhmg) at DAE. In that assignment students need to recreate a popular 80's arcade game with a game engine they need to program themselves. During the course we discuss several game programming patterns, using the book '[Game Programming Patterns](https://gameprogrammingpatterns.com/)' by [Robert Nystrom](https://github.com/munificent) as reading material. 
-
-# Disclaimer
-
-Minigin is, despite perhaps the suggestion in its name, **not** a game engine. It is just a very simple sdl2 ready project with some of the scaffolding in place to get started. None of the patterns discussed in the course are used yet (except singleton which use we challenge during the course). It is up to the students to implement their own vision for their engine, apply patterns as they see fit, create their game as efficient as possible.
-
-# Use
-
-Either download the latest release of this project and compile/run in visual studio or, since students need to have their work on github too, they can use this repository as a template (see the "Use this template" button at the top right corner). There is no point in forking this project.
+https://github.com/Capmare/Digger/tree/origin/GameBranch

@@ -10,8 +10,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Digger", "Digger\Digger.vcx
 		{41B0EC47-D48C-4B0F-951B-D98595FFAE0A} = {41B0EC47-D48C-4B0F-951B-D98595FFAE0A}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DiggerMapGenerator", "DiggerMapGenerator\DiggerMapGenerator.vcxproj", "{917500B9-6E43-4E24-8E15-15EE804B460F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -26,10 +24,6 @@ Global
 		{0C3D2C85-BFE1-411C-8803-D41E5C4069DD}.Debug|x64.Build.0 = Debug|x64
 		{0C3D2C85-BFE1-411C-8803-D41E5C4069DD}.Release|x64.ActiveCfg = Debug|x64
 		{0C3D2C85-BFE1-411C-8803-D41E5C4069DD}.Release|x64.Build.0 = Debug|x64
-		{917500B9-6E43-4E24-8E15-15EE804B460F}.Debug|x64.ActiveCfg = Debug|x64
-		{917500B9-6E43-4E24-8E15-15EE804B460F}.Debug|x64.Build.0 = Debug|x64
-		{917500B9-6E43-4E24-8E15-15EE804B460F}.Release|x64.ActiveCfg = Release|x64
-		{917500B9-6E43-4E24-8E15-15EE804B460F}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
