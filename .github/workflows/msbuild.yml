@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 env:
-  SOLUTION_FILE_PATH: Digger/Minigin.sln
+  SOLUTION_FILE_PATH: Minigin.sln
 
 permissions:
   contents: read
