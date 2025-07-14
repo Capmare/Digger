@@ -29,7 +29,7 @@ jobs:
       run: nuget restore ${{ env.SOLUTION_FILE_PATH }}
 
     - name: Build Minigin.lib
-      run: msbuildMinigin/Minigin.vcxproj /m /p:Configuration=${{ matrix.BUILD_CONFIGURATION }} /p:Platform=${{ matrix.BUILD_PLATFORM }}
+      run: msbuild Minigin/Minigin.vcxproj /m /p:Configuration=${{ matrix.BUILD_CONFIGURATION }} /p:Platform=${{ matrix.BUILD_PLATFORM }}
 
     - name: Build Digger
       run: msbuild Digger/Digger.vcxproj /m /p:Configuration=${{ matrix.BUILD_CONFIGURATION }} /p:Platform=${{ matrix.BUILD_PLATFORM }}
