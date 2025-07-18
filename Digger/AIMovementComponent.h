@@ -59,6 +59,8 @@ namespace dae
 
 		float m_MaxTime{.5};
 		float m_PassedTime{};
+
+		
 	};
 
 }

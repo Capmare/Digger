@@ -7,6 +7,7 @@
 
 void dae::AIMovementComponent::FixedUpdate(const float fixedDeltaTime)
 {
+	bool bPathRecreated{};
 	if (bStopPathFinding) return;
 
 	m_StateChangeTimer += fixedDeltaTime;
@@ -24,12 +25,19 @@ void dae::AIMovementComponent::FixedUpdate(const float fixedDeltaTime)
 			m_IsInAlternateState = false;
 			m_StateChangeTimer = 0.0f;
 			m_NextStateChangeTime = 10.0f + static_cast<float>(rand() % 11); // 10–20s
+
+			bPathRecreated = true;
 		}
 	}
 	else if (m_StateChangeTimer >= m_NextStateChangeTime)
 	{
 		m_AnimControllerComp->ChangeState(m_AlternateState);
-		RecreatePath();
+		
+		if (!bPathRecreated)
+		{
+			RecreatePath();
+		}
+
 		m_PassedTime = 0.0f;
 
 		m_IsInAlternateState = true;
@@ -40,7 +48,10 @@ void dae::AIMovementComponent::FixedUpdate(const float fixedDeltaTime)
 	m_PassedTime += fixedDeltaTime;
 	if (m_PassedTime > m_MaxTime)
 	{
-		RecreatePath();
+		if (!bPathRecreated)
+		{
+			RecreatePath();
+		}
 		m_PassedTime = 0.0f;
 	}
 
