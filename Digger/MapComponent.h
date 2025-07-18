@@ -99,16 +99,13 @@ namespace dae
 
 			}
 
-			for (auto& t : m_TileTextures)
-			{
-				t.release();
-			}
+			m_TileTextures.clear();
 			CreateSurface();
 			
 		};
 
 
-		virtual ~MapComponent() = default;
+		virtual ~MapComponent();;
 		
 		MapComponent(const MapComponent&) = delete;
 		MapComponent(MapComponent&&) noexcept = delete;

@@ -3,6 +3,12 @@
 #include <iostream>
 #include "Renderer.h"
 
+dae::MapComponent::~MapComponent()
+{
+	SDL_DestroyTexture(m_MapTunnelTexture);
+	SDL_FreeSurface(m_MapSurface);
+}
+
 void dae::MapComponent::Update(const float )
 {
 
