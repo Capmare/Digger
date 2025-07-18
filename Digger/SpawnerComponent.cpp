@@ -52,11 +52,15 @@ void dae::SpawnerComponent::ResetSpawns()
 	for (size_t idx{ 0 }; idx < m_MonstersSpawned.size(); ++idx)
 	{
 		AIMovementComponent* AIMovComp = m_MonstersSpawned[idx]->GetFirstComponentOfType<AIMovementComponent>();
-		AIMovComp->bStopPathFinding = true;
-		m_MonstersSpawned[idx]->SetLocalPosition(m_SpawnLocation.x, m_SpawnLocation.y);
-		AIMovComp->RecreatePath(static_cast<int>(idx+1));
-		AIMovComp->bStopPathFinding = false;
-		m_SpawnLocation += glm::ivec2{ 150 * (idx + 1),5 };
+		if (AIMovComp)
+		{
+			AIMovComp->bStopPathFinding = true;
+			m_MonstersSpawned[idx]->SetLocalPosition(m_SpawnLocation.x, m_SpawnLocation.y);
+			AIMovComp->RecreatePath(static_cast<int>(idx + 1));
+			AIMovComp->bStopPathFinding = false;
+			m_SpawnLocation += glm::ivec2{ 150 * (idx + 1),5 };
+		}
+		
 	}
 
 }

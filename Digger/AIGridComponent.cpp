@@ -185,54 +185,117 @@ std::vector<glm::ivec2> dae::AIGridComponent::FindPathAllMapFromPixels(const glm
 	return Path;
 }
 
-// use BFS for nobbin instead of A* because AStar fails when getting stuck
 std::vector<glm::ivec2> dae::AIGridComponent::FindPathFreeTiles(const glm::ivec2& start, const glm::ivec2& goal) const
 {
+	// Calculate grid dimensions based on screen and tile size
+	const int gridWidth = m_ScreenResolution.x / m_TileSize.x;
+	const int gridHeight = m_ScreenResolution.y / m_TileSize.y;
 
-	if (!m_FreeTiles.contains(start) || !m_FreeTiles.contains(goal))
+	// Lambda to check if a tile is valid (inside bounds and free)
+	auto isValid = [&](const glm::ivec2& pos) {
+		return pos.x >= 0 && pos.x < gridWidth &&
+			pos.y >= 0 && pos.y < gridHeight &&
+			m_FreeTiles.contains(pos);
+		};
+
+	if (!isValid(start) || !isValid(goal))
 		return {};
 
-	std::unordered_map<glm::ivec2, glm::ivec2, IVec2Hash> cameFrom;
-	std::queue<glm::ivec2> frontier;
-	std::unordered_set<glm::ivec2, IVec2Hash> visited;
+	// Lambda to convert 2D position to 1D index
+	auto PosToIndex = [&](const glm::ivec2& pos) {
+		return pos.y * gridWidth + pos.x;
+		};
 
-	frontier.push(start);
-	visited.insert(start);
+	
 
-	while (!frontier.empty())
+	// Create and initialize nodes array
+	std::vector<Node> nodes(gridWidth * gridHeight);
+	for (int y = 0; y < gridHeight; ++y)
 	{
-		glm::ivec2 current = frontier.front();
-		frontier.pop();
-
-		if (current == goal)
+		for (int x = 0; x < gridWidth; ++x)
 		{
-			// Reconstruct path
+			int idx = y * gridWidth + x;
+			nodes[idx].position = glm::ivec2(x, y);
+			nodes[idx].gCost = INT_MAX;
+			nodes[idx].parent = glm::ivec2(-1, -1);
+		}
+	}
+
+	// Closed set to track visited nodes
+	std::vector<bool> closedSet(gridWidth * gridHeight, false);
+
+	// Initialize start node
+	int startIndex = PosToIndex(start);
+	nodes[startIndex].gCost = 0;
+	nodes[startIndex].hCost = Heuristic(start, goal);
+
+	// Priority queue stores pairs of (fCost, nodeIndex), min-heap by fCost
+	auto ComparePair = [](const std::pair<int, int>& a, const std::pair<int, int>& b) {
+		return a.first > b.first; // min-heap
+		};
+
+	std::priority_queue<std::pair<int, int>,
+		std::vector<std::pair<int, int>>,
+		decltype(ComparePair)>
+		openSet(ComparePair);
+
+	openSet.push({ nodes[startIndex].fCost(), startIndex });
+
+	while (!openSet.empty())
+	{
+		int currentIndex = openSet.top().second;
+		openSet.pop();
+
+		if (closedSet[currentIndex])
+			continue; // skip if already processed
+
+		Node& currentNode = nodes[currentIndex];
+
+		if (currentNode.position == goal)
+		{
+			// Reconstruct path by following parents
 			std::vector<glm::ivec2> path;
 			glm::ivec2 step = goal;
 			while (step != start)
 			{
 				path.push_back(step);
-				step = cameFrom[step];
+				step = nodes[PosToIndex(step)].parent;
 			}
 			path.push_back(start);
 			std::reverse(path.begin(), path.end());
 			return path;
 		}
 
-		for (const auto& neighbor : GetNeighbors(current))
+		closedSet[currentIndex] = true;
+
+		// Explore neighbors
+		for (const glm::ivec2& neighborPos : GetNeighbors(currentNode.position))
 		{
-			if (!m_FreeTiles.contains(neighbor) || visited.contains(neighbor))
+			if (!isValid(neighborPos))
 				continue;
 
-			frontier.push(neighbor);
-			visited.insert(neighbor);
-			cameFrom[neighbor] = current;
+			int neighborIndex = PosToIndex(neighborPos);
+
+			if (closedSet[neighborIndex])
+				continue;
+
+			int tentativeGCost = currentNode.gCost + 1; // uniform cost for adjacent tiles
+
+			if (tentativeGCost < nodes[neighborIndex].gCost)
+			{
+				Node& neighborNode = nodes[neighborIndex];
+				neighborNode.gCost = tentativeGCost;
+				neighborNode.hCost = Heuristic(neighborPos, goal);
+				neighborNode.parent = currentNode.position;
+				openSet.push({ neighborNode.fCost(), neighborIndex });
+			}
 		}
 	}
 
 	// No path found
 	return {};
 }
+
 
 
 std::vector<glm::ivec2> dae::AIGridComponent::FindPathToRandomFreeTile(const glm::ivec2& start, int maxAttempts) const

@@ -16,11 +16,13 @@ void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
 
 	int emptyCount = 0;
 	const int totalChecks = 20;
+	dae::LockedTexture TempMap{};
 
+	Renderer::GetInstance().LockTexture(m_MapComponent->GetMapTexture(), TempMap);
 	for (int idx = 0; idx < totalChecks; ++idx)
 	{
-		SDL_Color color = Renderer::GetInstance().ReadPixelColor(
-			m_MapComponent->GetMapTexture(),
+		SDL_Color color = Renderer::GetInstance().FastReadPixel(
+			TempMap,
 			static_cast<int>(GetOwner()->GetWorldPosition().x + idx),
 			static_cast<int>(GetOwner()->GetWorldPosition().y + 20)
 		);
@@ -28,6 +30,7 @@ void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
 		if (color.r < 10 && color.g < 10 && color.b < 10)
 			++emptyCount;
 	}
+	Renderer::GetInstance().UnlockTexture(TempMap);
 
 	bool bCanFall = (emptyCount >= totalChecks * 0.6f);
 

@@ -9,13 +9,15 @@ namespace dae { struct LockedTexture; }
 
 namespace dae
 {
+	// Node struct for pathfinding data
 	struct Node
 	{
 		glm::ivec2 position;
-		int gCost = 0;
-		int hCost = 0;
+		int gCost = INT_MAX; 
+		int hCost = 0;       
+		glm::ivec2 parent = glm::ivec2(-1, -1);
+
 		int fCost() const { return gCost + hCost; }
-		glm::ivec2 parent;
 	};
 
 	struct IVec2Hash {
