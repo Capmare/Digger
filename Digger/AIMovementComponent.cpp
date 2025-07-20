@@ -7,12 +7,13 @@
 
 void dae::AIMovementComponent::FixedUpdate(const float fixedDeltaTime)
 {
-	bool bPathRecreated{};
 	if (bStopPathFinding) return;
 
 	m_StateChangeTimer += fixedDeltaTime;
+	m_PassedTime += fixedDeltaTime;
 
-	// Handle state switching
+	bool bPathRecreated = false;
+
 	if (m_IsInAlternateState)
 	{
 		m_AlternateStateTimer += fixedDeltaTime;
@@ -20,32 +21,29 @@ void dae::AIMovementComponent::FixedUpdate(const float fixedDeltaTime)
 		{
 			m_AnimControllerComp->ChangeState(m_DefaultState);
 			RecreatePath();
-			m_PassedTime = 0.0f;
+			bPathRecreated = true;
 
 			m_IsInAlternateState = false;
 			m_StateChangeTimer = 0.0f;
+			m_AlternateStateTimer = 0.0f;
 			m_NextStateChangeTime = 10.0f + static_cast<float>(rand() % 11); // 10–20s
-
-			bPathRecreated = true;
+			m_PassedTime = 0.0f;
 		}
 	}
 	else if (m_StateChangeTimer >= m_NextStateChangeTime)
 	{
 		m_AnimControllerComp->ChangeState(m_AlternateState);
-		
+		m_IsInAlternateState = true;
+		m_AlternateStateTimer = 0.0f;
+		m_PassedTime = 0.0f;
+
 		if (!bPathRecreated)
 		{
 			RecreatePath();
+			bPathRecreated = true;
 		}
-
-		m_PassedTime = 0.0f;
-
-		m_IsInAlternateState = true;
-		m_AlternateStateTimer = 0.0f;
 	}
 
-	// Path refresh timer
-	m_PassedTime += fixedDeltaTime;
 	if (m_PassedTime > m_MaxTime)
 	{
 		if (!bPathRecreated)
@@ -59,11 +57,10 @@ void dae::AIMovementComponent::FixedUpdate(const float fixedDeltaTime)
 
 	if (!m_MovingToTarget)
 	{
-		if (m_Destination.empty()) return;
-
 		m_StartPos = glm::vec2(GetOwner()->GetWorldTransform().m_position);
 		m_TargetPos = m_Destination.front();
-		glm::vec2 segment = m_TargetPos - m_StartPos;
+
+		const glm::vec2 segment = m_TargetPos - m_StartPos;
 		m_SegmentDuration = glm::length(segment) / speed;
 
 		m_MoveLerpTime = 0.0f;
@@ -71,29 +68,23 @@ void dae::AIMovementComponent::FixedUpdate(const float fixedDeltaTime)
 	}
 
 	m_MoveLerpTime += fixedDeltaTime;
-	float t = glm::clamp(m_MoveLerpTime / m_SegmentDuration, 0.0f, 1.0f);
-	glm::vec2 newPos2D = glm::mix(m_StartPos, m_TargetPos, t);
+	const float t = glm::clamp(m_MoveLerpTime / m_SegmentDuration, 0.0f, 1.0f);
+	const glm::vec2 newPos2D = glm::mix(m_StartPos, m_TargetPos, t);
 
 	GetOwner()->SetLocalPosition(glm::vec3(newPos2D, 0.0f));
 
 	if (m_IsInAlternateState)
 	{
-		m_MapComponent->ClearTunnelArea(newPos2D + glm::vec2{ 10.f, 10.f }, 10);
+		m_MapComponent->ClearTunnelAreaRequest(newPos2D + glm::vec2{ 10.f, 10.f }, 10);
 	}
 
 	if (t >= 1.0f)
 	{
-		if (!m_Destination.empty())
-			m_Destination.erase(m_Destination.begin());
-
+		m_Destination.erase(m_Destination.begin());
 		m_MovingToTarget = false;
-
-		if (m_Destination.empty())
-		{
-			m_MovingToTarget = false;
-		}
 	}
 }
+
 
 void dae::AIMovementComponent::Render() const
 {
@@ -118,7 +109,9 @@ void dae::AIMovementComponent::Render() const
 
 void dae::AIMovementComponent::RecreatePath(int idx /*= 1*/)
 {
-	
+	auto start = std::chrono::high_resolution_clock::now();
+
+
 	if (!m_Player || !GetOwner() || !m_GridComponent || !m_AnimControllerComp)
 		return;
 	
@@ -152,4 +145,10 @@ void dae::AIMovementComponent::RecreatePath(int idx /*= 1*/)
 		m_Destination = m_GridComponent->FindPathFreeTilesFromPixels(aiPos, {5, 10});
 	}
 
+
+
+	auto stop = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds>(stop - start);
+
+	std::cout << "Time to recreate path: " << duration.count() << std::endl;
 }

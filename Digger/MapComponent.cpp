@@ -2,6 +2,8 @@
 #include "TextureComponent.h"
 #include <iostream>
 #include "Renderer.h"
+#include <algorithm>
+#include <execution>
 
 dae::MapComponent::~MapComponent()
 {
@@ -9,9 +11,33 @@ dae::MapComponent::~MapComponent()
 	SDL_FreeSurface(m_MapSurface);
 }
 
-void dae::MapComponent::Update(const float )
+void dae::MapComponent::Update(const float deltaTime)
 {
 
+	if (!m_ClearTunnelRequest.empty())
+	{
+		m_WaitTimeForClearTunnel += deltaTime;
+		if (m_WaitTimeForClearTunnel > m_MaxWaitTimeForClearTunnel)
+		{
+			bWasUpdated = true;
+			m_WaitTimeForClearTunnel = 0;
+
+			// lock texture
+			m_MergedTexture->Lock();
+			std::for_each(std::execution::par, m_ClearTunnelRequest.begin(), m_ClearTunnelRequest.end(),
+				[&](const std::pair<glm::ivec2, int>& req)
+				{
+					m_MergedTexture->DrawFilledCircleOnTexture(req.first, req.second, SDL_Color(0, 0, 0, 1));
+				});
+
+			// unlock texture
+			m_MergedTexture->Unlock();
+
+			m_ClearTunnelRequest.clear();
+
+		}
+	}
+	
 }
 
 
@@ -24,11 +50,12 @@ void dae::MapComponent::Render() const
 
 }
 
-void dae::MapComponent::ClearTunnelArea(glm::ivec2 Middle, int Rad) const
+void dae::MapComponent::ClearTunnelAreaRequest(glm::ivec2 Middle, int Rad)
 {
 	if (m_MergedTexture)
 	{
-		m_MergedTexture->DrawFilledCircleOnTexture(Middle, Rad, SDL_Color(0, 0, 0, 1));
+		m_ClearTunnelRequest.emplace_back(Middle,Rad);
+		// m_MergedTexture->DrawFilledCircleOnTexture(Middle, Rad, SDL_Color(0, 0, 0, 1));
 	}
 }
 

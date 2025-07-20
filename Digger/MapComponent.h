@@ -2,6 +2,7 @@
 #include <BaseComponent.h>
 #include <vector>
 #include <iostream>
+#include <utility>
 #include "SDL_surface.h"
 #include "glm.hpp"
 #include "TextureComponent.h"
@@ -89,14 +90,13 @@ namespace dae
 				case TileType::Dirt:
 					break;
 				case TileType::Tunnel:
-					ClearTunnelArea({ centerX-offset, centerY },offset);
-					ClearTunnelArea({ centerX-offset-5, centerY },offset);
-					ClearTunnelArea({ centerX, centerY }, offset);
-					ClearTunnelArea({ centerX+offset, centerY }, offset)	;
-					ClearTunnelArea({ centerX+offset+5, centerY }, offset)	;
+					ClearTunnelAreaRequest({ centerX-offset, centerY },offset);
+					ClearTunnelAreaRequest({ centerX-offset-5, centerY },offset);
+					ClearTunnelAreaRequest({ centerX, centerY }, offset);
+					ClearTunnelAreaRequest({ centerX+offset, centerY }, offset)	;
+					ClearTunnelAreaRequest({ centerX+offset+5, centerY }, offset)	;
 					break;
 				}
-
 			}
 
 			m_TileTextures.clear();
@@ -116,22 +116,25 @@ namespace dae
 
 		void Render() const override;
 		
-		void ClearTunnelArea(glm::ivec2 Middle, int Rad) const;
+		void ClearTunnelAreaRequest(glm::ivec2 Middle, int Rad);
 		void UpdateSurfaceFromTexture();
 		SDL_Texture* GetMapTexture() { return m_MergedTexture->GetTexture(); }
 
 		SDL_Surface* GetMapSurface() const { return m_MapSurface; }
 
+		bool bWasUpdated{};
+
 	private:
 		void CreateSurface();
 
-
+		std::vector<std::pair<glm::ivec2, int>> m_ClearTunnelRequest{};
 		std::vector<TileType> m_Tiles{};
 		std::vector<std::unique_ptr<TextureComponent>> m_TileTextures{};
 		std::unique_ptr<TextureComponent> m_MergedTexture{};
 		std::shared_ptr<Texture2D> m_SharedMergedTexture{};
 		SDL_Texture* m_MapTunnelTexture{};
 		SDL_Surface* m_MapSurface{};
+
 		int m_Width{};
 		int m_Height{};
 
@@ -139,6 +142,10 @@ namespace dae
 		int m_TileHeight = 4;
 
 		mutable int cnt{};
+
+		float m_WaitTimeForClearTunnel{};
+		float m_MaxWaitTimeForClearTunnel{.2f};
+
 	};
 
 }

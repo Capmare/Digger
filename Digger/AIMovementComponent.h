@@ -57,10 +57,10 @@ namespace dae
 		const float speed{ 30.f };
 		bool m_MovingToTarget{ false };
 
-		float m_MaxTime{.5};
+		float m_MaxTime{2.f};
 		float m_PassedTime{};
 
-		
+
 	};
 
 }

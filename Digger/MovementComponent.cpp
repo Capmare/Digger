@@ -55,7 +55,7 @@ void dae::MovementComponent::FixedUpdate(const float fixedDeltaTime)
 		else
 		{
 			GetOwner()->SetLocalPosition(dae::MathUtils::Lerp(GetOwner()->GetLocalTransform().m_position, m_DesiredPosition, fixedDeltaTime * m_LerpSpeed));
-			m_MapComponent->ClearTunnelArea({ GetOwner()->GetLocalTransform().m_position.x + 10,GetOwner()->GetLocalTransform().m_position.y+10 }, 10);
+			m_MapComponent->ClearTunnelAreaRequest({ GetOwner()->GetLocalTransform().m_position.x + 10,GetOwner()->GetLocalTransform().m_position.y+10 }, 10);
 		}
 		return;
 	}

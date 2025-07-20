@@ -18,6 +18,7 @@ void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
 	const int totalChecks = 20;
 	dae::LockedTexture TempMap{};
 
+
 	Renderer::GetInstance().LockTexture(m_MapComponent->GetMapTexture(), TempMap);
 	for (int idx = 0; idx < totalChecks; ++idx)
 	{

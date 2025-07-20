@@ -4,6 +4,7 @@
 #include "Transform.h"
 #include "Texture2D.h"
 #include "SDL_rect.h"
+#include <vector>
 
 namespace dae  {
 	class TextureComponent final: public BaseComponent
@@ -12,7 +13,7 @@ namespace dae  {
 		TextureComponent(GameObject* Owner, const float RotationAngle = 0) : BaseComponent(Owner), m_RotationAngle(RotationAngle) {};
 		TextureComponent(GameObject* Owner, const std::string& Path) : BaseComponent(Owner) { SetTexture(Path); };
 		TextureComponent(GameObject* Owner, std::shared_ptr<Texture2D> Texture) : BaseComponent(Owner), m_Texture(std::move(Texture)) { };
-		virtual ~TextureComponent() = default;
+		virtual ~TextureComponent();;
 		
 		TextureComponent(const TextureComponent&) = delete;
 		//TextureComponent(TextureComponent&&) noexcept = delete; // will need the move constructor for merging textures
@@ -36,11 +37,18 @@ namespace dae  {
 
 		void DrawFilledCircleOnTexture(glm::ivec2 Middle, int radius, SDL_Color color);
 
+		void Lock();
+		void Unlock();
 	private:
 		std::shared_ptr<Texture2D> m_Texture{};
 		SDL_Rect m_RenderParams{};
 		SDL_Rect m_RegionRenderParams{};
 
+		SDL_Texture* m_OriginalTexture{nullptr};
+		std::vector<Uint32> m_LockedPixels{};
+		int m_LockedWidth{};
+		int m_LockedHeight{};
+		bool m_IsLocked{false};
 	};
 }
 
