@@ -13,6 +13,8 @@ namespace dae
 		Scene& CreateScene(const std::string& name);
 		Scene& GetLastScene() {return *m_scenes.back(); }
 
+
+
 		void Update(const float deltaTime);
 		void Render();
 		void FixedUpdate(const float fixedDeltaTime);

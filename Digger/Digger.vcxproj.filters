@@ -75,6 +75,9 @@
     <ClCompile Include="MenuComponent.cpp">
       <Filter>Components\Source</Filter>
     </ClCompile>
+    <ClCompile Include="NameEntryComponent.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HealthComponent.h">
@@ -133,6 +136,9 @@
     </ClInclude>
     <ClInclude Include="MenuComponent.h">
       <Filter>Components\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="NameEntryComponent.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
