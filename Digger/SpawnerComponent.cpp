@@ -4,16 +4,40 @@
 #include "DamageComponent.h"
 #include "HealthComponent.h"
 #include "CombatInformationComponent.h"
+#include <cassert>
 
-void dae::SpawnerComponent::SpawnMonster()
+using namespace dae;
+
+void SpawnerComponent::Update(float dt)
 {
+	if (m_SpawnedMonsters >= m_MonstersToSpawn) return;
+
+	m_TimeSinceLastSpawn += dt;
+	if (m_TimeSinceLastSpawn >= m_NextSpawnDelay)
+	{
+		SpawnMonster();
+		++m_SpawnedMonsters;
+
+		m_TimeSinceLastSpawn = 0.f;
+		m_NextSpawnDelay = ComputeNextDelay();
+	}
+}
+
+void SpawnerComponent::SpawnMonster()
+{
+	assert(m_Scene && "Scene is null");
+	assert(m_AIGridComp && m_Digger && m_MapComp && "AI movement dependency is null");
+
 	GameObject* Monster = m_Scene->CreateNewGameObject();
 	assert(Monster && "Failed to create monster GameObject");
 	Monster->m_Name = "Monster";
-	Monster->SetLocalPosition(m_SpawnLocation.x, m_SpawnLocation.y);
+
+	const int index = static_cast<int>(m_MonstersSpawned.size());
+	const glm::ivec2 spawnPos = m_SpawnOrigin + glm::ivec2{ m_SpawnXSpacing * index, 0 };
+	Monster->SetLocalPosition(spawnPos.x, spawnPos.y);
 
 	Monster->CreateComponent<HealthComponent>(1);
-	// Create AnimController and setup states
+
 	AnimControllerComponent* MonsterAnimController = Monster->CreateComponent<AnimControllerComponent>();
 	assert(MonsterAnimController && "Failed to create AnimControllerComponent");
 
@@ -24,45 +48,38 @@ void dae::SpawnerComponent::SpawnMonster()
 	MonsterAnimController->CreateState<HobbinState>(HobbinFlipBookConfig);
 	MonsterAnimController->ChangeState("Nobbin");
 
-	// Create AI Movement component
-	assert(m_AIGridComp && m_Digger && m_MapComp && "AI movement dependency is null");
+	// AI movement
 	auto* ai = Monster->CreateComponent<AIMovementComponent>(m_AIGridComp, MonsterAnimController, m_Digger, m_MapComp);
 	assert(ai && "Failed to create AIMovementComponent");
 
-	// Create Damage component
 	DamageComponent* dmgComp = Monster->CreateComponent<DamageComponent>(glm::ivec4{ 0, 0, 20, 20 });
 	assert(dmgComp && "Failed to create DamageComponent");
 	dmgComp->bDoesDamageWithoutCondition = true;
 	dmgComp->AddNewDamageRecevingActor(m_Digger);
 
-	m_MonstersSpawned.emplace_back(Monster);
-
-	for (GameObject* Actor : m_DamagingMonsterObject)
+	for (GameObject* actor : m_DamagingMonsterObject)
 	{
-		DamageComponent* OtherDmgComp = Actor->GetFirstComponentOfType<DamageComponent>();
-		OtherDmgComp->AddNewDamageRecevingActor(Monster);
-	}
-
-}
-
-void dae::SpawnerComponent::ResetSpawns()
-{
-
-	m_SpawnLocation = { 270,5 };
-	for (size_t idx{ 0 }; idx < m_MonstersSpawned.size(); ++idx)
-	{
-		AIMovementComponent* AIMovComp = m_MonstersSpawned[idx]->GetFirstComponentOfType<AIMovementComponent>();
-		if (AIMovComp)
+		if (!actor) continue;
+		if (auto* otherDmg = actor->GetFirstComponentOfType<DamageComponent>())
 		{
-			AIMovComp->bStopPathFinding = true;
-			m_MonstersSpawned[idx]->SetLocalPosition(m_SpawnLocation.x, m_SpawnLocation.y);
-			AIMovComp->RecreatePath(static_cast<int>(idx + 1));
-			AIMovComp->bStopPathFinding = false;
-			m_SpawnLocation += glm::ivec2{ 150 * (idx + 1),5 };
+			otherDmg->AddNewDamageRecevingActor(Monster);
 		}
-		
 	}
 
+	m_MonstersSpawned.emplace_back(Monster);
 }
 
+void SpawnerComponent::ResetSpawns()
+{
+	for (GameObject* m : m_MonstersSpawned)
+	{
+		if (m) m->Destroy();
+	}
+	m_MonstersSpawned.clear();
 
+	m_SpawnedMonsters = 0;
+	m_TimeSinceLastSpawn = 0.f;
+	m_NextSpawnDelay = ComputeNextDelay();
+
+	m_SpawnLocation = m_SpawnOrigin;
+}
