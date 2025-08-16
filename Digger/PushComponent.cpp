@@ -4,7 +4,6 @@
 #include "MathUtils.h"
 #include "SDL_render.h"
 #include "Renderer.h"
-// #include "GravityComponent.h" // removed
 #include "ScoreComponent.h"
 #include <string>
 

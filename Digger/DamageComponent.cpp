@@ -3,7 +3,6 @@
 #include "AnimControllerComponent.h"
 #include "MathUtils.h"
 #include "HealthComponent.h"
-// #include "GravityComponent.h" // no longer needed
 #include "ScoreComponent.h"
 #include <string>
 
@@ -16,7 +15,6 @@ namespace
 
 void dae::DamageComponent::Update(const float)
 {
-	// Build (slightly inset) damage rect in world space
 	const auto ownerPos = GetOwner()->GetWorldPosition();
 	const glm::ivec4 dmgRectI4 =
 	{
@@ -27,7 +25,6 @@ void dae::DamageComponent::Update(const float)
 	};
 	SDL_Rect dmgRectSDL{ dmgRectI4.x, dmgRectI4.y, dmgRectI4.z, dmgRectI4.w };
 
-	// Should this component deal damage right now?
 	bShouldDamage = bDoesDamageWithoutCondition;
 	if (!bDoesDamageWithoutCondition)
 	{
@@ -46,7 +43,6 @@ void dae::DamageComponent::Update(const float)
 
 	if (!bShouldDamage) return;
 
-	// Check overlap vs. other actors and apply damage/effects
 	for (GameObject* actor : m_OtherActors)
 	{
 		if (!actor) continue;
@@ -54,7 +50,6 @@ void dae::DamageComponent::Update(const float)
 		auto* anim = actor->GetFirstComponentOfType<AnimControllerComponent>();
 		if (!anim) continue;
 
-		// Compute actor's collision rect (same logic you had)
 		glm::ivec2 res = anim->GetCurrentState()->GetFlipBook()->GetUsedTexture()->GetTextureResolution();
 		res.x /= 4;
 
@@ -74,7 +69,6 @@ void dae::DamageComponent::Update(const float)
 		{
 			if (auto* health = actor->GetFirstComponentOfType<HealthComponent>())
 			{
-				// Award score if applicable (kept your logic)
 				if (actor->m_Name != "Digger")
 				{
 					if (auto* score = actor->GetFirstComponentOfType<ScoreComponent>())
@@ -84,7 +78,6 @@ void dae::DamageComponent::Update(const float)
 					}
 				}
 
-				// Kill the actor if not already dead
 				const auto* cur = anim->GetCurrentState();
 				if (!cur || cur->GetStateName() != kStateDead)
 				{
