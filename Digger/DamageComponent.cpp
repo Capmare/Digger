@@ -3,71 +3,94 @@
 #include "AnimControllerComponent.h"
 #include "MathUtils.h"
 #include "HealthComponent.h"
-#include "GravityComponent.h"
+// #include "GravityComponent.h" // no longer needed
 #include "ScoreComponent.h"
+#include <string>
 
-void dae::DamageComponent::Update(const float )
+namespace
 {
-	glm::ivec4 DmgRect = {
-		static_cast<int>(GetOwner()->GetWorldPosition().x + m_DamageSquare.x + 3),
-		static_cast<int>(GetOwner()->GetWorldPosition().y + m_DamageSquare.y + 3),
+	constexpr const char* kStateFalling = "Falling";
+	constexpr const char* kStateDestroyed = "Destroyed";
+	constexpr const char* kStateDead = "Dead";
+}
+
+void dae::DamageComponent::Update(const float)
+{
+	// Build (slightly inset) damage rect in world space
+	const auto ownerPos = GetOwner()->GetWorldPosition();
+	const glm::ivec4 dmgRectI4 =
+	{
+		static_cast<int>(ownerPos.x + m_DamageSquare.x + 3),
+		static_cast<int>(ownerPos.y + m_DamageSquare.y + 3),
 		m_DamageSquare.z - 3,
 		m_DamageSquare.w - 3
 	};
+	SDL_Rect dmgRectSDL{ dmgRectI4.x, dmgRectI4.y, dmgRectI4.z, dmgRectI4.w };
+
+	// Should this component deal damage right now?
 	bShouldDamage = bDoesDamageWithoutCondition;
-	GravityComponent* GravityComp = GetOwner()->GetFirstComponentOfType<GravityComponent>();
-	if (GravityComp && !bDoesDamageWithoutCondition)
+	if (!bDoesDamageWithoutCondition)
 	{
-		bShouldDamage = GravityComp->GetIsFalling() && !GravityComp->GetIsBroken();
+		if (auto* ownerAnim = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>())
+		{
+			const auto* st = ownerAnim->GetCurrentState();
+			const bool isFalling = (st && st->GetStateName() == kStateFalling);
+			const bool isDestroyed = (st && st->GetStateName() == kStateDestroyed);
+			bShouldDamage = isFalling && !isDestroyed;
+		}
+		else
+		{
+			bShouldDamage = false;
+		}
 	}
 
-	for (GameObject* Actors : m_OtherActors)
+	if (!bShouldDamage) return;
+
+	// Check overlap vs. other actors and apply damage/effects
+	for (GameObject* actor : m_OtherActors)
 	{
-		if (!Actors) return;
-		if (!bShouldDamage) continue;
+		if (!actor) continue;
 
-		if (AnimControllerComponent* AnimComponent = Actors->GetFirstComponentOfType<AnimControllerComponent>())
+		auto* anim = actor->GetFirstComponentOfType<AnimControllerComponent>();
+		if (!anim) continue;
+
+		// Compute actor's collision rect (same logic you had)
+		glm::ivec2 res = anim->GetCurrentState()->GetFlipBook()->GetUsedTexture()->GetTextureResolution();
+		res.x /= 4;
+
+		const glm::ivec2 actorPos{
+			static_cast<int>(actor->GetWorldPosition().x),
+			static_cast<int>(actor->GetWorldPosition().y)
+		};
+
+		SDL_Rect actorRect{
+			actorPos.x + m_CollisionOffset,
+			actorPos.y + m_CollisionOffset,
+			res.x - 2 * m_CollisionOffset,
+			res.y - 2 * m_CollisionOffset
+		};
+
+		if (SDL_HasIntersection(&dmgRectSDL, &actorRect))
 		{
-			glm::ivec2 Resolution = AnimComponent->GetCurrentState()->GetFlipBook()->GetUsedTexture()->GetTextureResolution();
-			Resolution.x /= 4;  
-
-			glm::ivec2 ActorPos = { static_cast<int>(Actors->GetWorldPosition().x), static_cast<int>(Actors->GetWorldPosition().y) };
-
-			SDL_Rect ActorRect = {
-				ActorPos.x + m_CollisionOffset,
-				ActorPos.y + m_CollisionOffset,
-				Resolution.x - 2 * m_CollisionOffset,
-				Resolution.y - 2 * m_CollisionOffset
-			};
-
-			SDL_Rect DamageRect = {
-				DmgRect.x, DmgRect.y, DmgRect.z, DmgRect.w
-			};
-
-			// Check for AABB overlap
-			bool isOverlapping = SDL_HasIntersection(&DamageRect, &ActorRect);
-			if (isOverlapping)
+			if (auto* health = actor->GetFirstComponentOfType<HealthComponent>())
 			{
-				if (HealthComponent* HealthComp = Actors->GetFirstComponentOfType<HealthComponent>())
+				// Award score if applicable (kept your logic)
+				if (actor->m_Name != "Digger")
 				{
-					if (Actors->m_Name != "Digger")
+					if (auto* score = actor->GetFirstComponentOfType<ScoreComponent>())
 					{
-						ScoreComponent* ScoreComp = Actors->GetFirstComponentOfType<ScoreComponent>();
-						if (ScoreComp)
-						{
-							ScoreComp->IncreaseScore(500);
-							GetOwner()->Destroy();
-						}
+						score->IncreaseScore(500);
+						GetOwner()->Destroy();
 					}
+				}
 
-					if (AnimComponent->GetCurrentState()->GetStateName() != "Dead")
-					{
-						HealthComp->DecreaseHealth(1);
-						AnimComponent->GetCurrentState()->GetFlipBook()->ResetFlipBook();
-						AnimComponent->ChangeState("Dead");
-					}
-
-					
+				// Kill the actor if not already dead
+				const auto* cur = anim->GetCurrentState();
+				if (!cur || cur->GetStateName() != kStateDead)
+				{
+					health->DecreaseHealth(1);
+					anim->GetCurrentState()->GetFlipBook()->ResetFlipBook();
+					anim->ChangeState(kStateDead);
 				}
 			}
 		}

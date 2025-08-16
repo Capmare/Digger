@@ -4,122 +4,131 @@
 #include "Renderer.h"
 #include "AnimControllerComponent.h"
 #include "DamageComponent.h"
+#include <cmath>
+#include <string>
 
-dae::GravityComponent::GravityComponent(GameObject* Owner, class MapComponent* MapComp) : BaseComponent(Owner), m_MapComponent(MapComp)
+namespace
+{
+	constexpr int   kSamples = 20;
+	constexpr float kEmptyRatio = 0.6f;
+	constexpr int   kProbeOffsetY = 20;
+	constexpr int   kDarkThreshold = 10;
+	constexpr float kFallSpeed = 80.f;
+	constexpr int   kScreenBottom = 200;
+	constexpr int   kObjectHeight = 20;
+	constexpr float kBreakFallDistance = 30.f;
+	constexpr float kShakePixelOffset = 0.5f;
+
+	constexpr const char* kStateIdle = "Idle";
+	constexpr const char* kStateFalling = "Falling";
+	constexpr const char* kStateDestroyed = "Destroyed";
+}
+
+dae::GravityComponent::GravityComponent(GameObject* Owner, class MapComponent* MapComp)
+	: BaseComponent(Owner)
+	, m_MapComponent(MapComp)
 {
 	AnimComponent = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
 }
 
-void dae::GravityComponent::FixedUpdate(const float fixedDeltaTime)
+void dae::GravityComponent::FixedUpdate(const float dt)
 {
 	if (!m_MapComponent) return;
 
-	int emptyCount = 0;
-	const int totalChecks = 20;
-	dae::LockedTexture TempMap{};
+	auto* owner = GetOwner();
 
+	auto currentStateName = [&]() -> std::string {
+		if (!AnimComponent) return kStateIdle;
+		const auto* s = AnimComponent->GetCurrentState();
+		return s ? s->GetStateName() : std::string{ kStateIdle };
+		};
 
-	Renderer::GetInstance().LockTexture(m_MapComponent->GetMapTexture(), TempMap);
-	for (int idx = 0; idx < totalChecks; ++idx)
-	{
-		SDL_Color color = Renderer::GetInstance().FastReadPixel(
-			TempMap,
-			static_cast<int>(GetOwner()->GetWorldPosition().x + idx),
-			static_cast<int>(GetOwner()->GetWorldPosition().y + 20)
-		);
+	auto setState = [&](const char* s)
+		{
+			if (!AnimComponent) return;
+			const auto* cur = AnimComponent->GetCurrentState();
+			if (cur && cur->GetStateName() == kStateDestroyed) return; // lock terminal state
+			if (!cur || cur->GetStateName() != s)
+				AnimComponent->ChangeState(s);
+		};
 
-		if (color.r < 10 && color.g < 10 && color.b < 10)
-			++emptyCount;
-	}
-	Renderer::GetInstance().UnlockTexture(TempMap);
+	const std::string state = currentStateName();
+	const auto wp = owner->GetWorldPosition();
 
-	bool bCanFall = (emptyCount >= totalChecks * 0.6f);
+	auto canFallHere = [&]() -> bool {
+		int emptyCount = 0;
+		dae::LockedTexture temp{};
+		auto& R = Renderer::GetInstance();
 
-	if (!bCanFall)
-	{
-		shakeTimer = 0.0f; // prevent shaking on solid ground
-	}
+		R.LockTexture(m_MapComponent->GetMapTexture(), temp);
+		for (int i = 0; i < kSamples; ++i)
+		{
+			const int px = static_cast<int>(wp.x) + i;
+			const int py = static_cast<int>(wp.y) + kProbeOffsetY;
+			const SDL_Color c = R.FastReadPixel(temp, px, py);
+			if (c.r < kDarkThreshold && c.g < kDarkThreshold && c.b < kDarkThreshold)
+				++emptyCount;
+		}
+		R.UnlockTexture(temp);
+
+		return emptyCount >= static_cast<int>(kSamples * kEmptyRatio);
+		};
+
+	const bool bCanFall = canFallHere();
+	if (!bCanFall) shakeTimer = 0.0f;
 
 	if (bCanFall)
 	{
-		if (!bIsFalling && !bIsBroken && shakeTimer < shakeDuration)
+		if (state != kStateFalling && state != kStateDestroyed && shakeTimer < shakeDuration)
 		{
-			shakeTimer += fixedDeltaTime;
-			timeSinceLastShake += fixedDeltaTime;
-
+			shakeTimer += dt;
+			timeSinceLastShake += dt;
 			if (timeSinceLastShake >= shakeInterval)
 			{
 				timeSinceLastShake = 0.0f;
-				shakeDirection *= -1; // Flip shake direction
+				shakeDirection *= -1;
 			}
-
-			auto pos = GetOwner()->GetLocalTransform().m_position;
-			pos.x += shakeDirection * 0.5f;
-			GetOwner()->SetLocalPosition(pos);
-
+			auto lp = owner->GetLocalTransform().m_position;
+			lp.x += shakeDirection * kShakePixelOffset;
+			owner->SetLocalPosition(lp);
 			return;
 		}
 
-		if (!bIsFalling)
+		if (state != kStateFalling)
 		{
-			m_StartFallingYPosition = GetOwner()->GetLocalTransform().m_position.y;
-			if (!bIsBroken && AnimComponent)
-				AnimComponent->ChangeState("Falling");
-
-			bIsFalling = true;
+			m_StartFallingYPosition = owner->GetLocalTransform().m_position.y;
+			setState(kStateFalling);
 			shakeTimer = 0.0f;
 			timeSinceLastShake = 0.0f;
 		}
 
-		// Apply fall
-		auto pos = GetOwner()->GetWorldPosition();
-		pos.y += 80.0f * fixedDeltaTime;
+		auto newPos = wp;
+		newPos.y += kFallSpeed * dt;
 
-		const int screenBottom = 200;
-		const int objectHeight = 20;
-		if (pos.y > screenBottom - objectHeight)
+		const int floorY = kScreenBottom - kObjectHeight;
+		if (newPos.y > floorY)
 		{
-			pos.y = screenBottom - objectHeight;
-
-			bIsFalling = false;
-
-			if (!bIsBroken && AnimComponent)
-				AnimComponent->ChangeState("Destroyed");
-
-			bIsBroken = true;
+			newPos.y = static_cast<float>(floorY);
+			setState(kStateDestroyed);
 		}
 
-		GetOwner()->SetLocalPosition(static_cast<int>(pos.x), static_cast<int>(pos.y));
+		owner->SetLocalPosition(static_cast<int>(newPos.x), static_cast<int>(newPos.y));
 		return;
 	}
-	else
+
+
+	if (state == kStateFalling)
 	{
-		if (bIsBroken) return;
+		const float fallDistance =
+			std::abs(owner->GetLocalTransform().m_position.y - m_StartFallingYPosition);
 
-		if (bIsFalling)
-		{
-			if (abs(GetOwner()->GetLocalTransform().m_position.y - m_StartFallingYPosition) > 30)
-			{
-				if (AnimComponent)
-					AnimComponent->ChangeState("Destroyed");
-
-				bIsBroken = true;
-			}
-			else
-			{
-				if (AnimComponent)
-					AnimComponent->ChangeState("Idle");
-			}
-		}
-
-		bIsFalling = false;
+		if (fallDistance > kBreakFallDistance)
+			setState(kStateDestroyed); 
+		else
+			setState(kStateIdle);
 	}
 }
 
 void dae::GravityComponent::Render() const
 {
-	// for (int idx{}; idx < 20; ++idx)
-	// {
-	// 	Renderer::GetInstance().DrawPoint(static_cast<int>(GetOwner()->GetWorldPosition().x + idx), static_cast<int>(GetOwner()->GetWorldPosition().y + 20), 2);
-	// }
 }

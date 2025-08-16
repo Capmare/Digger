@@ -4,95 +4,106 @@
 #include "MathUtils.h"
 #include "SDL_render.h"
 #include "Renderer.h"
-#include "GravityComponent.h"
+// #include "GravityComponent.h" // removed
 #include "ScoreComponent.h"
+#include <string>
+
+namespace {
+	constexpr const char* kStateFalling = "Falling";
+	constexpr const char* kStateDestroyed = "Destroyed";
+	constexpr const char* kStateDead = "Dead";
+}
 
 void dae::PushComponent::Push(float PushAmmount)
 {
-	GravityComponent* GravityComp = GetOwner()->GetFirstComponentOfType<GravityComponent>();
-	if (!GravityComp->GetIsFalling())
+	if (auto* ownerAnim = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>())
 	{
-		GetOwner()->SetLocalPosition(
-			static_cast<int>(GetOwner()->GetWorldPosition().x + (m_Direction * PushAmmount)),
-			static_cast<int>(GetOwner()->GetWorldPosition().y)
-		);
+		const auto* st = ownerAnim->GetCurrentState();
+		const std::string name = st ? st->GetStateName() : std::string{};
+		if (name == kStateFalling || name == kStateDestroyed)
+			return;
 	}
-	
+
+	GetOwner()->SetLocalPosition(
+		static_cast<int>(GetOwner()->GetWorldPosition().x + (m_Direction * PushAmmount)),
+		static_cast<int>(GetOwner()->GetWorldPosition().y)
+	);
 }
 
-void dae::PushComponent::Update(const float )
+void dae::PushComponent::Update(const float)
 {
 	m_CollisionPoint.x = static_cast<int>(m_PushingPoint.x + GetOwner()->GetWorldPosition().x);
 	m_CollisionPoint.y = static_cast<int>(m_PushingPoint.y + GetOwner()->GetWorldPosition().y);
 
 	for (GameObject* Actor : m_OtherActors)
 	{
+		if (!Actor) continue;
+
 		if (!bIsInstantlyPickup)
 		{
-			AnimControllerComponent* AnimController = Actor->GetFirstComponentOfType<AnimControllerComponent>();
-			if (AnimController->GetCurrentState()->GetStateName() == "Dead") continue;
+			auto* anim = Actor->GetFirstComponentOfType<AnimControllerComponent>();
+			if (!anim) continue;
 
-			glm::ivec2 ActorSize = AnimController->GetCurrentState()->GetFlipBook()->GetUsedTexture()->GetTextureResolution();
-			ActorSize.x /= 4;
-			glm::ivec4 CollisionSize
-			{
-				Actor->GetWorldPosition().x,
-				Actor->GetWorldPosition().y,
-				ActorSize.x,
-				ActorSize.y
+			const auto* st = anim->GetCurrentState();
+			if (st && st->GetStateName() == kStateDead) continue;
 
+			glm::ivec2 actorSize = st
+				? st->GetFlipBook()->GetUsedTexture()->GetTextureResolution()
+				: glm::ivec2{ 0,0 };
+			actorSize.x /= 4;
+
+			const glm::ivec4 actorRect{
+				static_cast<int>(Actor->GetWorldPosition().x),
+				static_cast<int>(Actor->GetWorldPosition().y),
+				actorSize.x,
+				actorSize.y
 			};
-			if (dae::MathUtils::CheckPointInSquare(CollisionSize, m_CollisionPoint))
-			{
 
-				AnimControllerComponent* AnimControlerBag = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
-				if (AnimControlerBag->GetCurrentState()->GetStateName() == "Destroyed")
+			if (dae::MathUtils::CheckPointInSquare(actorRect, m_CollisionPoint))
+			{
+				auto* ownerAnim = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>();
+				const bool ownerDestroyed =
+					ownerAnim && ownerAnim->GetCurrentState() &&
+					ownerAnim->GetCurrentState()->GetStateName() == kStateDestroyed;
+
+				if (ownerDestroyed)
 				{
-					ScoreComponent* ScoreComp = Actor->GetFirstComponentOfType<ScoreComponent>();
-					if (ScoreComp)
+					if (auto* score = Actor->GetFirstComponentOfType<ScoreComponent>())
 					{
-						ScoreComp->IncreaseScore(500);
+						score->IncreaseScore(500);
 						GetOwner()->Destroy();
 					}
 				}
 				else
 				{
-					Push(10);
+					Push(10.f);
 				}
 			}
 		}
 		else
 		{
-			glm::ivec2 ActorSize{ 20,20 };
-			glm::ivec4 CollisionSize
-			{
-				Actor->GetWorldPosition().x,
-				Actor->GetWorldPosition().y,
-				ActorSize.x,
-				ActorSize.y
-
+			const glm::ivec4 actorRect{
+				static_cast<int>(Actor->GetWorldPosition().x),
+				static_cast<int>(Actor->GetWorldPosition().y),
+				20, 20
 			};
 
-			if (dae::MathUtils::CheckPointInSquare(CollisionSize, m_CollisionPoint))
+			if (dae::MathUtils::CheckPointInSquare(actorRect, m_CollisionPoint))
 			{
-				ScoreComponent* ScoreComp = Actor->GetFirstComponentOfType<ScoreComponent>();
-				if (ScoreComp)
+				if (auto* score = Actor->GetFirstComponentOfType<ScoreComponent>())
 				{
-					ScoreComp->IncreaseScore(m_Score);
+					score->IncreaseScore(m_Score);
 					GetOwner()->Destroy();
 				}
 			}
 		}
-		
 	}
 }
 
 void dae::PushComponent::Render() const
 {
+	// debug point draw (optional)
 	// SDL_SetRenderDrawColor(Renderer::GetInstance().GetSDLRenderer(), 255, 0, 0, 255);
-	// 
 	// SDL_RenderDrawPoint(Renderer::GetInstance().GetSDLRenderer(), m_CollisionPoint.x, m_CollisionPoint.y);
 	// SDL_SetRenderDrawColor(Renderer::GetInstance().GetSDLRenderer(), 0, 0, 0, 255);
-
 }
-
