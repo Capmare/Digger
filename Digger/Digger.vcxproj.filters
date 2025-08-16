@@ -72,6 +72,9 @@
     <ClCompile Include="CombatInformationComponent.cpp">
       <Filter>Components\Source</Filter>
     </ClCompile>
+    <ClCompile Include="MenuComponent.cpp">
+      <Filter>Components\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HealthComponent.h">
@@ -126,6 +129,9 @@
       <Filter>Components\Headers</Filter>
     </ClInclude>
     <ClInclude Include="CombatInformationComponent.h">
+      <Filter>Components\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuComponent.h">
       <Filter>Components\Headers</Filter>
     </ClInclude>
   </ItemGroup>
