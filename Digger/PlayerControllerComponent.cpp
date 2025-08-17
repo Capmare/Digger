@@ -12,6 +12,11 @@
 constexpr int m_MoveDistance{ 15 };
 extern void OnAllEmeraldsCollected();
 
+
+namespace {
+	bool g_waitF1Release = false;
+}
+
 namespace dae
 {
 	class PlayerControllerComponent::Impl
@@ -40,10 +45,15 @@ namespace dae
 			m_DeadZonePercentage = 0.24f; 
 		}
 
-		void Update(const float)
+		void Update(const float deltaTime)
 		{
 			HandleButtonXInput();
 			ThumbInputReturn thumb = HandleThumbXInput(); (void)thumb;
+
+			if (m_LevelAdvanceCooldown > 0.f)
+				m_LevelAdvanceCooldown -= deltaTime;
+
+			std::cout << m_LevelAdvanceCooldown << std::endl;
 
 			if (Command* cmd = HandleInput())
 				cmd->Exec(*m_Owner);
@@ -51,6 +61,25 @@ namespace dae
 
 		Command* HandleInput()
 		{
+			const Uint8* key = SDL_GetKeyboardState(nullptr);
+			const bool f1 = key[SDL_SCANCODE_F1] != 0; 
+
+			if (g_waitF1Release)
+			{
+				if (!f1) g_waitF1Release = false;  
+				m_prevF1 = f1;                     
+			}
+			else
+			{
+				if (f1 && !m_prevF1 && m_LevelAdvanceCooldown <= 0.f)
+				{
+					OnAllEmeraldsCollected();
+					m_LevelAdvanceCooldown = 0.35f;
+					g_waitF1Release = true;        
+				}
+				m_prevF1 = f1;
+			}
+
 			if (!m_bIsSecondController)
 			{
 
@@ -72,15 +101,12 @@ namespace dae
 						if (m_LastDirection.y > 0) return ShootDown.get();
 					}
 				}
-				const Uint8* key = SDL_GetKeyboardState(nullptr);
 
-				if (key[SDL_SCANCODE_F1]) { OnAllEmeraldsCollected(); }
 
 			}
 			else
 			{
 				SDL_PumpEvents();
-				const Uint8* key = SDL_GetKeyboardState(nullptr);
 
 				if (key[SDL_SCANCODE_X] && !previousKeyState[SDL_SCANCODE_X]) previousKeyState[SDL_SCANCODE_X] = true;
 				if (!key[SDL_SCANCODE_X]) previousKeyState[SDL_SCANCODE_X] = false;
@@ -93,7 +119,6 @@ namespace dae
 				if (key[SDL_SCANCODE_A]) { m_LastDirection = { -1, 0 }; return MoveLeft.get(); } 
 				if (key[SDL_SCANCODE_D]) { m_LastDirection = { 1, 0 }; return MoveRight.get(); }
 
-				if (key[SDL_SCANCODE_F1]) { OnAllEmeraldsCollected(); }
 
 				if (key[SDL_SCANCODE_SPACE])
 				{
@@ -195,6 +220,10 @@ namespace dae
 		int   m_ThisFramePressedButtons{};
 		int   m_ThisFrameReleasedButtons{};
 		float m_DeadZonePercentage{ 0.24f };
+
+
+		bool  m_prevF1{ false };
+		float m_LevelAdvanceCooldown{ 0.f };
 
 		bool previousKeyState[SDL_NUM_SCANCODES]{}; 
 	};
