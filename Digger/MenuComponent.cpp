@@ -3,8 +3,13 @@
 #include <Windows.h>
 #include <Xinput.h>
 #include <SDL.h>
+#include <fstream>
+#include <algorithm>
 #include "MenuComponent.h"
 #include "SceneManager.h"
+#include "ResourceManager.h"
+#include "TextComponent.h"
+#include "Scene.h"
 
 void LoadSinglePlayer();
 void LoadCoOp();
@@ -15,6 +20,51 @@ namespace dae {
 	MenuComponent::MenuComponent(GameObject* owner)
 		: BaseComponent(owner) {
 	}
+
+	void MenuComponent::BuildScoreboard()
+	{
+		m_TitleX = 8;   m_TitleY = 8;
+		m_HeaderY = 20;
+		m_NameX = 8;   m_ScoreX = 100;   
+		m_BaseY = 32;  m_LineStep = 12;
+		m_MaxRows = 12;
+
+		auto& scene = SceneManager::GetInstance().GetLastScene();
+		m_ScoreRoot = scene.CreateNewGameObject();
+
+		auto font = ResourceManager::GetInstance().LoadFont("GameFont.ttf", 12);
+
+		m_ScoreRoot->CreateComponent<TextComponent>("Scoreboard", font, SDL_Color{ 255,220,120,255 })
+			->SetPosition(static_cast<float>(m_TitleX), static_cast<float>(m_TitleY));
+
+		m_ScoreRoot->CreateComponent<TextComponent>("Name", font, SDL_Color{ 200,200,200,255 })
+			->SetPosition(static_cast<float>(m_NameX), static_cast<float>(m_HeaderY));
+		m_ScoreRoot->CreateComponent<TextComponent>("Score", font, SDL_Color{ 200,200,200,255 })
+			->SetPosition(static_cast<float>(m_ScoreX), static_cast<float>(m_HeaderY));
+
+		auto scores = LoadScores(m_ScoreFile);
+		if (scores.empty()) {
+			m_ScoreRoot->CreateComponent<TextComponent>("- no scores yet -", font, SDL_Color{ 180,180,180,255 })
+				->SetPosition(static_cast<float>(m_NameX), static_cast<float>(m_BaseY));
+			return;
+		}
+
+		for (int i = 0; i < static_cast<int>(scores.size()) && i < m_MaxRows; ++i) {
+			const auto& [name, score] = scores[i];
+			const int y = static_cast<int>(m_BaseY + i * m_LineStep);
+
+			const float rankX = static_cast<float>(std::max(0, static_cast<int>(m_NameX - 8)));
+			m_ScoreRoot->CreateComponent<TextComponent>(std::to_string(i + 1) + ".", font, SDL_Color{ 150,150,150,255 })
+				->SetPosition(rankX, static_cast<float>(y));
+
+			m_ScoreRoot->CreateComponent<TextComponent>(name, font, SDL_Color{ 255,255,255,255 })
+				->SetPosition(static_cast<float>(m_NameX), static_cast<float>(y));
+
+			m_ScoreRoot->CreateComponent<TextComponent>(std::to_string(score), font, SDL_Color{ 255,255,255,255 })
+				->SetPosition(static_cast<float>(m_ScoreX), static_cast<float>(y));
+		}
+	}
+
 
 	void MenuComponent::Update(float)
 	{
@@ -84,6 +134,44 @@ namespace dae {
 		m_prevKeyA = keyA;
 		m_prevKeyX = keyX;
 		m_prevKeyY = keyY;
+	}
+
+	void MenuComponent::Trim(std::string& s)
+	{
+		auto notSpace = [](unsigned char c) { return !std::isspace(c); };
+		s.erase(s.begin(), std::find_if(s.begin(), s.end(), notSpace));
+		s.erase(std::find_if(s.rbegin(), s.rend(), notSpace).base(), s.end());
+	}
+
+	bool MenuComponent::ParseLine(const std::string& line, std::string& nameOut, int& scoreOut)
+	{
+		auto pos = line.find(',');
+		if (pos == std::string::npos) return false;
+		std::string name = line.substr(0, pos);
+		std::string scoreStr = line.substr(pos + 1);
+		Trim(name);
+		Trim(scoreStr);
+		if (name.empty() || scoreStr.empty()) return false;
+		try { scoreOut = std::stoi(scoreStr); }
+		catch (...) { return false; }
+		nameOut = std::move(name);
+		return true;
+	}
+
+	std::vector<std::pair<std::string, int>> MenuComponent::LoadScores(const std::string& path)
+	{
+		std::vector<std::pair<std::string, int>> rows;
+		std::ifstream f(path);
+		if (!f.is_open()) return rows;
+
+		std::string line;
+		while (std::getline(f, line)) {
+			std::string name; int score{};
+			if (ParseLine(line, name, score)) rows.emplace_back(std::move(name), score);
+		}
+		std::sort(rows.begin(), rows.end(),
+			[](auto& a, auto& b) { return a.second > b.second; });
+		return rows;
 	}
 
 } // namespace dae
