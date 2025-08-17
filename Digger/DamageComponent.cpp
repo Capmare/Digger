@@ -45,59 +45,61 @@ void dae::DamageComponent::Update(const float)
 		return a == nullptr || a->IsMarkedForDestroy();
 		});
 
-	for (GameObject* actor : m_OtherActors)
-	{
-		if (!actor || actor->IsMarkedForDestroy()) continue;
-
-		auto* anim = actor->GetFirstComponentOfType<AnimControllerComponent>();
-		if (!anim) continue;
-
-		const auto* st = anim->GetCurrentState();
-		if (!st) continue;
-
-		const auto* fb = st->GetFlipBook();
-		if (!fb) continue;
-
-		const auto* tex = fb->GetUsedTexture();
-		if (!tex) continue;
-
-		glm::ivec2 res = tex->GetTextureResolution();
-		res.x /= 4;
-
-		const glm::ivec2 actorPos{
-			static_cast<int>(actor->GetWorldPosition().x),
-			static_cast<int>(actor->GetWorldPosition().y)
-		};
-
-		SDL_Rect actorRect{
-			actorPos.x + m_CollisionOffset,
-			actorPos.y + m_CollisionOffset,
-			res.x - 2 * m_CollisionOffset,
-			res.y - 2 * m_CollisionOffset
-		};
-
-		if (!SDL_HasIntersection(&dmgRectSDL, &actorRect)) continue;
-
-		if (auto* health = actor->GetFirstComponentOfType<HealthComponent>())
+	auto visitActor = [&](GameObject* actor)
 		{
-			if (actor->m_Name != "Digger")
+			if (!actor || actor->IsMarkedForDestroy()) return;
+
+			auto* anim = actor->GetFirstComponentOfType<AnimControllerComponent>();
+			if (!anim) return;
+
+			const auto* st = anim->GetCurrentState(); if (!st) return;
+			const auto* fb = st->GetFlipBook();       if (!fb) return;
+			const auto* tex = fb->GetUsedTexture();    if (!tex) return;
+
+			glm::ivec2 res = tex->GetTextureResolution();
+			res.x /= 4;
+
+			const glm::ivec2 actorPos{
+				static_cast<int>(actor->GetWorldPosition().x),
+				static_cast<int>(actor->GetWorldPosition().y)
+			};
+
+			SDL_Rect actorRect{
+				actorPos.x + m_CollisionOffset,
+				actorPos.y + m_CollisionOffset,
+				res.x - 2 * m_CollisionOffset,
+				res.y - 2 * m_CollisionOffset
+			};
+
+			if (!SDL_HasIntersection(&dmgRectSDL, &actorRect)) return;
+
+			if (auto* health = actor->GetFirstComponentOfType<HealthComponent>())
 			{
-				if (auto* score = actor->GetFirstComponentOfType<ScoreComponent>())
+				if (actor->m_Name != "Digger")
 				{
-					score->IncreaseScore(500);
-					owner->Destroy();          
+					if (auto* score = actor->GetFirstComponentOfType<ScoreComponent>())
+					{
+						score->IncreaseScore(500);
+						owner->Destroy(); 
+					}
+				}
+
+				const auto* cur = anim->GetCurrentState();
+				if (!cur || cur->GetStateName() != kStateDead)
+				{
+					health->DecreaseHealth(1);
+					if (auto* cur2 = anim->GetCurrentState())
+						if (auto* fb2 = cur2->GetFlipBook()) fb2->ResetFlipBook();
+					anim->ChangeState(kStateDead);
 				}
 			}
+		};
 
-			const auto* cur = anim->GetCurrentState();
-			if (!cur || cur->GetStateName() != kStateDead)
-			{
-				health->DecreaseHealth(1);
-				if (auto* cur2 = anim->GetCurrentState())
-					if (auto* fb2 = cur2->GetFlipBook()) fb2->ResetFlipBook();
-				anim->ChangeState(kStateDead);
-			}
-		}
+	for (GameObject* a : m_OtherActors) visitActor(a);
+
+	if (m_DynamicActors)
+	{
+		for (GameObject* a : *m_DynamicActors) visitActor(a);
 	}
 }
 
