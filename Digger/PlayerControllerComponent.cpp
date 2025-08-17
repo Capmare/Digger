@@ -1,11 +1,13 @@
+// PlayerControllerComponent.cpp
 #include "GameCommands.h"
 #include "PlayerControllerComponent.h"
-#include <iostream>
+
 #define WINDOWS_LEAN_AND_MEAN
 #include <windows.h>
 #include <Xinput.h>
-#include "imgui_impl_sdl2.h"
+
 #include <SDL.h>
+#include <iostream>
 
 constexpr int m_MoveDistance{ 15 };
 extern void OnAllEmeraldsCollected();
@@ -14,211 +16,117 @@ namespace dae
 {
 	class PlayerControllerComponent::Impl
 	{
-		GameObject* m_Owner{};
-
-		std::unique_ptr<Command_Move> MoveUp;
-		std::unique_ptr<Command_Move> MoveDown;
-		std::unique_ptr<Command_Move> MoveRight;
-		std::unique_ptr<Command_Move> MoveLeft;
-													   
-		std::unique_ptr<Command_Move> MoveLeftUp;
-		std::unique_ptr<Command_Move> MoveRightUp;
-		std::unique_ptr<Command_Move> MoveLeftDown;
-		std::unique_ptr<Command_Move> MoveRightDown;
-
-		std::unique_ptr<Command_DecreaseHealth> DecreaseHealth;
-		std::unique_ptr<Command_IncreaseScore> IncreaseScore;
-		std::unique_ptr<Command_StopAllSound> StopAllSound;
-		std::unique_ptr<Command_Shoot> ShootLeft;
-		std::unique_ptr<Command_Shoot> ShootRight;
-		std::unique_ptr<Command_Shoot> ShootUp;
-		std::unique_ptr<Command_Shoot> ShootDown;
-
-		bool m_bIsSecondController{false};
-
-		glm::vec2 m_LastDirection{};
-
 	public:
-
-		Impl(GameObject* Owner,int ControllerIdx) : 
-			m_Owner			{ Owner },
-			MoveUp			{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,-m_MoveDistance }) },
-			MoveDown		{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,m_MoveDistance }) },
-			MoveRight		{ std::make_unique<dae::Command_Move>(glm::vec2{ m_MoveDistance,0 }) },
-			MoveLeft		{ std::make_unique<dae::Command_Move>(glm::vec2{ -m_MoveDistance,0 }) },
-
-			MoveLeftUp		{ std::make_unique<dae::Command_Move>(glm::vec2{ -1,-1 }) },
-			MoveRightUp		{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,-1 }) },
-			MoveLeftDown	{ std::make_unique<dae::Command_Move>(glm::vec2{ -1,1 }) },
-			MoveRightDown	{ std::make_unique<dae::Command_Move>(glm::vec2{ 1,1 }) },
-			DecreaseHealth	{ std::make_unique<dae::Command_DecreaseHealth>() },
-			IncreaseScore	{ std::make_unique<dae::Command_IncreaseScore>() },
-			StopAllSound	{ std::make_unique<dae::Command_StopAllSound>() },
-			ShootLeft		{ std::make_unique<dae::Command_Shoot>(glm::vec2{ -1,0 })},
-			ShootRight		{ std::make_unique<dae::Command_Shoot>(glm::vec2{ 1,0 })},
-			ShootUp			{ std::make_unique<dae::Command_Shoot>( glm::vec2{ 0,-1 })},
-			ShootDown		{ std::make_unique<dae::Command_Shoot>(glm::vec2{ 0,1 })},
-			m_ControllerIdx	{ ControllerIdx }
-
-		{};
-		~Impl() = default;
+		Impl(GameObject* owner, int controllerIdx)
+			: m_Owner{ owner }
+			, MoveUp{ std::make_unique<dae::Command_Move>(glm::vec2{ 0, -m_MoveDistance }) }
+			, MoveDown{ std::make_unique<dae::Command_Move>(glm::vec2{ 0,  m_MoveDistance }) }
+			, MoveRight{ std::make_unique<dae::Command_Move>(glm::vec2{  m_MoveDistance, 0 }) }
+			, MoveLeft{ std::make_unique<dae::Command_Move>(glm::vec2{ -m_MoveDistance, 0 }) }
+			, MoveLeftUp{ std::make_unique<dae::Command_Move>(glm::vec2{ -1, -1 }) }
+			, MoveRightUp{ std::make_unique<dae::Command_Move>(glm::vec2{  1, -1 }) }
+			, MoveLeftDown{ std::make_unique<dae::Command_Move>(glm::vec2{ -1,  1 }) }
+			, MoveRightDown{ std::make_unique<dae::Command_Move>(glm::vec2{  1,  1 }) }
+			, DecreaseHealth{ std::make_unique<dae::Command_DecreaseHealth>() }
+			, IncreaseScore{ std::make_unique<dae::Command_IncreaseScore>() }
+			, StopAllSound{ std::make_unique<dae::Command_StopAllSound>() }
+			, ShootLeft{ std::make_unique<dae::Command_Shoot>(glm::vec2{ -1, 0 }) }
+			, ShootRight{ std::make_unique<dae::Command_Shoot>(glm::vec2{  1, 0 }) }
+			, ShootUp{ std::make_unique<dae::Command_Shoot>(glm::vec2{  0,-1 }) }
+			, ShootDown{ std::make_unique<dae::Command_Shoot>(glm::vec2{  0, 1 }) }
+			, m_ControllerIdx{ controllerIdx }
+		{
+			m_bIsSecondController = (m_ControllerIdx == 1);
+			m_DeadZonePercentage = 0.24f; 
+		}
 
 		void Update(const float)
 		{
-			ThumbInputReturn ThumbInput = HandleThumbXInput();
-			HandleButtonXInput();			
-			Command* CurrentCommand = HandleInput();
-			if (CurrentCommand)
-			{
-				CurrentCommand->Exec(*m_Owner);
-			}
-			
-		}
+			HandleButtonXInput();
+			ThumbInputReturn thumb = HandleThumbXInput(); (void)thumb;
 
+			if (Command* cmd = HandleInput())
+				cmd->Exec(*m_Owner);
+		}
 
 		Command* HandleInput()
 		{
-			if (m_bIsSecondController == false)
+			if (!m_bIsSecondController)
 			{
-				// diagonal
-				//if (IsDpadPressed(DPadButton::DPAD_LEFT) && IsDpadPressed(DPadButton::DPAD_UP))
-				//{
-				//	return MoveLeftUp.get();
-				//}
-				//if (IsDpadPressed(DPadButton::DPAD_RIGHT) && IsDpadPressed(DPadButton::DPAD_UP))
-				//{
-				//	return MoveRightUp.get();
-				//}
-				//if (IsDpadPressed(DPadButton::DPAD_LEFT) && IsDpadPressed(DPadButton::DPAD_DOWN))
-				//{
-				//	return MoveLeftDown.get();
-				//}
-				//if (IsDpadPressed(DPadButton::DPAD_RIGHT) && IsDpadPressed(DPadButton::DPAD_DOWN))
-				//{
-				//	return MoveRightDown.get();
-				//}
 
-
-
-
-
-				// Normal movement
-				if (IsDpadPressed(DPadButton::DPAD_UP))
-				{
-					m_LastDirection = glm::vec2{ 0,-1 };
-					return MoveUp.get();
-				}
-				if (IsDpadPressed(DPadButton::DPAD_DOWN))
-				{
-					m_LastDirection = glm::vec2{ 0,1 };
-
-					return MoveDown.get();
-				}
-				if (IsDpadPressed(DPadButton::DPAD_LEFT))
-				{
-					m_LastDirection = glm::vec2{ -1,0 };
-
-					return MoveLeft.get();
-				}
-				if (IsDpadPressed(DPadButton::DPAD_RIGHT))
-				{
-					m_LastDirection = glm::vec2{ 1,0 };
-					return MoveRight.get();
-				}
+				if (IsDpadPressed(DPadButton::DPAD_UP)) { m_LastDirection = { 0,-1 }; return MoveUp.get(); }
+				if (IsDpadPressed(DPadButton::DPAD_DOWN)) { m_LastDirection = { 0, 1 }; return MoveDown.get(); }
+				if (IsDpadPressed(DPadButton::DPAD_LEFT)) { m_LastDirection = { -1, 0 }; return MoveLeft.get(); }
+				if (IsDpadPressed(DPadButton::DPAD_RIGHT)) { m_LastDirection = { 1, 0 }; return MoveRight.get(); }
 
 				if (IsGamepadPressed(GamepadButton::A))
 				{
-					if (m_LastDirection.x == -1)
+					if (m_LastDirection.y == 0)
 					{
-						return ShootLeft.get();
+						if (m_LastDirection.x < 0) return ShootLeft.get();
+						if (m_LastDirection.x > 0) return ShootRight.get();
 					}
-					if (m_LastDirection.x == 1)
+					else if (m_LastDirection.x == 0)
 					{
-						return ShootRight.get();
+						if (m_LastDirection.y < 0) return ShootUp.get();
+						if (m_LastDirection.y > 0) return ShootDown.get();
 					}
-					
 				}
-			
 			}
 			else
 			{
-				const Uint8* keyState = SDL_GetKeyboardState(NULL);
-				
-				// on pressed
-				if (keyState[SDL_SCANCODE_X] && !previousKeyState[SDL_SCANCODE_X])
-				{
-					previousKeyState[SDL_SCANCODE_X] = true; 
-					//return DecreaseHealth.get();
-				}
-				if (keyState[SDL_SCANCODE_C] && !previousKeyState[SDL_SCANCODE_C])
-				{
-					previousKeyState[SDL_SCANCODE_C] = true;
-					//return IncreaseScore.get();
-				}
-				// on release
-				if (!keyState[SDL_SCANCODE_X]) {
-					previousKeyState[SDL_SCANCODE_X] = false;  
-				}
-				if (!keyState[SDL_SCANCODE_C]) {
-					previousKeyState[SDL_SCANCODE_C] = false;  
-				}
+				SDL_PumpEvents();
+				const Uint8* key = SDL_GetKeyboardState(nullptr);
 
-				// Normal movement
-				if (keyState[SDL_SCANCODE_W]) 
-				{
-					m_LastDirection = glm::vec2{ 0,-1 };
-					return MoveUp.get();
-				}
-				if (keyState[SDL_SCANCODE_S])  
-				{
-					m_LastDirection = glm::vec2{ 0,1 };
-					return MoveDown.get();
-				}
-				if (keyState[SDL_SCANCODE_A])  
-				{
-					m_LastDirection = glm::vec2{ 1,0 };
-					return MoveLeft.get();
-				}
-				if (keyState[SDL_SCANCODE_D])  
-				{
-					m_LastDirection = glm::vec2{ 1,0 };
-					return MoveRight.get();
-				}
-				if (keyState[SDL_SCANCODE_F11])
-				{
-					OnAllEmeraldsCollected();
-				}
+				if (key[SDL_SCANCODE_X] && !previousKeyState[SDL_SCANCODE_X]) previousKeyState[SDL_SCANCODE_X] = true;
+				if (!key[SDL_SCANCODE_X]) previousKeyState[SDL_SCANCODE_X] = false;
 
-				if (keyState[SDL_SCANCODE_L])
+				if (key[SDL_SCANCODE_C] && !previousKeyState[SDL_SCANCODE_C]) previousKeyState[SDL_SCANCODE_C] = true;
+				if (!key[SDL_SCANCODE_C]) previousKeyState[SDL_SCANCODE_C] = false;
+
+				if (key[SDL_SCANCODE_W]) { m_LastDirection = { 0,-1 }; return MoveUp.get(); }
+				if (key[SDL_SCANCODE_S]) { m_LastDirection = { 0, 1 }; return MoveDown.get(); }
+				if (key[SDL_SCANCODE_A]) { m_LastDirection = { -1, 0 }; return MoveLeft.get(); } 
+				if (key[SDL_SCANCODE_D]) { m_LastDirection = { 1, 0 }; return MoveRight.get(); }
+
+				if (key[SDL_SCANCODE_F11]) { OnAllEmeraldsCollected(); }
+
+				if (key[SDL_SCANCODE_SPACE])
 				{
-					//return StopAllSound.get();
+					if (m_LastDirection.y == 0)
+					{
+						if (m_LastDirection.x < 0) return ShootLeft.get();
+						if (m_LastDirection.x > 0) return ShootRight.get();
+					}
+					else if (m_LastDirection.x == 0)
+					{
+						if (m_LastDirection.y < 0) return ShootUp.get();
+						if (m_LastDirection.y > 0) return ShootDown.get();
+					}
 				}
-				
-				
 			}
-
 			return nullptr;
 		}
 
+		struct ThumbInputReturn
+		{
+			short ThumbLX{};
+			short ThumbRX{};
+			short ShoulderLY{};
+			short ShoulderRY{};
+		};
+
 		ThumbInputReturn HandleThumbXInput()
 		{
-			ThumbInputReturn ReturnValues{};
+			ThumbInputReturn r{};
+			const auto Lx = m_CurrentState.Gamepad.sThumbLX;
+			const auto Rx = m_CurrentState.Gamepad.sThumbRX;
+			r.ShoulderLY = m_CurrentState.Gamepad.sThumbLY;
+			r.ShoulderRY = m_CurrentState.Gamepad.sThumbRY;
 
-			auto LThumbValue = m_CurrentState.Gamepad.sThumbLX;
-			auto RThumbValue = m_CurrentState.Gamepad.sThumbRX;
-			ReturnValues.ShoulderLY = m_CurrentState.Gamepad.sThumbLY;
-			ReturnValues.ShoulderRY = m_CurrentState.Gamepad.sThumbRY;
-
-			if (LThumbValue > (SHRT_MAX * m_DeadZonePercentage) || LThumbValue < (SHRT_MIN * m_DeadZonePercentage))
-			{
-				ReturnValues.ThumbLX = LThumbValue;
-			}
-			if (RThumbValue > (SHRT_MAX * m_DeadZonePercentage) || RThumbValue < (SHRT_MIN * m_DeadZonePercentage))
-			{
-				ReturnValues.ThumbRX = RThumbValue;
-			}
-
-			return ReturnValues;
+			if (std::abs(Lx) > SHRT_MAX * m_DeadZonePercentage) r.ThumbLX = Lx;
+			if (std::abs(Rx) > SHRT_MAX * m_DeadZonePercentage) r.ThumbRX = Rx;
+			return r;
 		}
 
 		void HandleButtonXInput()
@@ -227,64 +135,82 @@ namespace dae
 			ZeroMemory(&m_CurrentState, sizeof(XINPUT_STATE));
 			XInputGetState(m_ControllerIdx, &m_CurrentState);
 
-			auto ButtonChanges = m_CurrentState.Gamepad.wButtons ^ m_PrevState.Gamepad.wButtons;
-			m_ThisFramePressedButtons = ButtonChanges & m_CurrentState.Gamepad.wButtons;
-			m_ThisFrameReleasedButtons = ButtonChanges & (~m_CurrentState.Gamepad.wButtons);
-			m_PreviousFramePressedButtons = m_ThisFramePressedButtons;
+			const auto changes = m_CurrentState.Gamepad.wButtons ^ m_PrevState.Gamepad.wButtons;
+			m_ThisFramePressedButtons = changes & m_CurrentState.Gamepad.wButtons;
+			m_ThisFrameReleasedButtons = changes & (~m_CurrentState.Gamepad.wButtons);
 
 #ifdef _DEBUG
-			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_A)
-			{
-
-				std::cout << "A button pressed" << std::endl;
-			}
-			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_B) std::cout << "B button pressed" << std::endl;
-			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_X) std::cout << "X button pressed" << std::endl;
-			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_Y) std::cout << "Y button pressed" << std::endl;
-			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_DPAD_UP) std::cout << "DPad UP pressed" << std::endl;
-			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_DPAD_DOWN) std::cout << "DPad DOWN pressed" << std::endl;
-			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_DPAD_LEFT) std::cout << "DPad LEFT pressed" << std::endl;
-			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_DPAD_RIGHT) std::cout << "DPad RIGHT pressed" << std::endl;
+			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_A)           std::cout << "P" << m_ControllerIdx << " A\n";
+			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_B)           std::cout << "P" << m_ControllerIdx << " B\n";
+			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_X)           std::cout << "P" << m_ControllerIdx << " X\n";
+			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_Y)           std::cout << "P" << m_ControllerIdx << " Y\n";
+			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_DPAD_UP)     std::cout << "P" << m_ControllerIdx << " UP\n";
+			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_DPAD_DOWN)   std::cout << "P" << m_ControllerIdx << " DOWN\n";
+			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_DPAD_LEFT)   std::cout << "P" << m_ControllerIdx << " LEFT\n";
+			if (m_ThisFramePressedButtons & XINPUT_GAMEPAD_DPAD_RIGHT)  std::cout << "P" << m_ControllerIdx << " RIGHT\n";
 #endif
 		}
 
-		bool IsDpadPressed(DPadButton Button) const
+		bool IsDpadPressed(DPadButton b) const
 		{
-			return m_CurrentState.Gamepad.wButtons & static_cast<int>(Button);
+			return (m_CurrentState.Gamepad.wButtons & static_cast<int>(b)) != 0;
+		}
+		bool IsGamepadPressed(GamepadButton b) const
+		{
+			return (m_ThisFramePressedButtons & static_cast<int>(b)) != 0;
 		}
 
-		bool IsGamepadPressed(GamepadButton Button) const
-		{
-			return m_ThisFramePressedButtons & static_cast<int>(Button);
+	private:
+		GameObject* m_Owner{};
 
-		}
+		std::unique_ptr<Command_Move> MoveUp;
+		std::unique_ptr<Command_Move> MoveDown;
+		std::unique_ptr<Command_Move> MoveRight;
+		std::unique_ptr<Command_Move> MoveLeft;
 
+		std::unique_ptr<Command_Move> MoveLeftUp;
+		std::unique_ptr<Command_Move> MoveRightUp;
+		std::unique_ptr<Command_Move> MoveLeftDown;
+		std::unique_ptr<Command_Move> MoveRightDown;
+
+		std::unique_ptr<Command_DecreaseHealth> DecreaseHealth;
+		std::unique_ptr<Command_IncreaseScore>  IncreaseScore;
+		std::unique_ptr<Command_StopAllSound>   StopAllSound;
+
+		std::unique_ptr<Command_Shoot> ShootLeft;
+		std::unique_ptr<Command_Shoot> ShootRight;
+		std::unique_ptr<Command_Shoot> ShootUp;
+		std::unique_ptr<Command_Shoot> ShootDown;
+
+		bool m_bIsSecondController{ false };
+		glm::vec2 m_LastDirection{ 1, 0 }; 
 
 		XINPUT_STATE m_CurrentState{};
 		XINPUT_STATE m_PrevState{};
-		int m_ControllerIdx{};
-		int m_ThisFramePressedButtons{};
-		int m_ThisFrameReleasedButtons{};
-		int m_PreviousFramePressedButtons{};
-		float m_DeadZonePercentage{};
+		int   m_ControllerIdx{};
+		int   m_ThisFramePressedButtons{};
+		int   m_ThisFrameReleasedButtons{};
+		float m_DeadZonePercentage{ 0.24f };
 
-
-		bool previousKeyState[SDL_NUM_SCANCODES] = { false };
+		bool previousKeyState[SDL_NUM_SCANCODES]{}; 
 	};
 
 
-	PlayerControllerComponent::PlayerControllerComponent(GameObject* Owner, int ControllerIdx) : BaseComponent(Owner), pImpl(std::make_unique<Impl>(Owner,ControllerIdx)) {};
+	PlayerControllerComponent::PlayerControllerComponent(GameObject* owner, int controllerIdx)
+		: BaseComponent(owner)
+		, pImpl(std::make_unique<Impl>(owner, controllerIdx))
+	{
+	}
 
 	PlayerControllerComponent::~PlayerControllerComponent() = default;
 
-	void PlayerControllerComponent::Update(const float deltaTime)
+	void PlayerControllerComponent::Update(const float dt)
 	{
-		pImpl->Update(deltaTime);
+		pImpl->Update(dt);
 	}
 
 	Command* PlayerControllerComponent::HandleInput()
 	{
 		return pImpl->HandleInput();
 	}
-
-}
+} 
