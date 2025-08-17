@@ -49,8 +49,7 @@ void SpawnerComponent::SpawnMonster()
 	MonsterAnimController->ChangeState("Nobbin");
 
 	// AI movement
-	auto* ai = Monster->CreateComponent<AIMovementComponent>(m_AIGridComp, MonsterAnimController, m_Digger, m_MapComp);
-	assert(ai && "Failed to create AIMovementComponent");
+	Monster->CreateComponent<AIMovementComponent>(m_AIGridComp, MonsterAnimController, m_Digger, m_MapComp);
 
 	DamageComponent* dmgComp = Monster->CreateComponent<DamageComponent>(glm::ivec4{ 0, 0, 20, 20 });
 	assert(dmgComp && "Failed to create DamageComponent");
