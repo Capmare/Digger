@@ -36,6 +36,8 @@ namespace dae
 		std::vector < std::unique_ptr<Observer>> m_observers{};
 
 		static unsigned int m_idCounter; 
+
+		bool m_isClearing{false};
 	};
 
 }

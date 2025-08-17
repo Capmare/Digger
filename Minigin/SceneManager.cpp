@@ -14,27 +14,20 @@ void dae::SceneManager::Update( const float deltaTime)
 {
 
 
-	deltaTime;
-	for(auto& scene : m_scenes)
-	{
-		scene->Update(deltaTime);
-	}
+	GetLastScene().Update(deltaTime);
 }
 
 void dae::SceneManager::Render()
 {
-	for (const auto& scene : m_scenes)
-	{
-		scene->Render();
-	}
+	GetLastScene().Render();
+
+
 }
 
 void dae::SceneManager::FixedUpdate( const float fixedDeltaTime)
 {
-	for (const auto& scene : m_scenes)
-	{
-		scene->FixedUpdate(fixedDeltaTime);
-	}
+	GetLastScene().FixedUpdate(fixedDeltaTime);
+
 }
 
 void dae::SceneManager::RenderUI()
