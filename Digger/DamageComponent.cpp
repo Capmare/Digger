@@ -75,7 +75,7 @@ void dae::DamageComponent::Update(const float)
 
 			if (auto* health = actor->GetFirstComponentOfType<HealthComponent>())
 			{
-				if (actor->m_Name != "Digger")
+				if (actor->m_Name == "Hobbin" || actor->m_Name == "Nobbin" || actor->m_Name == "Monster")
 				{
 					if (DamageComponent* dmgComp = actor->GetFirstComponentOfType<DamageComponent>())
 					{
@@ -84,7 +84,7 @@ void dae::DamageComponent::Update(const float)
 							if (auto* score = a->GetFirstComponentOfType<ScoreComponent>())
 							{
 								score->IncreaseScore(500);
-								owner->Destroy();
+								actor->Destroy();
 							}
 						}
 
