@@ -72,6 +72,10 @@ namespace dae
 						if (m_LastDirection.y > 0) return ShootDown.get();
 					}
 				}
+				const Uint8* key = SDL_GetKeyboardState(nullptr);
+
+				if (key[SDL_SCANCODE_F11]) { OnAllEmeraldsCollected(); }
+
 			}
 			else
 			{
