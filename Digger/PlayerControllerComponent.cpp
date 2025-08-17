@@ -74,7 +74,7 @@ namespace dae
 				}
 				const Uint8* key = SDL_GetKeyboardState(nullptr);
 
-				if (key[SDL_SCANCODE_F11]) { OnAllEmeraldsCollected(); }
+				if (key[SDL_SCANCODE_F1]) { OnAllEmeraldsCollected(); }
 
 			}
 			else
@@ -93,7 +93,7 @@ namespace dae
 				if (key[SDL_SCANCODE_A]) { m_LastDirection = { -1, 0 }; return MoveLeft.get(); } 
 				if (key[SDL_SCANCODE_D]) { m_LastDirection = { 1, 0 }; return MoveRight.get(); }
 
-				if (key[SDL_SCANCODE_F11]) { OnAllEmeraldsCollected(); }
+				if (key[SDL_SCANCODE_F1]) { OnAllEmeraldsCollected(); }
 
 				if (key[SDL_SCANCODE_SPACE])
 				{
