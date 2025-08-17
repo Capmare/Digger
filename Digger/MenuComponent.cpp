@@ -158,20 +158,95 @@ namespace dae {
 		return true;
 	}
 
+
 	std::vector<std::pair<std::string, int>> MenuComponent::LoadScores(const std::string& path)
 	{
-		std::vector<std::pair<std::string, int>> rows;
-		std::ifstream f(path);
-		if (!f.is_open()) return rows;
+		auto log = [](const std::string& s) {
+			std::cout << s << std::flush;
+#ifdef _WIN32
+			OutputDebugStringA(s.c_str());
+#endif
+			};
 
-		std::string line;
-		while (std::getline(f, line)) {
-			std::string name; int score{};
-			if (ParseLine(line, name, score)) rows.emplace_back(std::move(name), score);
+		auto trim = [](std::string& s) {
+			auto notSpace = [](unsigned char c) { return !std::isspace(c); };
+			s.erase(s.begin(), std::find_if(s.begin(), s.end(), notSpace));
+			s.erase(std::find_if(s.rbegin(), s.rend(), notSpace).base(), s.end());
+			};
+
+		auto toLower = [](std::string s) {
+			for (auto& c : s) c = static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+			return s;
+			};
+
+		namespace fs = std::filesystem;
+
+		std::vector<std::pair<std::string, int>> rows;
+
+		// --- log cwd + target
+		log("\n[Scoreboard] Loading scores from: " + path + "\n");
+		try { log("[Scoreboard] CWD: " + fs::current_path().string() + "\n"); }
+		catch (...) {}
+
+		// --- build candidate paths
+		std::vector<std::string> candidates;
+		candidates.push_back(path);
+		if (path.find('/') == std::string::npos && path.find('\\') == std::string::npos) {
+			candidates.push_back("../Data/" + path);
+			candidates.push_back("Data/" + path);
 		}
-		std::sort(rows.begin(), rows.end(),
-			[](auto& a, auto& b) { return a.second > b.second; });
+
+		// --- try to open one
+		std::ifstream f;
+		std::string opened;
+		for (const auto& p : candidates) {
+			f.close();
+			f.clear();
+			f.open(p);
+			log(std::string("[Scoreboard] try: ") + p + (f.is_open() ? "  [OK]\n" : "  [NO]\n"));
+			if (f.is_open()) { opened = p; break; }
+		}
+		if (!f.is_open()) {
+			log("[Scoreboard] FAILED to open any candidate.\n");
+			return rows;
+		}
+		log("[Scoreboard] Using: " + opened + "\n");
+
+		// --- parse lines: name,score  (skip header, blanks, comments)
+		std::string line;
+		bool firstLine = true;
+		while (std::getline(f, line)) {
+			if (firstLine && line.size() >= 3 &&
+				(unsigned char)line[0] == 0xEF && (unsigned char)line[1] == 0xBB && (unsigned char)line[2] == 0xBF)
+				line.erase(0, 3);
+			firstLine = false;
+
+			std::string raw = line;
+			trim(line);
+			if (line.empty() || line[0] == '#' || line[0] == ';') continue;
+
+			auto comma = line.find(',');
+			if (comma == std::string::npos) { log("[Scoreboard] skip (no comma): " + raw + "\n"); continue; }
+
+			std::string name = line.substr(0, comma);
+			std::string score = line.substr(comma + 1);
+			trim(name); trim(score);
+			if (name.empty() || score.empty()) { log("[Scoreboard] skip (empty field): " + raw + "\n"); continue; }
+			if (toLower(name) == "name" && toLower(score) == "score") { log("[Scoreboard] skip header\n"); continue; }
+
+			char* end = nullptr;
+			long v = std::strtol(score.c_str(), &end, 10);
+			if (end == score.c_str() || *end != '\0') { log("[Scoreboard] skip (non-numeric): " + raw + "\n"); continue; }
+
+			rows.emplace_back(std::move(name), (int)v);
+			log("[Scoreboard] parsed: " + rows.back().first + " -> " + std::to_string(rows.back().second) + "\n");
+		}
+
+		std::sort(rows.begin(), rows.end(), [](const auto& a, const auto& b) { return a.second > b.second; });
+
+		log("[Scoreboard] total rows: " + std::to_string(rows.size()) + "\n");
 		return rows;
 	}
+
 
 } // namespace dae

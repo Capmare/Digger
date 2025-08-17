@@ -33,14 +33,14 @@ namespace dae {
 		bool m_prevKeyY{ false };
 
 
-		std::string m_ScoreFile{ "scoreboard.txt" };
+		std::string m_ScoreFile{ "../Data/scoreboard.txt" };
 
 		// layout
 		float m_MaxRows{ 5 };
 		float m_TitleX{ 380 }, m_TitleY{ 46 };
-		float m_HeaderY{ 68 };
+		float m_HeaderY{ 20 };
 		float m_NameX{ 380 }, m_ScoreX{ 540 };
-		float m_BaseY{ 88 }, m_LineStep{ 18 };
+		float m_BaseY{ 40 }, m_LineStep{ 18 };
 
 
 	};
