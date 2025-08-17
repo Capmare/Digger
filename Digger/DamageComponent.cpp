@@ -77,11 +77,22 @@ void dae::DamageComponent::Update(const float)
 			{
 				if (actor->m_Name != "Digger")
 				{
-					if (auto* score = actor->GetFirstComponentOfType<ScoreComponent>())
+					if (DamageComponent* dmgComp = actor->GetFirstComponentOfType<DamageComponent>())
 					{
-						score->IncreaseScore(500);
-						owner->Destroy(); 
+						for (auto& a : dmgComp->GetDamageReceivingActors())
+						{
+							if (auto* score = a->GetFirstComponentOfType<ScoreComponent>())
+							{
+								score->IncreaseScore(500);
+								owner->Destroy();
+							}
+						}
+
+						
 					}
+
+					
+					
 				}
 
 				const auto* cur = anim->GetCurrentState();

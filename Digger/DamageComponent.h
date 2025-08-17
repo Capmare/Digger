@@ -19,6 +19,9 @@ namespace dae
 
 		void SetDynamicActors(const std::vector<GameObject*>* actors) { m_DynamicActors = actors; }
 
+		std::vector<GameObject*> GetDamageReceivingActors() const { return m_OtherActors; }
+
+		GameObject* m_Player{};
 		bool bShouldDamage{};
 		bool bDoesDamageWithoutCondition{ false };
 
