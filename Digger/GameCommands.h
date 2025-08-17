@@ -97,7 +97,7 @@ namespace dae
 
 		void Exec(GameObject& GO) override
 		{
-			dae::FireballShooterComponent* ScoreComp = GO.GetAllComponentsOfType<FireballShooterComponent>().at(0);
+			dae::FireballShooterComponent* ScoreComp = GO.GetFirstComponentOfType<FireballShooterComponent>();
 			if (ScoreComp)
 			{
 				ScoreComp->TryFire(m_Direction);

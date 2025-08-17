@@ -8,6 +8,7 @@
 #include <SDL.h>
 
 constexpr int m_MoveDistance{ 15 };
+extern void OnAllEmeraldsCollected();
 
 namespace dae
 {
@@ -183,7 +184,10 @@ namespace dae
 					m_LastDirection = glm::vec2{ 1,0 };
 					return MoveRight.get();
 				}
-				
+				if (keyState[SDL_SCANCODE_F11])
+				{
+					OnAllEmeraldsCollected();
+				}
 
 				if (keyState[SDL_SCANCODE_L])
 				{
