@@ -44,28 +44,24 @@ dae::Observer* dae::Scene::CreateObserver(std::unique_ptr<Observer> observer)
 
 void dae::Scene::Update(float dt)
 {
-	// Take ownership of current objects for this frame
 	std::vector<std::unique_ptr<GameObject>> old = std::move(m_objects);
 	m_objects.clear();
 	m_objects.reserve(old.size());
 
 	for (auto& obj : old)
 	{
-		if (!obj) continue; // defensive
+		if (!obj) continue; 
 
 		if (obj->IsMarkedForDestroy())
 		{
 			std::cout << "Checking " << obj->m_Name << " -> Destroyed\n";
-			// Don't move it back; leaving it in 'old' means it'll be destroyed
 			continue;
 		}
 
 		obj->Update(dt);
-		m_objects.emplace_back(std::move(obj)); // survivor stays alive
+		m_objects.emplace_back(std::move(obj)); 
 	}
 
-	// 'old' now contains only the ones we didn't move (i.e., destroyed/null).
-	// When 'old' goes out of scope at the end of the function, their unique_ptr dtors run.
 }
 
 
