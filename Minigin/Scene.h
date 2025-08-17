@@ -27,6 +27,7 @@ namespace dae
 		void FixedUpdate(const float fixedDeltaTime);
 		void Render() const;
 
+		std::string GetName() const { return m_name; }
 	private: 
 		explicit Scene(const std::string& name);
 

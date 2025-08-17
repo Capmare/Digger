@@ -21,7 +21,10 @@ Scene::~Scene() = default;
 
 void Scene::RemoveAll()
 {
-	m_objects.clear();
+	for (auto& obj : m_objects)
+	{
+		obj->Destroy();
+	}
 }
 
 dae::GameObject* dae::Scene::CreateNewGameObject()
