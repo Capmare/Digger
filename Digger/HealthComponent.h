@@ -12,6 +12,8 @@
 #include "SpawnerComponent.h"
 #include "ServiceLocator.h"
 
+extern void LoadNameSelectScene();
+
 namespace dae
 {
 	class HealthComponent : public BaseComponent
@@ -68,6 +70,11 @@ namespace dae
 				if (GetOwner()->m_Name == "Monster")
 				{
 					GetOwner()->Destroy();
+					
+				}
+				if (GetOwner()->m_Name == "Digger")
+				{
+					LoadNameSelectScene();
 				}
 			}
 
