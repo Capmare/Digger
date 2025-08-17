@@ -52,12 +52,13 @@ namespace dae
 		float ComputeNextDelay() const
 		{
 			// jitter spawns so they don't happen at the exact same cadence
-			const float minDelay = std::max(0.1f, m_SpawnInterval * (1.f - m_SpawnJitter));
+			const float minDelay = (std::max)(0.1f, m_SpawnInterval * (1.f - m_SpawnJitter));
 			const float maxDelay = m_SpawnInterval * (1.f + m_SpawnJitter);
 			static thread_local std::mt19937 rng{ std::random_device{}() };
 			std::uniform_real_distribution<float> dist(minDelay, maxDelay);
 			return dist(rng);
 		}
+
 
 		// Dependencies
 		std::vector<GameObject*> m_DamagingMonsterObject{};

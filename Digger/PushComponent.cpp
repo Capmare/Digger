@@ -6,12 +6,22 @@
 #include "Renderer.h"
 #include "ScoreComponent.h"
 #include <string>
+#include <unordered_set>
 
 namespace {
 	constexpr const char* kStateFalling = "Falling";
 	constexpr const char* kStateDestroyed = "Destroyed";
 	constexpr const char* kStateDead = "Dead";
+
+	std::unordered_set<const dae::GameObject*> gEmeralds;
 }
+
+// exported for Main.cpp
+void ResetEmeraldTracking() { gEmeralds.clear(); }
+void RegisterEmerald(const dae::GameObject* go) { if (go) gEmeralds.insert(go); }
+void UnregisterEmerald(const dae::GameObject* go) { if (go) gEmeralds.erase(go); }
+
+extern void OnAllEmeraldsCollected();
 
 void dae::PushComponent::Push(float PushAmmount)
 {
@@ -19,8 +29,7 @@ void dae::PushComponent::Push(float PushAmmount)
 	{
 		const auto* st = ownerAnim->GetCurrentState();
 		const std::string name = st ? st->GetStateName() : std::string{};
-		if (name == kStateFalling || name == kStateDestroyed)
-			return;
+		if (name == kStateFalling || name == kStateDestroyed) return;
 	}
 
 	GetOwner()->SetLocalPosition(
@@ -92,6 +101,13 @@ void dae::PushComponent::Update(const float)
 				if (auto* score = Actor->GetFirstComponentOfType<ScoreComponent>())
 				{
 					score->IncreaseScore(m_Score);
+
+					if (GetOwner() && GetOwner()->m_Name == "Emerald")
+					{
+						UnregisterEmerald(GetOwner());
+						if (gEmeralds.empty()) OnAllEmeraldsCollected();
+					}
+
 					GetOwner()->Destroy();
 				}
 			}
@@ -99,10 +115,4 @@ void dae::PushComponent::Update(const float)
 	}
 }
 
-void dae::PushComponent::Render() const
-{
-	// debug point draw (optional)
-	// SDL_SetRenderDrawColor(Renderer::GetInstance().GetSDLRenderer(), 255, 0, 0, 255);
-	// SDL_RenderDrawPoint(Renderer::GetInstance().GetSDLRenderer(), m_CollisionPoint.x, m_CollisionPoint.y);
-	// SDL_SetRenderDrawColor(Renderer::GetInstance().GetSDLRenderer(), 0, 0, 0, 255);
-}
+void dae::PushComponent::Render() const {}
