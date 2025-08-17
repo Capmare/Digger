@@ -15,9 +15,11 @@ namespace
 
 void dae::DamageComponent::Update(const float)
 {
-	const auto ownerPos = GetOwner()->GetWorldPosition();
-	const glm::ivec4 dmgRectI4 =
-	{
+	auto* owner = GetOwner();
+	if (!owner || owner->IsMarkedForDestroy()) return;
+
+	const auto ownerPos = owner->GetWorldPosition();
+	const glm::ivec4 dmgRectI4{
 		static_cast<int>(ownerPos.x + m_DamageSquare.x + 3),
 		static_cast<int>(ownerPos.y + m_DamageSquare.y + 3),
 		m_DamageSquare.z - 3,
@@ -28,29 +30,38 @@ void dae::DamageComponent::Update(const float)
 	bShouldDamage = bDoesDamageWithoutCondition;
 	if (!bDoesDamageWithoutCondition)
 	{
-		if (auto* ownerAnim = GetOwner()->GetFirstComponentOfType<AnimControllerComponent>())
+		if (auto* ownerAnim = owner->GetFirstComponentOfType<AnimControllerComponent>())
 		{
 			const auto* st = ownerAnim->GetCurrentState();
 			const bool isFalling = (st && st->GetStateName() == kStateFalling);
 			const bool isDestroyed = (st && st->GetStateName() == kStateDestroyed);
 			bShouldDamage = isFalling && !isDestroyed;
 		}
-		else
-		{
-			bShouldDamage = false;
-		}
+		else bShouldDamage = false;
 	}
-
 	if (!bShouldDamage) return;
+
+	std::erase_if(m_OtherActors, [](GameObject* a) {
+		return a == nullptr || a->IsMarkedForDestroy();
+		});
 
 	for (GameObject* actor : m_OtherActors)
 	{
-		if (!actor) continue;
+		if (!actor || actor->IsMarkedForDestroy()) continue;
 
 		auto* anim = actor->GetFirstComponentOfType<AnimControllerComponent>();
 		if (!anim) continue;
 
-		glm::ivec2 res = anim->GetCurrentState()->GetFlipBook()->GetUsedTexture()->GetTextureResolution();
+		const auto* st = anim->GetCurrentState();
+		if (!st) continue;
+
+		const auto* fb = st->GetFlipBook();
+		if (!fb) continue;
+
+		const auto* tex = fb->GetUsedTexture();
+		if (!tex) continue;
+
+		glm::ivec2 res = tex->GetTextureResolution();
 		res.x /= 4;
 
 		const glm::ivec2 actorPos{
@@ -65,30 +76,31 @@ void dae::DamageComponent::Update(const float)
 			res.y - 2 * m_CollisionOffset
 		};
 
-		if (SDL_HasIntersection(&dmgRectSDL, &actorRect))
-		{
-			if (auto* health = actor->GetFirstComponentOfType<HealthComponent>())
-			{
-				if (actor->m_Name != "Digger")
-				{
-					if (auto* score = actor->GetFirstComponentOfType<ScoreComponent>())
-					{
-						score->IncreaseScore(500);
-						GetOwner()->Destroy();
-					}
-				}
+		if (!SDL_HasIntersection(&dmgRectSDL, &actorRect)) continue;
 
-				const auto* cur = anim->GetCurrentState();
-				if (!cur || cur->GetStateName() != kStateDead)
+		if (auto* health = actor->GetFirstComponentOfType<HealthComponent>())
+		{
+			if (actor->m_Name != "Digger")
+			{
+				if (auto* score = actor->GetFirstComponentOfType<ScoreComponent>())
 				{
-					health->DecreaseHealth(1);
-					anim->GetCurrentState()->GetFlipBook()->ResetFlipBook();
-					anim->ChangeState(kStateDead);
+					score->IncreaseScore(500);
+					owner->Destroy();          
 				}
+			}
+
+			const auto* cur = anim->GetCurrentState();
+			if (!cur || cur->GetStateName() != kStateDead)
+			{
+				health->DecreaseHealth(1);
+				if (auto* cur2 = anim->GetCurrentState())
+					if (auto* fb2 = cur2->GetFlipBook()) fb2->ResetFlipBook();
+				anim->ChangeState(kStateDead);
 			}
 		}
 	}
 }
+
 
 void dae::DamageComponent::Render() const
 {

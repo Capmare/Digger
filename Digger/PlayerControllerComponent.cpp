@@ -28,9 +28,14 @@ namespace dae
 		std::unique_ptr<Command_DecreaseHealth> DecreaseHealth;
 		std::unique_ptr<Command_IncreaseScore> IncreaseScore;
 		std::unique_ptr<Command_StopAllSound> StopAllSound;
+		std::unique_ptr<Command_Shoot> ShootLeft;
+		std::unique_ptr<Command_Shoot> ShootRight;
+		std::unique_ptr<Command_Shoot> ShootUp;
+		std::unique_ptr<Command_Shoot> ShootDown;
 
 		bool m_bIsSecondController{false};
 
+		glm::vec2 m_LastDirection{};
 
 	public:
 
@@ -48,6 +53,10 @@ namespace dae
 			DecreaseHealth	{ std::make_unique<dae::Command_DecreaseHealth>() },
 			IncreaseScore	{ std::make_unique<dae::Command_IncreaseScore>() },
 			StopAllSound	{ std::make_unique<dae::Command_StopAllSound>() },
+			ShootLeft		{ std::make_unique<dae::Command_Shoot>(glm::vec2{ -1,0 })},
+			ShootRight		{ std::make_unique<dae::Command_Shoot>(glm::vec2{ 1,0 })},
+			ShootUp			{ std::make_unique<dae::Command_Shoot>( glm::vec2{ 0,-1 })},
+			ShootDown		{ std::make_unique<dae::Command_Shoot>(glm::vec2{ 0,1 })},
 			m_ControllerIdx	{ ControllerIdx }
 
 		{};
@@ -88,32 +97,47 @@ namespace dae
 				//	return MoveRightDown.get();
 				//}
 
+
+
+
+
 				// Normal movement
 				if (IsDpadPressed(DPadButton::DPAD_UP))
 				{
+					m_LastDirection = glm::vec2{ 0,-1 };
 					return MoveUp.get();
 				}
 				if (IsDpadPressed(DPadButton::DPAD_DOWN))
 				{
+					m_LastDirection = glm::vec2{ 0,1 };
+
 					return MoveDown.get();
 				}
 				if (IsDpadPressed(DPadButton::DPAD_LEFT))
 				{
+					m_LastDirection = glm::vec2{ -1,0 };
+
 					return MoveLeft.get();
 				}
 				if (IsDpadPressed(DPadButton::DPAD_RIGHT))
 				{
+					m_LastDirection = glm::vec2{ 1,0 };
 					return MoveRight.get();
 				}
 
 				if (IsGamepadPressed(GamepadButton::A))
 				{
-					return DecreaseHealth.get();
+					if (m_LastDirection.x == -1)
+					{
+						return ShootLeft.get();
+					}
+					if (m_LastDirection.x == 1)
+					{
+						return ShootRight.get();
+					}
+					
 				}
-				if (IsGamepadPressed(GamepadButton::B))
-				{
-					return IncreaseScore.get();
-				}
+			
 			}
 			else
 			{
@@ -138,39 +162,25 @@ namespace dae
 					previousKeyState[SDL_SCANCODE_C] = false;  
 				}
 
-				// diagonal
-				if (keyState[SDL_SCANCODE_W] && keyState[SDL_SCANCODE_A]) 
-				{
-					return MoveLeftUp.get();
-				}
-				if (keyState[SDL_SCANCODE_W] && keyState[SDL_SCANCODE_D])
-				{
-					return MoveRightUp.get();
-				}
-				if (keyState[SDL_SCANCODE_S] && keyState[SDL_SCANCODE_A]) 
-				{
-					return MoveLeftDown.get();
-				}
-				if (keyState[SDL_SCANCODE_S] && keyState[SDL_SCANCODE_D])
-				{
-					return MoveRightDown.get();
-				}
-
 				// Normal movement
 				if (keyState[SDL_SCANCODE_W]) 
 				{
+					m_LastDirection = glm::vec2{ 0,-1 };
 					return MoveUp.get();
 				}
 				if (keyState[SDL_SCANCODE_S])  
 				{
+					m_LastDirection = glm::vec2{ 0,1 };
 					return MoveDown.get();
 				}
 				if (keyState[SDL_SCANCODE_A])  
 				{
+					m_LastDirection = glm::vec2{ 1,0 };
 					return MoveLeft.get();
 				}
 				if (keyState[SDL_SCANCODE_D])  
 				{
+					m_LastDirection = glm::vec2{ 1,0 };
 					return MoveRight.get();
 				}
 				

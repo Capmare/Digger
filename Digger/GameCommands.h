@@ -2,6 +2,7 @@
 #include "Command.h"
 #include "ServiceLocator.h"
 #include "DiggingComponent.h"
+#include <ProjectileComponent.h>
 
 
 namespace dae
@@ -87,5 +88,23 @@ namespace dae
 			dae::ServiceLocator::GetSoundSystem().PlaySound("../Data/piano2.wav");
 
 		}
+	};
+
+	class Command_Shoot final : public Command
+	{
+	public:
+		Command_Shoot(const glm::vec2& Direction) : m_Direction{ Direction } {};
+
+		void Exec(GameObject& GO) override
+		{
+			dae::FireballShooterComponent* ScoreComp = GO.GetAllComponentsOfType<FireballShooterComponent>().at(0);
+			if (ScoreComp)
+			{
+				ScoreComp->TryFire(m_Direction);
+			}
+		}
+
+	private:
+		glm::vec2 m_Direction;
 	};
 }

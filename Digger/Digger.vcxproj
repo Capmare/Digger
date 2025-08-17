@@ -103,6 +103,7 @@
     <ClCompile Include="MovementComponent.cpp" />
     <ClCompile Include="NameEntryComponent.cpp" />
     <ClCompile Include="PlayerControllerComponent.cpp" />
+    <ClCompile Include="ProjectileComponent.cpp" />
     <ClCompile Include="PushComponent.cpp" />
     <ClCompile Include="RotatingComponent.cpp" />
     <ClCompile Include="SpawnerComponent.cpp" />
@@ -124,6 +125,7 @@
     <ClInclude Include="MovementComponent.h" />
     <ClInclude Include="NameEntryComponent.h" />
     <ClInclude Include="PlayerControllerComponent.h" />
+    <ClInclude Include="ProjectileComponent.h" />
     <ClInclude Include="PushComponent.h" />
     <ClInclude Include="RotatingComponent.h" />
     <ClInclude Include="ScoreComponent.h" />
