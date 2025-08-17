@@ -43,6 +43,8 @@ void dae::ScoreObserver::OnNotify(GameObject& GO, const ObserverEvents& Event)
 			ScoreText += std::to_string(ScoreComp->GetScore());
 			ScoreComp->GetScoreText()->SetText(ScoreText);
 			break;
+		case ObserverEvents::OnSavedScore:
+			ScoreComp->SaveScore(g_PlayerName);
 		default:
 			break;
 		}
